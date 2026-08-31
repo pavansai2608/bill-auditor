@@ -77,7 +77,11 @@ Per request, each bill line runs through a LangGraph loop: non-payable fast path
 
 ## Git workflow
 
-GitFlow: `main` (tagged releases only) ← `release/vX` ← `develop` ← `feature/BA-XX-short-name`. Commits are Conventional Commits with a Jira ID: `feat(agent): add retry loop with query rewriting [BA-24]`. The `.githooks/commit-msg` hook enforces both; `.githooks/pre-commit` runs ruff. Install with `git config core.hooksPath .githooks`.
+GitFlow: `main` (tagged releases only) ← `release/vX` ← `develop` ← `feature/short-name`. Commits are Conventional Commits: `feat(agent): add retry loop with query rewriting`. The `.githooks/commit-msg` hook enforces the format and a 72-character subject limit; `.githooks/pre-commit` runs ruff. Install with `git config core.hooksPath .githooks`.
+
+**No issue tracker.** This is a solo project, so the `[BA-XX]` ticket IDs the original spec called for have been dropped. Commits before `262e6eb` still carry them — that history is not rewritten. Do not add ticket IDs to new commits.
+
+**Always branch from `develop`.** Running `git checkout -b feature/next` while still standing on the previous feature branch stacks them, and `develop` then holds none of the work — which has already happened once here. `git checkout develop` first, every time.
 
 Annotated tags mark eval milestones: `v0` naive baseline · `v1` hybrid retrieval · `v2` agent loop · `v3` second pass · `v4` all 8 guardrails · `v1.0.0` submission.
 

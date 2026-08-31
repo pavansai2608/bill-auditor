@@ -1,7 +1,3 @@
-## Ticket
-
-BA-
-
 ## What changed
 
 <!-- One paragraph. What problem does this solve? -->
@@ -26,8 +22,8 @@ BA-
 
 ## Checklist
 
-- [ ] Branch is `feature/BA-XX-*`, `release/vX` or `hotfix/BA-XX-*`
-- [ ] Every commit subject carries `[BA-XX]`
+- [ ] Branch is `feature/*`, `release/vX` or `hotfix/*`
+- [ ] Commit subjects follow Conventional Commits
 - [ ] `uv run ruff check .` passes
 - [ ] `uv run python -m unittest discover -s tests` passes
 - [ ] No arithmetic performed by the LLM
