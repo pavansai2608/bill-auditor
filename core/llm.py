@@ -58,6 +58,8 @@ def get_llm() -> ChatOllama:
             num_ctx=settings.num_ctx,  # CRITICAL - default 2048 truncates silently
             temperature=settings.temperature,
             keep_alive=settings.keep_alive,
+            reasoning=settings.llm_reasoning,
+            num_predict=settings.llm_num_predict,
             client_kwargs={"timeout": settings.llm_timeout_s},
         )
     return _client
@@ -84,6 +86,8 @@ def cache_key(messages: list[BaseMessage], schema_name: str | None) -> str:
         "model": settings.ollama_model,
         "num_ctx": settings.num_ctx,
         "temperature": settings.temperature,
+        "reasoning": settings.llm_reasoning,
+        "num_predict": settings.llm_num_predict,
         "schema": schema_name,
         "messages": _messages_payload(messages),
     }

@@ -28,6 +28,16 @@ class Settings(BaseSettings):
     temperature: float = 0.0
     keep_alive: str = "30m"
     llm_timeout_s: int = 180
+    # qwen3 "thinks" before answering by default, which costs roughly five times
+    # the latency. Classification and structured judging at temperature 0 do not
+    # benefit from it. Flip this on and re-run the eval if the numbers say
+    # otherwise - that is exactly the kind of question Phase 5 exists to settle.
+    llm_reasoning: bool = False
+    # Hard cap on generated tokens. Without it a looping model streams forever:
+    # the HTTP read timeout never fires because every token resets it, so the
+    # call hangs indefinitely with the process idle at 1% CPU. This is the only
+    # thing that actually bounds a runaway generation.
+    llm_num_predict: int = 2048
 
     # --- LLM disk cache -------------------------------------------------
     llm_cache_enabled: bool = True
