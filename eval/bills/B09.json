@@ -1,0 +1,63 @@
+{
+  "bill_id": "B09",
+  "policy": "star_health",
+  "sum_insured": 500000,
+  "policy_start_date": "2021-02-18",
+  "admission_date": "2026-03-20",
+  "discharge_date": "2026-03-24",
+  "category": "non_payable",
+  "lines": [
+    {
+      "item": "Room Rent (Single A/C) 4,500 x 4 days",
+      "amount": 18000.0,
+      "qty": 4
+    },
+    {
+      "item": "Surgeon Fee",
+      "amount": 62000.0,
+      "qty": 1
+    },
+    {
+      "item": "Medicines and Drugs",
+      "amount": 23000.0,
+      "qty": 1
+    },
+    {
+      "item": "Gloves",
+      "amount": 1500.0,
+      "qty": 25
+    },
+    {
+      "item": "Crepe Bandage",
+      "amount": 600.0,
+      "qty": 4
+    },
+    {
+      "item": "Cold Pack / Hot Pack",
+      "amount": 400.0,
+      "qty": 2
+    },
+    {
+      "item": "Walking Aids Charges",
+      "amount": 2200.0,
+      "qty": 1
+    },
+    {
+      "item": "Mineral Water",
+      "amount": 180.0,
+      "qty": 1
+    },
+    {
+      "item": "Telephone Charges",
+      "amount": 120.0,
+      "qty": 1
+    },
+    {
+      "item": "Investigations - Labs",
+      "amount": 6300.0,
+      "qty": 1
+    }
+  ],
+  "total_charged": 114300.0,
+  "bill_text": "CITY CARE MULTISPECIALITY HOSPITAL\nChennai - 600 034\n\nPatient Name: Rakesh Patel\nUHID: B09500\nPhone: 9925001122\nAdmission: 2026-03-20    Discharge: 2026-03-24\n\n--------------------------------------------------------------\nDESCRIPTION                                   QTY       AMOUNT\n--------------------------------------------------------------\nRoom Rent (Single A/C) 4,500 x 4 days           4    18,000.00\nSurgeon Fee                                     1    62,000.00\nMedicines and Drugs                             1    23,000.00\nGloves                                         25     1,500.00\nCrepe Bandage                                   4       600.00\nCold Pack / Hot Pack                            2       400.00\nWalking Aids Charges                            1     2,200.00\nMineral Water                                   1       180.00\nTelephone Charges                               1       120.00\nInvestigations - Labs                           1     6,300.00\n--------------------------------------------------------------\nGRAND TOTAL                                         114,300.00\n--------------------------------------------------------------"
+}

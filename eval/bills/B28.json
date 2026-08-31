@@ -1,0 +1,58 @@
+{
+  "bill_id": "B28",
+  "policy": "hdfc_ergo",
+  "sum_insured": 2500000,
+  "policy_start_date": "2019-07-14",
+  "admission_date": "2026-01-05",
+  "discharge_date": "2026-01-13",
+  "category": "room_rent_over",
+  "lines": [
+    {
+      "item": "Room Rent (Suite) 22,000 x 8 days",
+      "amount": 176000.0,
+      "qty": 8
+    },
+    {
+      "item": "ICU Charges 28,000 x 3 days",
+      "amount": 84000.0,
+      "qty": 3
+    },
+    {
+      "item": "Surgeon Fee",
+      "amount": 240000.0,
+      "qty": 1
+    },
+    {
+      "item": "Anaesthetist Charges",
+      "amount": 48000.0,
+      "qty": 1
+    },
+    {
+      "item": "Medicines and Drugs",
+      "amount": 112000.0,
+      "qty": 1
+    },
+    {
+      "item": "Operation Theatre Charges",
+      "amount": 72000.0,
+      "qty": 1
+    },
+    {
+      "item": "Investigations - PET CT and Labs",
+      "amount": 46000.0,
+      "qty": 1
+    },
+    {
+      "item": "Ventilator Charges",
+      "amount": 36000.0,
+      "qty": 3
+    },
+    {
+      "item": "Ambulance Charges",
+      "amount": 4000.0,
+      "qty": 1
+    }
+  ],
+  "total_charged": 818000.0,
+  "bill_text": "ASHIRVAD SUPER SPECIALITY HOSPITAL\nAhmedabad - 380 015\n\nPatient Name: Lakshmi Narayanan\nUHID: B282500\nPhone: 9840112233\nAdmission: 2026-01-05    Discharge: 2026-01-13\n\n--------------------------------------------------------------\nDESCRIPTION                                   QTY       AMOUNT\n--------------------------------------------------------------\nRoom Rent (Suite) 22,000 x 8 days               8   176,000.00\nICU Charges 28,000 x 3 days                     3    84,000.00\nSurgeon Fee                                     1   240,000.00\nAnaesthetist Charges                            1    48,000.00\nMedicines and Drugs                             1   112,000.00\nOperation Theatre Charges                       1    72,000.00\nInvestigations - PET CT and Labs                1    46,000.00\nVentilator Charges                              3    36,000.00\nAmbulance Charges                               1     4,000.00\n--------------------------------------------------------------\nGRAND TOTAL                                         818,000.00\n--------------------------------------------------------------"
+}

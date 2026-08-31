@@ -1,0 +1,48 @@
+{
+  "bill_id": "B27",
+  "policy": "star_health",
+  "sum_insured": 500000,
+  "policy_start_date": "2025-09-05",
+  "admission_date": "2026-02-19",
+  "discharge_date": "2026-02-22",
+  "category": "waiting_period",
+  "lines": [
+    {
+      "item": "Room Rent (Shared) 3,500 x 3 days",
+      "amount": 10500.0,
+      "qty": 3
+    },
+    {
+      "item": "Total Knee Replacement - Surgeon Fee",
+      "amount": 145000.0,
+      "qty": 1
+    },
+    {
+      "item": "Knee Implant",
+      "amount": 95000.0,
+      "qty": 1
+    },
+    {
+      "item": "Anaesthetist Charges",
+      "amount": 22000.0,
+      "qty": 1
+    },
+    {
+      "item": "Operation Theatre Charges",
+      "amount": 34000.0,
+      "qty": 1
+    },
+    {
+      "item": "Medicines and Drugs",
+      "amount": 26000.0,
+      "qty": 1
+    },
+    {
+      "item": "Physiotherapy Sessions",
+      "amount": 7000.0,
+      "qty": 5
+    }
+  ],
+  "total_charged": 339500.0,
+  "bill_text": "GREENFIELD HOSPITAL & RESEARCH CENTRE\nHyderabad - 500 081\n\nPatient Name: Joseph Mathew\nUHID: B27500\nPhone: 9847001234\nAdmission: 2026-02-19    Discharge: 2026-02-22\n\n--------------------------------------------------------------\nDESCRIPTION                                   QTY       AMOUNT\n--------------------------------------------------------------\nRoom Rent (Shared) 3,500 x 3 days               3    10,500.00\nTotal Knee Replacement - Surgeon Fee            1   145,000.00\nKnee Implant                                    1    95,000.00\nAnaesthetist Charges                            1    22,000.00\nOperation Theatre Charges                       1    34,000.00\nMedicines and Drugs                             1    26,000.00\nPhysiotherapy Sessions                          5     7,000.00\n--------------------------------------------------------------\nGRAND TOTAL                                         339,500.00\n--------------------------------------------------------------"
+}

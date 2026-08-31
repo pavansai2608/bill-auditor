@@ -1,0 +1,48 @@
+{
+  "bill_id": "B07",
+  "policy": "star_health",
+  "sum_insured": 300000,
+  "policy_start_date": "2023-07-22",
+  "admission_date": "2026-01-28",
+  "discharge_date": "2026-02-01",
+  "category": "room_rent_over",
+  "lines": [
+    {
+      "item": "Room Rent (Deluxe) 7,500 x 4 days",
+      "amount": 30000.0,
+      "qty": 4
+    },
+    {
+      "item": "ICU Charges 10,000 x 1 day",
+      "amount": 10000.0,
+      "qty": 1
+    },
+    {
+      "item": "Surgeon Fee",
+      "amount": 48000.0,
+      "qty": 1
+    },
+    {
+      "item": "Medicines and Drugs",
+      "amount": 19500.0,
+      "qty": 1
+    },
+    {
+      "item": "Operation Theatre Charges",
+      "amount": 15000.0,
+      "qty": 1
+    },
+    {
+      "item": "Investigations - Endoscopy",
+      "amount": 8500.0,
+      "qty": 1
+    },
+    {
+      "item": "Consultant Visit Charges",
+      "amount": 3600.0,
+      "qty": 3
+    }
+  ],
+  "total_charged": 134600.0,
+  "bill_text": "SANJEEVANI HEALTHCARE\nKochi - 682 016\n\nPatient Name: Joseph Mathew\nUHID: B07300\nPhone: 9847001234\nAdmission: 2026-01-28    Discharge: 2026-02-01\n\n--------------------------------------------------------------\nDESCRIPTION                                   QTY       AMOUNT\n--------------------------------------------------------------\nRoom Rent (Deluxe) 7,500 x 4 days               4    30,000.00\nICU Charges 10,000 x 1 day                      1    10,000.00\nSurgeon Fee                                     1    48,000.00\nMedicines and Drugs                             1    19,500.00\nOperation Theatre Charges                       1    15,000.00\nInvestigations - Endoscopy                      1     8,500.00\nConsultant Visit Charges                        3     3,600.00\n--------------------------------------------------------------\nGRAND TOTAL                                         134,600.00\n--------------------------------------------------------------"
+}

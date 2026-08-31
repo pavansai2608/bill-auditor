@@ -1,0 +1,48 @@
+{
+  "bill_id": "B20",
+  "policy": "hdfc_ergo",
+  "sum_insured": 1000000,
+  "policy_start_date": "2018-10-22",
+  "admission_date": "2026-01-31",
+  "discharge_date": "2026-02-03",
+  "category": "clean",
+  "lines": [
+    {
+      "item": "Room Rent (Single A/C) 6,000 x 3 days",
+      "amount": 18000.0,
+      "qty": 3
+    },
+    {
+      "item": "Surgeon Fee",
+      "amount": 84000.0,
+      "qty": 1
+    },
+    {
+      "item": "Anaesthetist Charges",
+      "amount": 18000.0,
+      "qty": 1
+    },
+    {
+      "item": "Operation Theatre Charges",
+      "amount": 26000.0,
+      "qty": 1
+    },
+    {
+      "item": "Medicines and Drugs",
+      "amount": 31000.0,
+      "qty": 1
+    },
+    {
+      "item": "Investigations - Labs and CT",
+      "amount": 15000.0,
+      "qty": 1
+    },
+    {
+      "item": "Consultant Visit Charges",
+      "amount": 5400.0,
+      "qty": 3
+    }
+  ],
+  "total_charged": 197400.0,
+  "bill_text": "ASHIRVAD SUPER SPECIALITY HOSPITAL\nAhmedabad - 380 015\n\nPatient Name: Anjali Verma\nUHID: B201000\nPhone: 9718002233\nAdmission: 2026-01-31    Discharge: 2026-02-03\n\n--------------------------------------------------------------\nDESCRIPTION                                   QTY       AMOUNT\n--------------------------------------------------------------\nRoom Rent (Single A/C) 6,000 x 3 days           3    18,000.00\nSurgeon Fee                                     1    84,000.00\nAnaesthetist Charges                            1    18,000.00\nOperation Theatre Charges                       1    26,000.00\nMedicines and Drugs                             1    31,000.00\nInvestigations - Labs and CT                    1    15,000.00\nConsultant Visit Charges                        3     5,400.00\n--------------------------------------------------------------\nGRAND TOTAL                                         197,400.00\n--------------------------------------------------------------"
+}

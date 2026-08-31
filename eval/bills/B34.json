@@ -1,0 +1,43 @@
+{
+  "bill_id": "B34",
+  "policy": "hdfc_ergo",
+  "sum_insured": 1000000,
+  "policy_start_date": "2025-11-12",
+  "admission_date": "2026-04-08",
+  "discharge_date": "2026-04-10",
+  "category": "waiting_period",
+  "lines": [
+    {
+      "item": "Room Rent (Single A/C) 5,500 x 2 days",
+      "amount": 11000.0,
+      "qty": 2
+    },
+    {
+      "item": "Hysterectomy - Surgeon Fee",
+      "amount": 118000.0,
+      "qty": 1
+    },
+    {
+      "item": "Anaesthetist Charges",
+      "amount": 24000.0,
+      "qty": 1
+    },
+    {
+      "item": "Operation Theatre Charges",
+      "amount": 32000.0,
+      "qty": 1
+    },
+    {
+      "item": "Medicines and Drugs",
+      "amount": 18000.0,
+      "qty": 1
+    },
+    {
+      "item": "Investigations - USG and Labs",
+      "amount": 7600.0,
+      "qty": 1
+    }
+  ],
+  "total_charged": 210600.0,
+  "bill_text": "SUNRISE INSTITUTE OF MEDICAL SCIENCES\nPune - 411 001\n\nPatient Name: Meena Iyer\nUHID: B341000\nPhone: 9445566778\nAdmission: 2026-04-08    Discharge: 2026-04-10\n\n--------------------------------------------------------------\nDESCRIPTION                                   QTY       AMOUNT\n--------------------------------------------------------------\nRoom Rent (Single A/C) 5,500 x 2 days           2    11,000.00\nHysterectomy - Surgeon Fee                      1   118,000.00\nAnaesthetist Charges                            1    24,000.00\nOperation Theatre Charges                       1    32,000.00\nMedicines and Drugs                             1    18,000.00\nInvestigations - USG and Labs                   1     7,600.00\n--------------------------------------------------------------\nGRAND TOTAL                                         210,600.00\n--------------------------------------------------------------"
+}

@@ -1,0 +1,43 @@
+{
+  "bill_id": "B40",
+  "policy": "star_health",
+  "sum_insured": 300000,
+  "policy_start_date": "2025-12-20",
+  "admission_date": "2026-04-22",
+  "discharge_date": "2026-04-24",
+  "category": "waiting_period",
+  "lines": [
+    {
+      "item": "Room Rent (Shared) 2,800 x 2 days",
+      "amount": 5600.0,
+      "qty": 2
+    },
+    {
+      "item": "Piles / Fistula Surgery - Surgeon Fee",
+      "amount": 46000.0,
+      "qty": 1
+    },
+    {
+      "item": "Anaesthetist Charges",
+      "amount": 9000.0,
+      "qty": 1
+    },
+    {
+      "item": "Operation Theatre Charges",
+      "amount": 13000.0,
+      "qty": 1
+    },
+    {
+      "item": "Medicines and Drugs",
+      "amount": 7200.0,
+      "qty": 1
+    },
+    {
+      "item": "Investigations - Basic Panel",
+      "amount": 2800.0,
+      "qty": 1
+    }
+  ],
+  "total_charged": 83600.0,
+  "bill_text": "RELIANCE PARK HOSPITAL\nNashik - 422 005\n\nPatient Name: Anjali Verma\nUHID: B40300\nPhone: 9718002233\nAdmission: 2026-04-22    Discharge: 2026-04-24\n\n--------------------------------------------------------------\nDESCRIPTION                                   QTY       AMOUNT\n--------------------------------------------------------------\nRoom Rent (Shared) 2,800 x 2 days               2     5,600.00\nPiles / Fistula Surgery - Surgeon Fee           1    46,000.00\nAnaesthetist Charges                            1     9,000.00\nOperation Theatre Charges                       1    13,000.00\nMedicines and Drugs                             1     7,200.00\nInvestigations - Basic Panel                    1     2,800.00\n--------------------------------------------------------------\nGRAND TOTAL                                          83,600.00\n--------------------------------------------------------------"
+}

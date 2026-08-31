@@ -1,0 +1,63 @@
+{
+  "bill_id": "B06",
+  "policy": "niva_bupa",
+  "sum_insured": 1000000,
+  "policy_start_date": "2022-09-12",
+  "admission_date": "2026-03-01",
+  "discharge_date": "2026-03-06",
+  "category": "non_payable",
+  "lines": [
+    {
+      "item": "Room Rent (Single Private) 6,000 x 5 days",
+      "amount": 30000.0,
+      "qty": 5
+    },
+    {
+      "item": "Surgeon Fee",
+      "amount": 70000.0,
+      "qty": 1
+    },
+    {
+      "item": "Medicines and Drugs",
+      "amount": 26000.0,
+      "qty": 1
+    },
+    {
+      "item": "Nebulisation Kit",
+      "amount": 1400.0,
+      "qty": 2
+    },
+    {
+      "item": "Oxygen Mask",
+      "amount": 700.0,
+      "qty": 2
+    },
+    {
+      "item": "Kidney Tray",
+      "amount": 300.0,
+      "qty": 3
+    },
+    {
+      "item": "Ecg Electrodes",
+      "amount": 850.0,
+      "qty": 10
+    },
+    {
+      "item": "Diaper of Any Type",
+      "amount": 1100.0,
+      "qty": 1
+    },
+    {
+      "item": "Sanitary Pad",
+      "amount": 250.0,
+      "qty": 1
+    },
+    {
+      "item": "Investigations - Chest X-Ray",
+      "amount": 1800.0,
+      "qty": 2
+    }
+  ],
+  "total_charged": 132400.0,
+  "bill_text": "MATRUCHHAYA HOSPITAL\nIndore - 452 010\n\nPatient Name: Fatima Sheikh\nUHID: B061000\nPhone: 9701234567\nAdmission: 2026-03-01    Discharge: 2026-03-06\n\n--------------------------------------------------------------\nDESCRIPTION                                   QTY       AMOUNT\n--------------------------------------------------------------\nRoom Rent (Single Private) 6,000 x 5 days       5    30,000.00\nSurgeon Fee                                     1    70,000.00\nMedicines and Drugs                             1    26,000.00\nNebulisation Kit                                2     1,400.00\nOxygen Mask                                     2       700.00\nKidney Tray                                     3       300.00\nEcg Electrodes                                 10       850.00\nDiaper of Any Type                              1     1,100.00\nSanitary Pad                                    1       250.00\nInvestigations - Chest X-Ray                    2     1,800.00\n--------------------------------------------------------------\nGRAND TOTAL                                         132,400.00\n--------------------------------------------------------------"
+}

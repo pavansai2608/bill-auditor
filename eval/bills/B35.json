@@ -1,0 +1,63 @@
+{
+  "bill_id": "B35",
+  "policy": "hdfc_ergo",
+  "sum_insured": 500000,
+  "policy_start_date": "2022-07-04",
+  "admission_date": "2026-02-16",
+  "discharge_date": "2026-02-19",
+  "category": "non_payable",
+  "lines": [
+    {
+      "item": "Room Rent (Shared) 3,000 x 3 days",
+      "amount": 9000.0,
+      "qty": 3
+    },
+    {
+      "item": "Surgeon Fee",
+      "amount": 50000.0,
+      "qty": 1
+    },
+    {
+      "item": "Medicines and Drugs",
+      "amount": 17500.0,
+      "qty": 1
+    },
+    {
+      "item": "Gloves",
+      "amount": 1100.0,
+      "qty": 20
+    },
+    {
+      "item": "Ecg Electrodes",
+      "amount": 700.0,
+      "qty": 8
+    },
+    {
+      "item": "Oxygen Mask",
+      "amount": 600.0,
+      "qty": 2
+    },
+    {
+      "item": "Television Charges",
+      "amount": 450.0,
+      "qty": 3
+    },
+    {
+      "item": "Conveyance Charges",
+      "amount": 800.0,
+      "qty": 1
+    },
+    {
+      "item": "Medical Records",
+      "amount": 350.0,
+      "qty": 1
+    },
+    {
+      "item": "Investigations - Labs",
+      "amount": 5100.0,
+      "qty": 1
+    }
+  ],
+  "total_charged": 85600.0,
+  "bill_text": "GREENFIELD HOSPITAL & RESEARCH CENTRE\nHyderabad - 500 081\n\nPatient Name: Vikram Singh\nUHID: B35500\nPhone: 9823001122\nAdmission: 2026-02-16    Discharge: 2026-02-19\n\n--------------------------------------------------------------\nDESCRIPTION                                   QTY       AMOUNT\n--------------------------------------------------------------\nRoom Rent (Shared) 3,000 x 3 days               3     9,000.00\nSurgeon Fee                                     1    50,000.00\nMedicines and Drugs                             1    17,500.00\nGloves                                         20     1,100.00\nEcg Electrodes                                  8       700.00\nOxygen Mask                                     2       600.00\nTelevision Charges                              3       450.00\nConveyance Charges                              1       800.00\nMedical Records                                 1       350.00\nInvestigations - Labs                           1     5,100.00\n--------------------------------------------------------------\nGRAND TOTAL                                          85,600.00\n--------------------------------------------------------------"
+}
