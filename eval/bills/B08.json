@@ -1,0 +1,48 @@
+{
+  "bill_id": "B08",
+  "policy": "hdfc_ergo",
+  "sum_insured": 500000,
+  "policy_start_date": "2025-10-01",
+  "admission_date": "2026-02-14",
+  "discharge_date": "2026-02-16",
+  "category": "waiting_period",
+  "lines": [
+    {
+      "item": "Room Rent (Shared) 3,500 x 2 days",
+      "amount": 7000.0,
+      "qty": 2
+    },
+    {
+      "item": "Hernia Repair - Surgeon Fee",
+      "amount": 52000.0,
+      "qty": 1
+    },
+    {
+      "item": "Anaesthetist Charges",
+      "amount": 11000.0,
+      "qty": 1
+    },
+    {
+      "item": "Mesh Implant",
+      "amount": 14000.0,
+      "qty": 1
+    },
+    {
+      "item": "Operation Theatre Charges",
+      "amount": 16000.0,
+      "qty": 1
+    },
+    {
+      "item": "Medicines and Drugs",
+      "amount": 8400.0,
+      "qty": 1
+    },
+    {
+      "item": "Pre-operative Investigations",
+      "amount": 4200.0,
+      "qty": 1
+    }
+  ],
+  "total_charged": 112600.0,
+  "bill_text": "RELIANCE PARK HOSPITAL\nNashik - 422 005\n\nPatient Name: Lakshmi Narayanan\nUHID: B08500\nPhone: 9840112233\nAdmission: 2026-02-14    Discharge: 2026-02-16\n\n--------------------------------------------------------------\nDESCRIPTION                                   QTY       AMOUNT\n--------------------------------------------------------------\nRoom Rent (Shared) 3,500 x 2 days               2     7,000.00\nHernia Repair - Surgeon Fee                     1    52,000.00\nAnaesthetist Charges                            1    11,000.00\nMesh Implant                                    1    14,000.00\nOperation Theatre Charges                       1    16,000.00\nMedicines and Drugs                             1     8,400.00\nPre-operative Investigations                    1     4,200.00\n--------------------------------------------------------------\nGRAND TOTAL                                         112,600.00\n--------------------------------------------------------------"
+}

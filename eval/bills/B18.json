@@ -1,0 +1,38 @@
+{
+  "bill_id": "B18",
+  "policy": "niva_bupa",
+  "sum_insured": 500000,
+  "policy_start_date": "2025-08-15",
+  "admission_date": "2026-03-28",
+  "discharge_date": "2026-03-30",
+  "category": "waiting_period",
+  "lines": [
+    {
+      "item": "Room Rent (Shared) 3,000 x 2 days",
+      "amount": 6000.0,
+      "qty": 2
+    },
+    {
+      "item": "Cataract Surgery - Left Eye",
+      "amount": 56000.0,
+      "qty": 1
+    },
+    {
+      "item": "Intraocular Lens",
+      "amount": 18000.0,
+      "qty": 1
+    },
+    {
+      "item": "Medicines and Drugs",
+      "amount": 2800.0,
+      "qty": 1
+    },
+    {
+      "item": "Pre-operative Investigations",
+      "amount": 2400.0,
+      "qty": 1
+    }
+  ],
+  "total_charged": 85200.0,
+  "bill_text": "SUNRISE INSTITUTE OF MEDICAL SCIENCES\nPune - 411 001\n\nPatient Name: Lakshmi Narayanan\nUHID: B18500\nPhone: 9840112233\nAdmission: 2026-03-28    Discharge: 2026-03-30\n\n--------------------------------------------------------------\nDESCRIPTION                                   QTY       AMOUNT\n--------------------------------------------------------------\nRoom Rent (Shared) 3,000 x 2 days               2     6,000.00\nCataract Surgery - Left Eye                     1    56,000.00\nIntraocular Lens                                1    18,000.00\nMedicines and Drugs                             1     2,800.00\nPre-operative Investigations                    1     2,400.00\n--------------------------------------------------------------\nGRAND TOTAL                                          85,200.00\n--------------------------------------------------------------"
+}

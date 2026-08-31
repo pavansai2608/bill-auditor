@@ -1,0 +1,58 @@
+{
+  "bill_id": "B13",
+  "policy": "hdfc_ergo",
+  "sum_insured": 500000,
+  "policy_start_date": "2023-04-19",
+  "admission_date": "2026-03-05",
+  "discharge_date": "2026-03-09",
+  "category": "non_payable",
+  "lines": [
+    {
+      "item": "Room Rent (Shared) 3,200 x 4 days",
+      "amount": 12800.0,
+      "qty": 4
+    },
+    {
+      "item": "Surgeon Fee",
+      "amount": 58000.0,
+      "qty": 1
+    },
+    {
+      "item": "Medicines and Drugs",
+      "amount": 21500.0,
+      "qty": 1
+    },
+    {
+      "item": "Attendant Charges",
+      "amount": 2400.0,
+      "qty": 4
+    },
+    {
+      "item": "Private Nurses Charges - Special Nursing Charges",
+      "amount": 6000.0,
+      "qty": 2
+    },
+    {
+      "item": "Surcharges",
+      "amount": 1500.0,
+      "qty": 1
+    },
+    {
+      "item": "Photocopies Charges",
+      "amount": 200.0,
+      "qty": 1
+    },
+    {
+      "item": "Certificate Charges",
+      "amount": 300.0,
+      "qty": 1
+    },
+    {
+      "item": "Investigations - Labs",
+      "amount": 5800.0,
+      "qty": 1
+    }
+  ],
+  "total_charged": 108500.0,
+  "bill_text": "NEW LIFE MEDICAL CENTRE\nBengaluru - 560 078\n\nPatient Name: Arun Prakash\nUHID: B13500\nPhone: 9900112233\nAdmission: 2026-03-05    Discharge: 2026-03-09\n\n--------------------------------------------------------------\nDESCRIPTION                                   QTY       AMOUNT\n--------------------------------------------------------------\nRoom Rent (Shared) 3,200 x 4 days               4    12,800.00\nSurgeon Fee                                     1    58,000.00\nMedicines and Drugs                             1    21,500.00\nAttendant Charges                               4     2,400.00\nPrivate Nurses Charges - Special Nursing Cha    2     6,000.00\nSurcharges                                      1     1,500.00\nPhotocopies Charges                             1       200.00\nCertificate Charges                             1       300.00\nInvestigations - Labs                           1     5,800.00\n--------------------------------------------------------------\nGRAND TOTAL                                         108,500.00\n--------------------------------------------------------------"
+}

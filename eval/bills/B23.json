@@ -1,0 +1,53 @@
+{
+  "bill_id": "B23",
+  "policy": "niva_bupa",
+  "sum_insured": 1000000,
+  "policy_start_date": "2020-09-16",
+  "admission_date": "2026-01-22",
+  "discharge_date": "2026-01-27",
+  "category": "room_rent_over",
+  "lines": [
+    {
+      "item": "Room Rent (Single Private) 13,500 x 5 days",
+      "amount": 67500.0,
+      "qty": 5
+    },
+    {
+      "item": "Nursing Charges",
+      "amount": 15000.0,
+      "qty": 5
+    },
+    {
+      "item": "Surgeon Fee",
+      "amount": 125000.0,
+      "qty": 1
+    },
+    {
+      "item": "Anaesthetist Charges",
+      "amount": 26000.0,
+      "qty": 1
+    },
+    {
+      "item": "Medicines and Drugs",
+      "amount": 48000.0,
+      "qty": 1
+    },
+    {
+      "item": "Operation Theatre Charges",
+      "amount": 35000.0,
+      "qty": 1
+    },
+    {
+      "item": "Investigations - CT and Labs",
+      "amount": 19500.0,
+      "qty": 1
+    },
+    {
+      "item": "Attendant Charges",
+      "amount": 3000.0,
+      "qty": 5
+    }
+  ],
+  "total_charged": 339000.0,
+  "bill_text": "SANJEEVANI HEALTHCARE\nKochi - 682 016\n\nPatient Name: Arun Prakash\nUHID: B231000\nPhone: 9900112233\nAdmission: 2026-01-22    Discharge: 2026-01-27\n\n--------------------------------------------------------------\nDESCRIPTION                                   QTY       AMOUNT\n--------------------------------------------------------------\nRoom Rent (Single Private) 13,500 x 5 days      5    67,500.00\nNursing Charges                                 5    15,000.00\nSurgeon Fee                                     1   125,000.00\nAnaesthetist Charges                            1    26,000.00\nMedicines and Drugs                             1    48,000.00\nOperation Theatre Charges                       1    35,000.00\nInvestigations - CT and Labs                    1    19,500.00\nAttendant Charges                               5     3,000.00\n--------------------------------------------------------------\nGRAND TOTAL                                         339,000.00\n--------------------------------------------------------------"
+}

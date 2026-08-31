@@ -1,0 +1,58 @@
+{
+  "bill_id": "B30",
+  "policy": "niva_bupa",
+  "sum_insured": 500000,
+  "policy_start_date": "2021-08-29",
+  "admission_date": "2026-02-04",
+  "discharge_date": "2026-02-08",
+  "category": "non_payable",
+  "lines": [
+    {
+      "item": "Room Rent (Shared) 3,200 x 4 days",
+      "amount": 12800.0,
+      "qty": 4
+    },
+    {
+      "item": "Surgeon Fee",
+      "amount": 54000.0,
+      "qty": 1
+    },
+    {
+      "item": "Medicines and Drugs",
+      "amount": 19800.0,
+      "qty": 1
+    },
+    {
+      "item": "Gloves",
+      "amount": 1300.0,
+      "qty": 22
+    },
+    {
+      "item": "Mask",
+      "amount": 500.0,
+      "qty": 30
+    },
+    {
+      "item": "Belts / Braces",
+      "amount": 2400.0,
+      "qty": 1
+    },
+    {
+      "item": "Knee Immobilizer / Shoulder Immobilizer",
+      "amount": 2800.0,
+      "qty": 1
+    },
+    {
+      "item": "Sugar Free Tablets",
+      "amount": 320.0,
+      "qty": 1
+    },
+    {
+      "item": "Investigations - X-Ray and Labs",
+      "amount": 5900.0,
+      "qty": 1
+    }
+  ],
+  "total_charged": 99820.0,
+  "bill_text": "MATRUCHHAYA HOSPITAL\nIndore - 452 010\n\nPatient Name: Anjali Verma\nUHID: B30500\nPhone: 9718002233\nAdmission: 2026-02-04    Discharge: 2026-02-08\n\n--------------------------------------------------------------\nDESCRIPTION                                   QTY       AMOUNT\n--------------------------------------------------------------\nRoom Rent (Shared) 3,200 x 4 days               4    12,800.00\nSurgeon Fee                                     1    54,000.00\nMedicines and Drugs                             1    19,800.00\nGloves                                         22     1,300.00\nMask                                           30       500.00\nBelts / Braces                                  1     2,400.00\nKnee Immobilizer / Shoulder Immobilizer         1     2,800.00\nSugar Free Tablets                              1       320.00\nInvestigations - X-Ray and Labs                 1     5,900.00\n--------------------------------------------------------------\nGRAND TOTAL                                          99,820.00\n--------------------------------------------------------------"
+}

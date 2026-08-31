@@ -1,0 +1,53 @@
+{
+  "bill_id": "B04",
+  "policy": "hdfc_ergo",
+  "sum_insured": 300000,
+  "policy_start_date": "2023-01-10",
+  "admission_date": "2026-04-02",
+  "discharge_date": "2026-04-09",
+  "category": "room_rent_over",
+  "lines": [
+    {
+      "item": "Room Rent (Single A/C) 9,500 x 7 days",
+      "amount": 66500.0,
+      "qty": 7
+    },
+    {
+      "item": "Nursing Charges",
+      "amount": 14000.0,
+      "qty": 7
+    },
+    {
+      "item": "Surgeon Fee",
+      "amount": 95000.0,
+      "qty": 1
+    },
+    {
+      "item": "Assistant Surgeon Fee",
+      "amount": 25000.0,
+      "qty": 1
+    },
+    {
+      "item": "Medicines and Drugs",
+      "amount": 42000.0,
+      "qty": 1
+    },
+    {
+      "item": "Operation Theatre Charges",
+      "amount": 30000.0,
+      "qty": 1
+    },
+    {
+      "item": "Physiotherapy Sessions",
+      "amount": 6000.0,
+      "qty": 4
+    },
+    {
+      "item": "Investigations - MRI",
+      "amount": 12000.0,
+      "qty": 1
+    }
+  ],
+  "total_charged": 290500.0,
+  "bill_text": "ASHIRVAD SUPER SPECIALITY HOSPITAL\nAhmedabad - 380 015\n\nPatient Name: Meena Iyer\nUHID: B04300\nPhone: 9445566778\nAdmission: 2026-04-02    Discharge: 2026-04-09\n\n--------------------------------------------------------------\nDESCRIPTION                                   QTY       AMOUNT\n--------------------------------------------------------------\nRoom Rent (Single A/C) 9,500 x 7 days           7    66,500.00\nNursing Charges                                 7    14,000.00\nSurgeon Fee                                     1    95,000.00\nAssistant Surgeon Fee                           1    25,000.00\nMedicines and Drugs                             1    42,000.00\nOperation Theatre Charges                       1    30,000.00\nPhysiotherapy Sessions                          4     6,000.00\nInvestigations - MRI                            1    12,000.00\n--------------------------------------------------------------\nGRAND TOTAL                                         290,500.00\n--------------------------------------------------------------"
+}

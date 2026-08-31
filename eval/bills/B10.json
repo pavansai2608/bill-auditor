@@ -1,0 +1,53 @@
+{
+  "bill_id": "B10",
+  "policy": "niva_bupa",
+  "sum_insured": 2500000,
+  "policy_start_date": "2018-05-30",
+  "admission_date": "2026-01-09",
+  "discharge_date": "2026-01-12",
+  "category": "clean",
+  "lines": [
+    {
+      "item": "Room Rent (Single Private) 9,000 x 3 days",
+      "amount": 27000.0,
+      "qty": 3
+    },
+    {
+      "item": "Surgeon Fee",
+      "amount": 140000.0,
+      "qty": 1
+    },
+    {
+      "item": "Anaesthetist Charges",
+      "amount": 28000.0,
+      "qty": 1
+    },
+    {
+      "item": "Operation Theatre Charges",
+      "amount": 45000.0,
+      "qty": 1
+    },
+    {
+      "item": "Medicines and Drugs",
+      "amount": 52000.0,
+      "qty": 1
+    },
+    {
+      "item": "Investigations - CT Angiogram",
+      "amount": 22000.0,
+      "qty": 1
+    },
+    {
+      "item": "Consultant Visit Charges",
+      "amount": 9000.0,
+      "qty": 3
+    },
+    {
+      "item": "Ambulance Charges",
+      "amount": 2500.0,
+      "qty": 1
+    }
+  ],
+  "total_charged": 325500.0,
+  "bill_text": "SUNRISE INSTITUTE OF MEDICAL SCIENCES\nPune - 411 001\n\nPatient Name: Anjali Verma\nUHID: B102500\nPhone: 9718002233\nAdmission: 2026-01-09    Discharge: 2026-01-12\n\n--------------------------------------------------------------\nDESCRIPTION                                   QTY       AMOUNT\n--------------------------------------------------------------\nRoom Rent (Single Private) 9,000 x 3 days       3    27,000.00\nSurgeon Fee                                     1   140,000.00\nAnaesthetist Charges                            1    28,000.00\nOperation Theatre Charges                       1    45,000.00\nMedicines and Drugs                             1    52,000.00\nInvestigations - CT Angiogram                   1    22,000.00\nConsultant Visit Charges                        3     9,000.00\nAmbulance Charges                               1     2,500.00\n--------------------------------------------------------------\nGRAND TOTAL                                         325,500.00\n--------------------------------------------------------------"
+}

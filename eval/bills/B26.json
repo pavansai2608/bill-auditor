@@ -1,0 +1,63 @@
+{
+  "bill_id": "B26",
+  "policy": "star_health",
+  "sum_insured": 1000000,
+  "policy_start_date": "2022-03-25",
+  "admission_date": "2026-03-09",
+  "discharge_date": "2026-03-15",
+  "category": "non_payable",
+  "lines": [
+    {
+      "item": "Room Rent (Single A/C) 7,000 x 6 days",
+      "amount": 42000.0,
+      "qty": 6
+    },
+    {
+      "item": "Surgeon Fee",
+      "amount": 98000.0,
+      "qty": 1
+    },
+    {
+      "item": "Medicines and Drugs",
+      "amount": 41000.0,
+      "qty": 1
+    },
+    {
+      "item": "Gloves",
+      "amount": 2100.0,
+      "qty": 35
+    },
+    {
+      "item": "Nimbus Bed Or Water Or Air Bed Charges",
+      "amount": 4500.0,
+      "qty": 6
+    },
+    {
+      "item": "Lumbo Sacral Belt",
+      "amount": 1900.0,
+      "qty": 1
+    },
+    {
+      "item": "Abdominal Binder",
+      "amount": 1600.0,
+      "qty": 1
+    },
+    {
+      "item": "Carry Bags",
+      "amount": 150.0,
+      "qty": 1
+    },
+    {
+      "item": "Guest Services",
+      "amount": 800.0,
+      "qty": 1
+    },
+    {
+      "item": "Investigations - MRI",
+      "amount": 13500.0,
+      "qty": 1
+    }
+  ],
+  "total_charged": 205550.0,
+  "bill_text": "SUNRISE INSTITUTE OF MEDICAL SCIENCES\nPune - 411 001\n\nPatient Name: Fatima Sheikh\nUHID: B261000\nPhone: 9701234567\nAdmission: 2026-03-09    Discharge: 2026-03-15\n\n--------------------------------------------------------------\nDESCRIPTION                                   QTY       AMOUNT\n--------------------------------------------------------------\nRoom Rent (Single A/C) 7,000 x 6 days           6    42,000.00\nSurgeon Fee                                     1    98,000.00\nMedicines and Drugs                             1    41,000.00\nGloves                                         35     2,100.00\nNimbus Bed Or Water Or Air Bed Charges          6     4,500.00\nLumbo Sacral Belt                               1     1,900.00\nAbdominal Binder                                1     1,600.00\nCarry Bags                                      1       150.00\nGuest Services                                  1       800.00\nInvestigations - MRI                            1    13,500.00\n--------------------------------------------------------------\nGRAND TOTAL                                         205,550.00\n--------------------------------------------------------------"
+}
