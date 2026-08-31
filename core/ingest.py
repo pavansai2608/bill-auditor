@@ -212,7 +212,9 @@ def clause_to_document(clause: Clause):
     from langchain_core.documents import Document
 
     return Document(
-        page_content=f"{clause.title}\n{clause.text}",
+        # clause.text already opens with the title - prepending it again wasted
+        # context and put a duplicated sentence in front of the cross-encoder.
+        page_content=clause.text,
         metadata={
             "clause_id": clause.clause_id,
             "title": clause.title,

@@ -24,7 +24,8 @@ class ClauseDocumentTest(unittest.TestCase):
         clause = Clause(
             clause_id="4.2",
             title="Room Rent Limit",
-            text="Room rent is limited to 1% of the sum insured per day.",
+            # As the splitter writes it: the body already opens with the title.
+            text="Room Rent Limit\nRoom rent is limited to 1% of the sum insured per day.",
             page=4,
             policy="demo",
             rule_type="room_rent",
@@ -34,6 +35,8 @@ class ClauseDocumentTest(unittest.TestCase):
         self.assertEqual(document.metadata["policy"], "demo")
         self.assertEqual(document.metadata["rule_type"], "room_rent")
         self.assertIn("Room Rent Limit", document.page_content)
+        # The title must appear exactly once - it used to be prepended twice.
+        self.assertEqual(document.page_content.count("Room Rent Limit"), 1)
 
 
 @unittest.skipIf(_checkpoint_missing(), "run 'uv run python -m core.ingest' first")
