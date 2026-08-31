@@ -1,0 +1,24 @@
+CITY CARE MULTISPECIALITY HOSPITAL
+Chennai - 600 034
+
+Patient Name: Ramesh Kumar
+UHID: SH2291447
+Phone: 9876543210
+Admission: 12/03/2026    Discharge: 17/03/2026    (5 days)
+
+--------------------------------------------------------------
+DESCRIPTION                              QTY        AMOUNT (Rs)
+--------------------------------------------------------------
+Room Rent (Single A/C) 8,000 x 5 days      5          40,000.00
+ICU Charges                                2          60,000.00
+Surgeon Fee                                1          80,000.00
+Anaesthetist Charges                       1          15,000.00
+Medicines and Drugs                        1          38,000.00
+Surgical Gloves                           20           1,200.00
+Disposable Syringes                       40             800.00
+Admission / Registration Charges           1           1,500.00
+Attendant Charges                          5           2,500.00
+Ambulance Charges                          1           1,000.00
+--------------------------------------------------------------
+GRAND TOTAL                                          240,000.00
+--------------------------------------------------------------
