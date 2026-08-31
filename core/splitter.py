@@ -71,6 +71,27 @@ MIN_DEFS_TO_SPLIT = 5
 NOISE_RE = re.compile(r"(?:Tel\.:|Email:|bimalokpal|cioins\.co\.in|Ombudsman)", re.I)
 NOISE_HITS = 4
 
+# Star Health writes its definitions as unnumbered "Term: Term means ..."
+# headings, so nothing before Section II matches the clause pattern and the
+# whole definitions section was dropped - 68 definitions including "Room Rent
+# means ... and shall include the associated medical expenses", which is what
+# makes the proportionate deduction reach the surgeon's fee.
+UNNUMBERED_DEF_RE = re.compile(r"(?m)^[ \t]*([A-Z][A-Za-z0-9 /()'-]{3,45}):[ \t]+(?=[A-Z0-9])")
+MIN_UNNUMBERED_DEFS = 10
+
+# Some headings are letter-spaced by the PDF ("O rgan", "A YUSH"). "A" and "I"
+# are real words, so they are never joined.
+SPACED_LOWER_RE = re.compile(r"^([B-HJ-Z])\s+([a-z]{2,})")
+SPACED_UPPER_RE = re.compile(r"^([A-Z])\s+([A-Z]{2,})\b")
+
+# A heading cut at a column boundary ends on a function word.
+DANGLING_RE = re.compile(
+    r"\b(?:the|a|an|of|for|in|to|and|or|is|are|be|with|by|from|as|at|on|"
+    r"which|that|will|shall|any|all|this|these|its|our|we|you|if|under|upto|up)\s*$",
+    re.I,
+)
+TITLE_MAX = 90
+
 
 @dataclass
 class PageText:
@@ -224,6 +245,52 @@ def _depth(clause_id: str) -> int:
     return clause_id.count(".") + 1
 
 
+def fix_letter_spacing(text: str) -> str:
+    """Rejoin a drop-cap letter the PDF separated from its word."""
+    text = SPACED_LOWER_RE.sub(r"\1\2", text)
+    return SPACED_UPPER_RE.sub(r"\1\2", text)
+
+
+def complete_title(heading: str, following: list[str]) -> str:
+    """Extend a heading that a column break cut off mid-phrase.
+
+    In a two-column layout a line is only about 44 characters wide, so
+    "In-patient Treatment: We will cover the" is where the column ended, not
+    where the title ended. Only headings that dangle on a function word are
+    extended, which leaves single-column titles like "Hospitalization
+    Expenses" untouched.
+    """
+
+    def trim_at_colon(text: str) -> str | None:
+        head, separator, _ = text.partition(": ")
+        if separator and 4 <= len(head) <= 80 and re.search(r"[A-Za-z]{3}", head):
+            return head.rstrip(" ,;:").strip()
+        return None
+
+    title = fix_letter_spacing(heading.strip())
+
+    # These policies write "Shared accommodation: If the Insured Person..." -
+    # the heading is the part before the colon, and the rest is already the
+    # first sentence of the body. Taking the prefix also sidesteps a column
+    # break landing mid-word ("Coverage for Modern Treatments: The follo").
+    trimmed = trim_at_colon(title)
+    if trimmed:
+        return trimmed
+
+    index = 0
+    while DANGLING_RE.search(title) and index < len(following) and len(title) < TITLE_MAX:
+        title = f"{title} {following[index].strip()}"
+        index += 1
+        # Extension can pull in the colon that was on the next line.
+        trimmed = trim_at_colon(title)
+        if trimmed:
+            return trimmed
+
+    if len(title) > TITLE_MAX:
+        title = title[:TITLE_MAX].rsplit(" ", 1)[0]
+    return title.rstrip(" ,;:").strip()
+
+
 def _looks_like_title(title: str) -> bool:
     """Reject sentence fragments and numeric noise.
 
@@ -274,7 +341,16 @@ def split_clauses(pages: list[PageText], policy: str) -> list[Clause]:
             {
                 "index": index,
                 "number": match.group(1),
-                "title": match.group(2).strip().rstrip(":").strip(),
+                # Two separate things: a short label for display, and the
+                # heading line in full for the body. Shortening the title must
+                # never drop words from the text that gets embedded - cutting
+                # "In-patient Treatment: We will cover the" at the colon lost
+                # "We will cover the" from the clause itself.
+                "title": complete_title(
+                    match.group(2).rstrip(":"),
+                    [ln for ln, _ in lines[index + 1 : index + 4]],
+                ),
+                "heading": fix_letter_spacing(match.group(2).strip()),
                 "page": page_no,
                 "section": section,
             }
@@ -290,11 +366,12 @@ def split_clauses(pages: list[PageText], policy: str) -> list[Clause]:
             continue
 
         clause_id = f"{start['section']}.{start['number']}" if start["section"] else start["number"]
+        body = fix_letter_spacing(body)
         clauses.append(
             Clause(
                 clause_id=clause_id,
                 title=start["title"][:120],
-                text=f"{start['title']}\n{body}".strip(),
+                text=f"{start['heading']}\n{body}".strip(),
                 page=start["page"],
                 policy=policy,
             )
@@ -354,10 +431,77 @@ def _split_definitions(clause: Clause) -> list[Clause]:
     return out or [clause]
 
 
+def split_unnumbered_definitions(
+    pages: list[PageText], policy: str, stop_line: int
+) -> list[Clause]:
+    """Capture a definitions section written as unnumbered "Term: ..." headings.
+
+    Star Health numbers its coverage clauses but not its definitions, so the
+    clause pattern matches nothing until Section II and everything before it -
+    68 definitions - was silently dropped. They are given synthetic ids
+    (`I.Def1`) so a verdict can still cite one.
+    """
+    lines: list[tuple[str, int]] = []
+    for page in pages:
+        lines.extend((line, page.page) for line in page.text.split("\n"))
+    lines = lines[:stop_line]
+
+    text_only = "\n".join(line for line, _ in lines)
+    if len(UNNUMBERED_DEF_RE.findall(text_only)) < MIN_UNNUMBERED_DEFS:
+        return []
+
+    starts = [
+        (index, UNNUMBERED_DEF_RE.match(line))
+        for index, (line, _) in enumerate(lines)
+        if UNNUMBERED_DEF_RE.match(line)
+    ]
+
+    clauses: list[Clause] = []
+    for position, (index, match) in enumerate(starts):
+        stop = starts[position + 1][0] if position + 1 < len(starts) else len(lines)
+        term = fix_letter_spacing(match.group(1).strip())
+        head = lines[index][0][match.end() :].strip()
+        rest = join_wrapped_lines("\n".join(ln for ln, _ in lines[index + 1 : stop]))
+        body = f"{term}: {head}\n{rest}".strip()
+
+        if len(body) < MIN_BODY_CHARS:
+            continue
+        clauses.append(
+            Clause(
+                clause_id=f"I.Def{len(clauses) + 1}",
+                title=term[:TITLE_MAX],
+                text=fix_letter_spacing(body),
+                page=lines[index][1],
+                policy=policy,
+            )
+        )
+
+    log.info("%s: recovered %d unnumbered definitions", policy, len(clauses))
+    return clauses
+
+
+def _first_clause_line(pages: list[PageText]) -> int:
+    lines: list[str] = []
+    for page in pages:
+        lines.extend(page.text.split("\n"))
+    for index, line in enumerate(lines):
+        if _section_at(line):
+            continue
+        match = CLAUSE_RE.match(line)
+        if match and _looks_like_title(match.group(2)):
+            return index
+    return 0
+
+
 def split_pdf(pdf_path: Path, policy: str) -> list[Clause]:
     """S2 -> S5 for one policy document."""
     pages = clean_pages(extract_pages(pdf_path))
     clauses = split_clauses(pages, policy)
+
+    # Anything above the first numbered clause is invisible to split_clauses.
+    # For a policy that numbers only its coverage section, that is the whole
+    # definitions section.
+    clauses = split_unnumbered_definitions(pages, policy, _first_clause_line(pages)) + clauses
 
     expanded: list[Clause] = []
     for clause in clauses:

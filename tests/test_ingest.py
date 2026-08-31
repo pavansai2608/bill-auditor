@@ -6,6 +6,7 @@ fresh clone can still run the suite - but once ingestion has run they assert
 the invariants every later phase depends on.
 """
 
+import re
 import unittest
 
 from core.config import settings
@@ -63,9 +64,8 @@ class CheckpointTest(unittest.TestCase):
             seen.add(key)
 
     def test_clause_ids_look_like_citations(self):
-        import re
-
-        pattern = re.compile(r"^[A-Z]{0,4}\.?\d+(?:\.\d+)*(?:\.Def\d+)?$")
+        # 4.2 | 5.3.1 | A.1.1 | II.28 | A.1.1.Def41 | I.Def41
+        pattern = re.compile(r"^(?:[A-Z]{1,4}\.)?(?:\d+(?:\.\d+)*(?:\.Def\d+)?|Def\d+)$")
         for clause in self.clauses:
             self.assertRegex(clause.clause_id, pattern)
 
@@ -89,6 +89,36 @@ class CheckpointTest(unittest.TestCase):
         for policy in ("star_health", "hdfc_ergo", "niva_bupa"):
             hits = [c for c in self.clauses if c.policy == policy and "room rent" in c.text.lower()]
             self.assertTrue(hits, f"no room rent clause found for {policy}")
+
+    def test_star_health_definitions_are_indexed(self):
+        """Star Health writes definitions unnumbered; they were dropped entirely.
+
+        Without them "Room Rent means ... and shall include the associated
+        medical expenses" is not in the index, and that sentence is what makes
+        the proportionate deduction reach the surgeon's fee.
+        """
+        definitions = [
+            c for c in self.clauses if c.policy == "star_health" and c.clause_id.startswith("I.Def")
+        ]
+        self.assertGreater(len(definitions), 40, "definitions section is missing")
+        room_rent = [c for c in definitions if c.title.lower() == "room rent"]
+        self.assertTrue(room_rent, "no Room Rent definition indexed for star_health")
+        self.assertIn("associated medical expenses", room_rent[0].text.lower())
+
+    def test_titles_are_clean(self):
+        """Column breaks used to leave titles cut mid-phrase or letter-spaced."""
+        for clause in self.clauses:
+            self.assertFalse(
+                re.match(r"^[B-HJ-Z]\s[a-z]", clause.title),
+                f"letter-spaced title: {clause.title!r}",
+            )
+            self.assertNotIn(":", clause.title, f"title carries a sentence: {clause.title!r}")
+
+    def test_shortened_titles_never_drop_text_from_the_body(self):
+        """The title is a label; the body must keep the whole heading line."""
+        star = [c for c in self.clauses if c.policy == "star_health" and c.clause_id == "II.1"]
+        self.assertTrue(star)
+        self.assertIn("We will cover the", star[0].text)
 
     def test_rule_types_were_actually_assigned(self):
         """If labelling silently failed, everything would be 'other'."""
