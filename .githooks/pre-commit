@@ -1,0 +1,40 @@
+#!/bin/sh
+# Blocks the commit when ruff finds a lint error in staged Python files.
+# Install with: git config core.hooksPath .githooks
+
+set -e
+
+STAGED=$(git diff --cached --name-only --diff-filter=ACM -- '*.py')
+
+if [ -z "$STAGED" ]; then
+    exit 0
+fi
+
+if command -v uv >/dev/null 2>&1; then
+    RUFF="uv run ruff"
+elif [ -x .venv/bin/ruff ]; then
+    RUFF=".venv/bin/ruff"
+else
+    echo "pre-commit: ruff not found; install it with 'uv sync'" >&2
+    exit 1
+fi
+
+echo "pre-commit: ruff check on $(echo "$STAGED" | wc -l | tr -d ' ') staged file(s)"
+
+# shellcheck disable=SC2086
+if ! $RUFF check $STAGED; then
+    echo "" >&2
+    echo "pre-commit: BLOCKED - ruff reported problems." >&2
+    echo "  fix them, or run 'uv run ruff check --fix' then re-stage." >&2
+    exit 1
+fi
+
+# shellcheck disable=SC2086
+if ! $RUFF format --check $STAGED; then
+    echo "" >&2
+    echo "pre-commit: BLOCKED - formatting differs." >&2
+    echo "  run 'uv run ruff format' then re-stage." >&2
+    exit 1
+fi
+
+exit 0

@@ -1,0 +1,36 @@
+#!/bin/sh
+# Rejects commit messages that do not carry a Jira ticket ID [BA-XX]
+# and do not follow Conventional Commits.
+# Install with: git config core.hooksPath .githooks
+
+MSG_FILE="$1"
+SUBJECT=$(head -n 1 "$MSG_FILE")
+
+# Let merge, revert and fixup commits through untouched.
+case "$SUBJECT" in
+    "Merge "*|"Revert "*|"fixup!"*|"squash!"*|"#"*) exit 0 ;;
+esac
+
+TYPES='feat|fix|refactor|test|docs|chore|perf|ci|build'
+
+if ! printf '%s' "$SUBJECT" | grep -Eq "^($TYPES)(\([a-z0-9._-]+\))?!?: .+"; then
+    echo "commit-msg: BLOCKED - subject is not a Conventional Commit." >&2
+    echo "  expected: <type>(<scope>): <description> [BA-XX]" >&2
+    echo "  types:    $TYPES" >&2
+    echo "  got:      $SUBJECT" >&2
+    exit 1
+fi
+
+if ! printf '%s' "$SUBJECT" | grep -Eq '\[BA-[0-9]+\]'; then
+    echo "commit-msg: BLOCKED - no Jira ticket in the subject." >&2
+    echo "  every commit must end with a ticket, e.g. [BA-12]" >&2
+    echo "  got: $SUBJECT" >&2
+    exit 1
+fi
+
+if [ "${#SUBJECT}" -gt 72 ]; then
+    echo "commit-msg: BLOCKED - subject is ${#SUBJECT} chars, limit is 72." >&2
+    exit 1
+fi
+
+exit 0

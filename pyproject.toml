@@ -14,6 +14,9 @@ dependencies = [
     "langchain-community>=0.4.2",
     "langchain-ollama>=1.1.0",
     "langgraph>=1.2.11",
+    "pdfplumber>=0.11.10",
+    "pydantic-settings>=2.15.0",
+    "python-dotenv>=1.2.3",
     "rank-bm25>=0.2.2",
     "sentence-transformers>=6.0.1",
 ]
@@ -33,3 +36,23 @@ dev = [
     "ruff>=0.16.5",
     "selenium>=4.48.0",
 ]
+
+[tool.ruff]
+line-length = 100
+target-version = "py314"
+exclude = [".venv", "data", "frontend", "build", "dist"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "C4", "SIM", "PTH", "RUF"]
+ignore = [
+    "E501",     # line length is handled by the formatter
+    "RUF012",   # pydantic/langchain class attrs are not ClassVar
+    "B008",     # FastAPI Depends() in defaults is idiomatic
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["E402"]
+"eval/*" = ["E402"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
