@@ -1,7 +1,519 @@
 [
   {
+    "clause_id": "I.Def1",
+    "title": "Corporate Office",
+    "text": "Corporate Office: No. 148, Acropolis, D\nEmail: support@starhealth.in | Website P O L I C Y W FAMILY HEALTH OPTIM Unique Identification No:\nPREAMBLE The proposal, declaration and other documents given by the proposer shall be the basis of this Contract and is deemed to be incorporated herein.\nI. Definitions STANDARD DEFINITIONS",
+    "page": 2,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def2",
+    "title": "Accident",
+    "text": "Accident: An accident means sudden,\nunforeseen and involuntary event caused by external, visible and violent means.",
+    "page": 2,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def3",
+    "title": "Any one illness",
+    "text": "Any one illness: Any one illness means continuous\nperiod of illness and includes relapse within 45 days from the date of last consultation with the Hospital/Nursing Home where treatment was taken.",
+    "page": 2,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def4",
+    "title": "AYUSH Day Care Centre",
+    "text": "AYUSH Day Care Centre: AYUSH Day Care Centre\nmeans and includes Community Health Centre (CHC), Primary Health Centre (PHC), Dispensary, Clinic, Polyclinic or any such health centre which is registered with the local authorities, wherever applicable and having facilities for carrying out treatment procedures and medical or surgical/ para-surgical interventions or both under the supervision of registered AYUSH Medical Practitioner (s) on day care basis without in-patient services and must comply with all the following criterion:\nD ALLIED INSURANCE COMPANY LIMITED Valluvar Kottam High Road, Nungambakkam, Chennai - 600 034. Phone : 044 - 28288800 Dr. Radha Krishnan Salai, Mylapore, Chennai - 600 004. Phone : 044 - 4788 6666 e: www.starhealth.in | CIN: L66010TN2005PLC056649 | IRDAI Regn. No.: 129 O R D I N G S MA INSURANCE PLAN SHAHLIP26046V092526\ni. Having qualified registered AYUSH Medical Practitioner(s) in charge;\nii. Having dedicated AYUSH therapy sections as required and/or has equipped operation theatre where surgical procedures are to be carried out;\niii. Maintaining daily records of the patients and making them accessible to the insurance company’s authorized representative.",
+    "page": 2,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def5",
+    "title": "AYUSH Hospital",
+    "text": "AYUSH Hospital: An AYUSH Hospital is a healthcare\nfacility wherein medical/surgical/ para-surgical treatment procedures and interventions are carried out by AYUSH Medical Practitioner(s) comprising of any of the following:\ni. Central or State Government AYUSH Hospital;\nor\nii. T eaching hospital attached to AYUSH College recognized by the Central Government/Central Council of Indian Medicine/Central Council for Homeopathy; or\niii. AYUSH Hospital, standalone or colocated with in-patient healthcare facility of any recognized system of medicine, registered with the local authorities, wherever applicable, and is under the supervision of a qualified registered AYUSH Medical Practitioner and must comply with all the following criterion:\na. Having at least 5 in-patient beds;\nb. Having qualified AYUSH Medical Practitioner in charge round the clock;\nc. H aving dedicated AYUSH therapy sections as required and/or has equipped operation theatre where surgical procedures are to be carried out;\nd. Maintaining daily records of the patients and making them accessible to the insurance company’s authorized representative.",
+    "page": 2,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def6",
+    "title": "AYUSH Treatment",
+    "text": "AYUSH Treatment: AYUSH treatment refers to\nthe medical and / or hospitalization treatments given under ‘Ayurveda, Yoga and Naturopathy, Unani, Siddha and Homeopathy systems’.",
+    "page": 3,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def7",
+    "title": "Break in policy",
+    "text": "Break in policy: Break in policy means the\nperiod of gap that occurs at the end of the existing Policy Term/instalment premium due date, when the premium due for renewal on a given policy or instalment premium due is not paid on or before the premium renewal date or grace period.",
+    "page": 3,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def8",
+    "title": "Cashless facility",
+    "text": "Cashless facility: Cashless facility means a\nfacility extended by the insurer to the insured where the payments, of the costs of treatment undergone by the insured in accordance with the Policy Terms and conditions, are directly made to the network provider by the insurer to the extent pre-authorization is approved.",
+    "page": 3,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def9",
+    "title": "Condition Precedent",
+    "text": "Condition Precedent: Condition Precedent\nmeans a Policy Term or condition upon which the Insurer's liability under the policy is conditional upon.",
+    "page": 3,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def10",
+    "title": "Congenital Anomaly",
+    "text": "Congenital Anomaly: Congenital Anomaly\nmeans a condition which is present since birth, and which is abnormal with reference to form, structure or position.\ni. Internal Congenital Anomaly: Congenital anomaly which is not in the visible and accessible parts of the body\nii. External Congenital Anomaly: Congenital anomaly which is in the visible and accessible parts of the body",
+    "page": 3,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def11",
+    "title": "Co-Payment",
+    "text": "Co-Payment: Co-payment means a cost-sharing\nrequirement under a health insurance policy that provides that the policyholder/insured will bear a specified percentage of the admissible claims amount. A co-payment does not reduce the Sum Insured.",
+    "page": 3,
+    "policy": "star_health",
+    "rule_type": "copay"
+  },
+  {
+    "clause_id": "I.Def12",
+    "title": "Day Care Centre",
+    "text": "Day Care Centre: A day care centre means any\ninstitution established for day care treatment of illness and/or injuries or a medical setup with a hospital and which has been registered with the local authorities, wherever applicable, and is under supervision of a registered and qualified medical practitioner AND must comply with all minimum criterion as under-\ni. has qualified nursing staff under its employment;\nii. has qualified medical practitioner/s in charge;\niii. has fully equipped operation theatre of its own where surgical procedures are carried out;\niv. maintains daily records of patients and will make these accessible to the insurance company’s authorized personnel.",
+    "page": 3,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def13",
+    "title": "Day Care Treatment",
+    "text": "Day Care Treatment: Day care treatment\nmeans medical treatment, and/or surgical procedure which is:\ni. Undertaken under General or Local Anesthesia in a hospital/day care centre in less than 24 hrs because of technological advancement, and\nii. which would have otherwise required hospitalization of more than 24 hours Treatment normally taken on an out-patient basis is not included in the scope of this definition",
+    "page": 3,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def14",
+    "title": "Dental Treatment",
+    "text": "Dental Treatment: Dental treatment means\na treatment related to teeth or structures supporting teeth including examinations, fillings (where appropriate), crowns, extractions and surgery.",
+    "page": 4,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def15",
+    "title": "Disclosure to information norm",
+    "text": "Disclosure to information norm: The policy\nshall be void and all premium paid thereon shall be forfeited to the Company in the event of misrepresentation, mis-description or non-disclosure of any material fact.",
+    "page": 4,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def16",
+    "title": "Domiciliary Hospitalization",
+    "text": "Domiciliary Hospitalization: Domiciliary\nhospitalization means medical treatment for an illness/disease/injury which in the normal course would require care and treatment at a hospital but is actually taken while confined at home under any of the following circumstances:\ni. the condition of the patient is such that he/she is not in a condition to be removed to a hospital, or\nii. the patient takes treatment at home on account of non-availability of room in a hospital",
+    "page": 4,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def17",
+    "title": "Grace Period",
+    "text": "Grace Period: Grace period means the specified\nperiod of time, immediately following the premium due date during which premium payment can be made to renew or continue a policy in force without loss of continuity benefits pertaining to waiting periods and coverage of pre-existing diseases. Coverage need not be available during the period for which no premium is received. The grace period for payment of the premium for all types of insurance policies shall be: fifteen days where premium payment mode is monthly and thirty days in all other cases. Provided the insurers shall offer coverage during the grace period, if the premium is paid in instalments during the Policy Period.",
+    "page": 4,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def18",
+    "title": "Hospital",
+    "text": "Hospital: A hospital means any institution\nestablished for in-patient care and day care treatment of illness and/or injuries and which has been registered as a hospital with the local authorities under Clinical Establishments (Registration and Regulation) Act 2010 or under enactments specified under the Schedule of Section 56(1) of the said act Or complies with all minimum criteria as under:\ni. has qualified nursing staff under its employment round the clock;\nii. has at least 10 in-patient beds in towns having a population of less than 10,00,000 and at least 15 in-patient beds in all other places;\niii. has qualified medical practitioner(s) in charge round the clock;\niv. has a fully equipped operation theatre of its own where surgical procedures are carried out;\nv. maintains daily records of patients and makes these accessible to the insurance company’s authorized personnel;",
+    "page": 4,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def19",
+    "title": "Hospitalization",
+    "text": "Hospitalization: Hospitalization means admission\nin a Hospital for a minimum period of 24 consecutive ‘In-patient Care’ hours except for specified procedures/ treatments, where such admission could be for a period of less than 24 consecutive hours.",
+    "page": 5,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def20",
+    "title": "Illness",
+    "text": "Illness: Illness means a sickness or a disease\nor pathological condition leading to the impairment of normal physiological function and requires medical treatment;\ni. Acute condition - Acute condition is a disease, illness or injury that is likely to respond quickly to treatment which aims to return the person to his or her state of health immediately before suffering the disease/ illness/ injury which leads to full recovery\nii. Chronic condition - A chronic condition is defined as a disease, illness, or injury that has one or more of the following characteristics;\na. It needs ongoing or long-term monitoring through consultations, examinations, check-ups, and /or tests\nb. it needs ongoing or long-term control or relief of symptoms\nc. it requires rehabilitation for the patient or for the patient to be specially trained to cope with it\nd. it continues indefinitely\ne. it recurs or is likely to recur",
+    "page": 5,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def21",
+    "title": "Injury",
+    "text": "Injury: Injury means accidental physical\nbodily harm excluding illness or disease solely and directly caused by external, violent, visible and evident means which is verified and certified by a Medical Practitioner.",
+    "page": 5,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def22",
+    "title": "Inpatient Care",
+    "text": "Inpatient Care: Inpatient care means\ntreatment for which the Insured Person has to stay in a hospital for more than 24 hours for a covered event.",
+    "page": 5,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def23",
+    "title": "Intensive Care Unit",
+    "text": "Intensive Care Unit: Intensive care unit means\nan identified section, ward or wing of a hospital which is under the constant supervision of a dedicated medical practitioner(s), and which is specially equipped for the continuous monitoring and treatment of patients who are in a critical condition, or require life support facilities and where the level of care and supervision is considerably more sophisticated and intensive than in the ordinary and other wards.",
+    "page": 5,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def24",
+    "title": "ICU Charges",
+    "text": "ICU Charges: ICU (Intensive Care Unit) Charges\nmeans the amount charged by a Hospital towards ICU expenses which shall include the expenses for ICU bed, general medical support services provided to any ICU patient including monitoring devices, critical care nursing and intensivist charges.",
+    "page": 5,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def25",
+    "title": "Medical Advice",
+    "text": "Medical Advice: Medical Advice means any\nconsultation or advice from a Medical Practitioner including the issuance of any prescription or follow-up prescription.",
+    "page": 5,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def26",
+    "title": "Medical Expenses",
+    "text": "Medical Expenses: Medical Expenses means\nthose expenses that an Insured Person has necessarily and actually incurred for medical treatment on account of Illness or Accident on the advice of a Medical Practitioner, as long as these are no more than would have been payable if the Insured Person had not been insured and no more than other hospitals or doctors in the same locality would have charged for the same medical treatment.",
+    "page": 5,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def27",
+    "title": "Medical Practitioner",
+    "text": "Medical Practitioner: Medical Practitioner\nmeans a person who holds a valid registration from the Medical Council of any State or Medical Council of India or Council for Indian Medicine or for Homeopathy set up by the Government of India or a State Government and is thereby entitled to practice medicine within its jurisdiction; and is acting within its scope and jurisdiction of license.",
+    "page": 6,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def28",
+    "title": "Medically Necessary Treatment",
+    "text": "Medically Necessary Treatment: Medically\nnecessary treatment means any treatment, tests, medication, or stay in hospital or part of a stay in hospital which:\ni. is required for the medical management of the illness or injury suffered by the insured;\nii. must not exceed the level of care necessary to provide safe, adequate and appropriate medical care in scope, duration, or intensity;\niii. must have been prescribed by a medical practitioner;\niv. m ust conform to the professional standards widely accepted in international medical practice or by the medical community In India.",
+    "page": 6,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def29",
+    "title": "Migration",
+    "text": "Migration: Migration means a facility\nprovided to policyholders (including all members under family cover and group policies), to transfer the credits gained for pre-existing diseases and specific waiting periods from one health insurance policy to another with the same insurer.",
+    "page": 6,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def30",
+    "title": "Network Provider",
+    "text": "Network Provider: Network Provider means\nhospitals or health care providers enlisted by an insurer, TPA or jointly by an Insurer and TPA to provide medical services to an insured by a cashless facility.",
+    "page": 6,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def31",
+    "title": "New Born Baby",
+    "text": "New Born Baby: Newborn baby means baby\nborn during the Policy Period and is aged upto 90 days.",
+    "page": 6,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def32",
+    "title": "Non-Network Provider",
+    "text": "Non-Network Provider: Non-Network means\nany hospital, day care centre or other provider that is not part of the network.",
+    "page": 6,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def33",
+    "title": "Notification of Claim",
+    "text": "Notification of Claim: Notification of claim\nmeans the process of intimating a claim to the insurer or TPA through any of the recognized modes of communication.",
+    "page": 6,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def34",
+    "title": "Pre-Existing Disease",
+    "text": "Pre-Existing Disease: Pre-existing disease\n(PED) means any condition, ailment, injury or disease:\ni. that is/are diagnosed by a physician not more than 36 months prior to the date of commencement of the policy issued by the insurer;\nor\nii. for which medical advice or treatment was recommended by, or received from, a physician, not more than 36 months prior to the date of commencement of the policy.",
+    "page": 6,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def35",
+    "title": "Pre-hospitalization Medical Expenses",
+    "text": "Pre-hospitalization Medical Expenses: Pre-\nhospitalization Medical Expenses means medical expenses incurred during pre-defined number of days preceding the hospitalization of the Insured Person, provided that:\ni. Such Medical Expenses are incurred for the same condition for which the Insured Person’s Hospitalization was required, and\nii. The In-patient Hospitalization claim for such Hospitalization is admissible by the Insurance Company",
+    "page": 6,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def36",
+    "title": "Portability",
+    "text": "Portability: Portability means a facility provided\nto the health insurance policyholders (including all members under family cover), to transfer the credits gained for, pre-existing diseases and specific waiting periods from one insurer to another insurer.",
+    "page": 7,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def37",
+    "title": "Post-hospitalization Medical Expenses",
+    "text": "Post-hospitalization Medical Expenses: Post-\nhospitalization Medical Expenses means medical expenses incurred during pre-defined number of days immediately after the Insured Person is discharged from the hospital provided that:\ni. Such Medical Expenses are for the same condition for which the Insured Person’s hospitalization was required, and\nii. T he inpatient hospitalization claim for such hospitalization is admissible by the insurance company.",
+    "page": 7,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def38",
+    "title": "Qualified Nurse",
+    "text": "Qualified Nurse: Qualified nurse means a person\nwho holds a valid registration from the Nursing Council of India or the Nursing Council of any state in India.",
+    "page": 7,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def39",
+    "title": "Reasonable and Customary Charges",
+    "text": "Reasonable and Customary Charges: Reasonable\nand Customary charges means the charges for services or supplies, which are the standard charges for the specific provider and consistent with the prevailing charges in the geographical area for identical or similar services, taking into account the nature of the illness / injury involved.",
+    "page": 7,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def40",
+    "title": "Renewal",
+    "text": "Renewal: Renewal means the terms on which\nthe contract of insurance can be renewed on mutual consent with a provision of grace period for treating the renewal continuous for the purpose of gaining credit for pre-existing diseases, time-bound exclusions and for all waiting periods.",
+    "page": 7,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def41",
+    "title": "Room Rent",
+    "text": "Room Rent: Room Rent means the amount\ncharged by a Hospital towards Room and Boarding expenses and shall include the associated medical expenses.",
+    "page": 7,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def42",
+    "title": "Specific Waiting Period",
+    "text": "Specific Waiting Period: Specific Waiting Period\nmeans a period up to 36 months from the commencement of a health insurance policy during which period specified diseases/ treatments (except due to an Accident) are not covered. On completion of the period, diseases/ treatments shall be covered provided the policy has been continuously renewed without any break.",
+    "page": 7,
+    "policy": "star_health",
+    "rule_type": "waiting_period"
+  },
+  {
+    "clause_id": "I.Def43",
+    "title": "Surgery or Surgical Procedure",
+    "text": "Surgery or Surgical Procedure: Surgery or\nSurgical Procedure means manual and / or operative procedure(s) required for treatment of an illness or injury, correction of deformities and defects, diagnosis and cure of diseases, relief from suffering and prolongation of life, performed in a hospital or day care centre by a medical practitioner",
+    "page": 7,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def44",
+    "title": "Unproven/Experimental treatment",
+    "text": "Unproven/Experimental treatment: Unproven/\nExperimental treatment means the treatment including drug experimental therapy which is not based on established medical practice in India, is treatment experimental or unproven.\nS P E C I F I C D E F I N I T I O N S",
+    "page": 7,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def45",
+    "title": "Associated medical expenses",
+    "text": "Associated medical expenses: Associated\nMedical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/ anaesthetist/ Physician/Specialist of the Hospital where the Insured Person has been admitted and treated and hence Proportionate deduction will be applicable on these items.\nAssociated Medical Expenses does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges and hence proportionate deduction will not be applicable on these items.",
+    "page": 8,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def46",
+    "title": "Assisted Reproduction Treatment",
+    "text": "Assisted Reproduction Treatment: Assisted\nreproduction treatment means Intra Uterine Insemination (IUI), Intra-Cytoplasmic Sperm Injection (ICSI), In-Vitro Fertilisation (IVF) and TESA / TESE (Testicular / Epididymal Sperm Aspiration / Extraction).",
+    "page": 8,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def47",
+    "title": "Company / Insurer / We / Us",
+    "text": "Company / Insurer / We / Us: Company /\nInsurer / We / Us means Star Health and Allied Insurance Company Limited.",
+    "page": 8,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def48",
+    "title": "Dependent Child",
+    "text": "Dependent Child: Dependent child means\na child (natural or legally adopted) who is financially dependent and does not have his / her independent sources of income and not over 25 years.",
+    "page": 8,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def49",
+    "title": "Diagnosis",
+    "text": "Diagnosis: Diagnosis means diagnosis by a\nregistered medical practitioner, supported by clinical, radiological, histological, histo-pathological and laboratory evidence and also surgical evidence wherever applicable, acceptable to the Company.",
+    "page": 8,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def50",
+    "title": "Family",
+    "text": "Family: Family includes Insured Person, Spouse\n/ Live in partner / Same Sex partner, dependent children between 16 days and 25 years of age not exceeding 3 in number. Dependent Parent / Parents in law.",
+    "page": 8,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def51",
+    "title": "Home Care Treatment",
+    "text": "Home Care Treatment: Home Care Treatment\nmeans treatment availed by the Insured Person at home, which in normal course would require care and treatment at a hospital but is actually taken at home provided that:\ni. The Medical practitioner advises the Insured Person to undergo treatment at home\nii. T here is a continuous active line of treatment with monitoring of the health status by a medical practitioner for each day through the duration of the home care treatment\niii. Daily monitoring chart including records of treatment administered duly signed by the treating doctor are maintained",
+    "page": 8,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def52",
+    "title": "Insured Person",
+    "text": "Insured Person: Insured Person means the\nname/s of persons named in the schedule of the Policy",
+    "page": 8,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def53",
+    "title": "Instalment",
+    "text": "Instalment: Instalment means frequency\nof Premium amount paid through Monthly / Quarterly / Half-yearly mode by the Policy Holder/ Insured.",
+    "page": 8,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def54",
+    "title": "In-Patient",
+    "text": "In-Patient: In-Patient means an Insured\nPerson who is admitted to Hospital and stays there for a minimum period of 24 hours for the sole purpose of receiving treatment.",
+    "page": 8,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def55",
+    "title": "Limit of Coverage",
+    "text": "Limit of Coverage: Limit of Coverage means\nSum Insured plus Loyalty Bonus earned wherever applicable",
+    "page": 9,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def56",
+    "title": "Policy Period/Policy Year",
+    "text": "Policy Period/Policy Year: Policy Period / Policy\nYear means a year following the commencement date and its subsequent annual anniversary.",
+    "page": 9,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def57",
+    "title": "Policy Term",
+    "text": "Policy Term: Policy Term means the period\nbetween the commencement date and expiry date specified in the schedule.",
+    "page": 9,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def58",
+    "title": "Shared accommodation",
+    "text": "Shared accommodation: Shared accommodation\nmeans a room with two or more patient beds in a Network Hospital.",
+    "page": 9,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def59",
+    "title": "Single Standard A/C Room",
+    "text": "Single Standard A/C Room: Single standard\nA/C Room means a single occupancy air-conditioned room with attached wash room and a couch for the attendant. The room may have a television and / or a telephone.\nSuch room must be the most economical of all accommodations available in that hospital as single occupancy. This does not include a deluxe room or a suite.",
+    "page": 9,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def60",
+    "title": "Sum Insured",
+    "text": "Sum Insured: Sum Insured means the Sum\nInsured Opted for and for which the premium is paid.",
+    "page": 9,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def61",
+    "title": "Zone A",
+    "text": "Zone A: Delhi, New Delhi, Faridabad, Gurugram,\nShahdara, Ahmedabad, Surat, Vadodara, Gautam Buddha Nagar, Ghaziabad, Mewat, Alwar, Baghpat, Bhiwani, Bulandshahar, Fatehabad, Hisar, jhajjar, Jind, Kaithal, Karnal, Kurukshetra, Mahendragarh, Meerut, Muzaffar nagar, Palwal, Panchsheel Nagar, Panipat, Rewari, Rohtak, Saharanpur, Sirsa and Sonipat.",
+    "page": 9,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def62",
+    "title": "Zone B",
+    "text": "Zone B: Mumbai (Including suburban), Rest\nof Gujarat, Thane, Palghar and Raigad",
+    "page": 9,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def63",
+    "title": "Zone C",
+    "text": "Zone C: Chennai, Ernakulam, Thiruvananthapuram,\nBengaluru, Chengalpattu, Kanchipuram, Nashik, Pune, Tiruvallur, Hyderabad, Kollam, Wayanad, Indore, K V Ranga Reddy, Medchal Malkajgiri, Ahmed Nagar and Gwalior",
+    "page": 9,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
+    "clause_id": "I.Def64",
+    "title": "Zone D",
+    "text": "Zone D: Rest of India\nII. Coverage In consideration of the premium paid, subject to the terms, conditions, exclusions and definitions contained herein the Company agrees as under.\nIf during the period stated in the Policy Schedule the Insured Person sustains bodily injury or contracts any disease or suffer from any illness and if such disease or injury shall require the Insured Person, upon the advice of a duly qualified Medical Practitioner to incur Hospitalization expenses for Medical / Surgical treatment at any Nursing Home / Hospital in India as an In-patient for medically necessary treatment, the Company will indemnify the Insured Person such expenses as are reasonably and necessarily incurred under the Coverage but not exceeding the Sum Insured/ annual Sum Insured/ appropriate benefit stated in the Policy schedule.",
+    "page": 9,
+    "policy": "star_health",
+    "rule_type": "other"
+  },
+  {
     "clause_id": "II.1",
-    "title": "In-patient Treatment: We will cover the",
+    "title": "In-patient Treatment",
     "text": "In-patient Treatment: We will cover the\nfollowing Medical Expenses incurred in respect of Hospitalization of the Insured Person during the Policy Period, up to the Sum Insured specified in the Policy Schedule against this In-Patient treatment:\ni. Room, Boarding, Nursing Expenses all-inclusive as provided by the Hospital / Nursing Home as per the limits given below;\nSum Insured (Rs.) Limit (Rs.) 1,00,000/Up to 2,000/- per day 2,00,000/3,00,000/Up to 5,000/- per day 4,00,000/5,00,000/10,00,000/Single Standard A/C 15,00,000/Room 20,00,000/25,00,000/Note: Expenses relating to Associated medical expenses will be considered in proportion to the eligible room rent/room category stated in the policy schedule or actuals whichever is less. Proportionate deductions are not applied in respect of the hospitals which do not follow differential billing or for those expenses in respect of which differential billing is not adopted based on the room category.\nii. Surgeon, Anaesthetist, Medical Practitioner, Consultants, Specialist Fees.\niii. Anaesthesia, Blood, Oxygen, Operation theatre charges, ICU charges, Surgical appliances, Medicines and Drugs, Diagnostic materials and X-ray, Diagnostic imaging modalities, dialysis, chemotherapy, radiotherapy, cost of pacemaker, stent and similar expenses.\nWith regard to coronary stenting, medicines, Implants and such other similar items the Company will pay cost of stent as per the Drug Price Control Order (DPCO) / National Pharmaceuticals Pricing Authority (NPPA) Capping.",
     "page": 9,
     "policy": "star_health",
@@ -9,7 +521,7 @@
   },
   {
     "clause_id": "II.5",
-    "title": "Coverage for Modern Treatments: The follo",
+    "title": "Coverage for Modern Treatments",
     "text": "Coverage for Modern Treatments: The follo\nPeriod for the treatment/procedure (either the amount mentioned in table below. This Uterine Sum artery Balloon Deep Bra Insured Embolization Sinuplasty Stimulati (Rs.) and HIFU Limit per Policy Period for each treatm 1,00,000/- 12,500/- 5,000/- 25,000/2,00,000/- 25,000/- 10,000/- 50,000/3,00,000/- 37,500/- 15,000/- 75,000/4,00,000/- 1,00,000/- 40,000/- 2,00,000/ 5,00,000/- 1,25,000/- 50,000/- 2,50,000/ 10,00,000/- 1,50,000/- 1,00,000/- 3,00,000/ 15,00,000/- 1,75,000/- 1,25,000/- 4,00,000/ 20,00,000/- 2,00,000/- 1,50,000/- 4,50,000/ 25,00,000/- 2,00,000/- 1,50,000/- 5,00,000/ * Sublimits are all inclusive with or without hospita post hospitalization.\nSum Stereotactic Robotic Bronchic Insured radio surgeries Thermop (Rs.) surgeries Limit per Policy Perio 1,00,000/- 25,000/- 25,000/2,00,000/- 50,000/- 50,000/3,00,000/- 75,000/- 75,000/4,00,000/- 2,00,000/- 1,75,000/5,00,000/- 2,50,000/- 2,00,000/10,00,000/- 3,00,000/- 2,25,000/15,00,000/- 4,00,000/- 2,50,000/20,00,000/- 4,50,000/- 2,75,000/25,00,000/- 5,00,000/- 3,00,000/owing expenses are payable during the Policy as a day care or as an in-patient) is limited to benefit forms part of Sum Insured.\nOral Chemotherapy* ImmunotheraphyIntra ain (Sublimits Monoclonal Vitreal ion including Pre Antibody to be injections and Post given as injection Hospitalization) ment/procedure (Rs.) 12,500/- 25,000/- 5,000/25,000/- 50,000/- 10,000/37,500/- 75,000/- 15,000//- 1,00,000/- 2,00,000/- 40,000//- 1,25,000/- 2,50,000/- 50,000//- 2,00,000/- 4,00,000/- 75,000//- 2,50,000/- 5,00,000/- 1,00,000//- 2,75,000/- 5,50,000/- 1,25,000//- 3,00,000/- 6,00,000/- 1,50,000/alization wherever hospitalization includes pre and Stem cell Vaporisation therapy:\nof the prostate IONM-(Intra Hematopoietic cal (Green laser Operative stem cells for plasty treatment or Neuro bone marrow transplant for holmium laser Monitoring) haematological treatment) conditions od for each treatment/procedure (Rs.) 25,000/50,000/75,000/2,00,000/Up to Sum Insured 2,50,000/3,00,000/4,00,000/4,50,000/5,00,000/-",
     "page": 11,
     "policy": "star_health",
@@ -25,7 +537,7 @@
   },
   {
     "clause_id": "II.8",
-    "title": "Road ambulance: Subject to an admissible",
+    "title": "Road ambulance",
     "text": "Road ambulance: Subject to an admissible\nhospitalization claim, road ambulance expenses up to Rs.750/- per hospitalization and up to Rs.1,500/- per Policy Period shall be payable for the following:\ni. f or transportation of the Insured Person by private ambulance service to go to hospital when this is needed for medical reasons or\nii. for transportation of the Insured Person by private ambulance service from one hospital to another hospital for better medical treatment or\niii. for transportation of the Insured Person from the hospital where treatment is taken to their place of residence (if it is in same city) provided the requirement of an ambulance to the residence is certified by the medical practitioner",
     "page": 12,
     "policy": "star_health",
@@ -33,7 +545,7 @@
   },
   {
     "clause_id": "II.9",
-    "title": "Air Ambulance charges up to 10% of",
+    "title": "Air Ambulance charges up to 10% of the Sum Insured during the entire Policy",
     "text": "Air Ambulance charges up to 10% of\nthe Sum Insured during the entire Policy Period, provided that;\ni. It is for life threatening emergency health condition/s of the Insured Person which requires immediate and rapid ambulance transportation to the hospital/medical centre that ground transportation cannot provide\nii. Necessary medical treatment not being available at the location where the Insured Person is situated at the time of Emergency\niii. I t is prescribed by a Medical Practitioner and is Medically Necessary\niv. The Insured Person is in India and the treatment is in India only\nv. Such Air ambulance should have been duly licensed to operate as such by Competent Authorities of the Government/s Note: This benefit is available for Sum Insured options of Rs.5,00,000/- and above only.",
     "page": 12,
     "policy": "star_health",
@@ -42,22 +554,22 @@
   {
     "clause_id": "II.10",
     "title": "Emergency Domestic Medical Evacuation",
-    "text": "Emergency Domestic Medical Evacuation\nSubject to limits mentioned in the table given below, the Company will reimburse reasonable and necessary expenses incurred towards transportation of the Insured Person from the hospital where the Insured Person is currently undergoing treatment to another hospital for further treatment provided:\ni. The medical condition of the Insured Person is a life threatening emergency\nii. Further treatment facilities are not available in the current hospital\niii. T he Medical Evacuation is recommended by the treating Medical Practitioner\niv. Claim for Hospitalization is admissible under the policy Sum Insured Limit per hospitalization Up to Rs.4,00,000/- Up to Rs.5,000/Rs.5,00,000/- to Up to Rs.7,500/Rs.15,00,000/Rs.20,00,000/- and Up to Rs.10,000/Rs.25,00,000/Note: Payment under this benefit does not form part of the Sum Insured",
+    "text": "Emergency Domestic Medical Evacuation:\nSubject to limits mentioned in the table given below, the Company will reimburse reasonable and necessary expenses incurred towards transportation of the Insured Person from the hospital where the Insured Person is currently undergoing treatment to another hospital for further treatment provided:\ni. The medical condition of the Insured Person is a life threatening emergency\nii. Further treatment facilities are not available in the current hospital\niii. T he Medical Evacuation is recommended by the treating Medical Practitioner\niv. Claim for Hospitalization is admissible under the policy Sum Insured Limit per hospitalization Up to Rs.4,00,000/- Up to Rs.5,000/Rs.5,00,000/- to Up to Rs.7,500/Rs.15,00,000/Rs.20,00,000/- and Up to Rs.10,000/Rs.25,00,000/Note: Payment under this benefit does not form part of the Sum Insured",
     "page": 12,
     "policy": "star_health",
     "rule_type": "other"
   },
   {
     "clause_id": "II.11",
-    "title": "O rgan Donor Expenses for organ",
-    "text": "O rgan Donor Expenses for organ\ntransplantation where the Insured Person is the recipient are payable provided the claim for transplantation is payable and subject to the availability of the Sum Insured. Donor screening expenses and post-donation complications of the donor are not payable. This cover is subject to a limit of 10% of the Sum Insured or Rupees One lakh, whichever is less.",
+    "title": "Organ Donor Expenses for organ",
+    "text": "Organ Donor Expenses for organ\ntransplantation where the Insured Person is the recipient are payable provided the claim for transplantation is payable and subject to the availability of the Sum Insured. Donor screening expenses and post-donation complications of the donor are not payable. This cover is subject to a limit of 10% of the Sum Insured or Rupees One lakh, whichever is less.",
     "page": 13,
     "policy": "star_health",
     "rule_type": "sub_limit"
   },
   {
     "clause_id": "II.12",
-    "title": "Home Care Treatment: Payable up to 10%",
+    "title": "Home Care Treatment",
     "text": "Home Care Treatment: Payable up to 10%\nof Sum Insured of the Policy in a Policy Year, for treatment availed by the Insured Person at home, only for the specified conditions mentioned below, which in normal course would require care and treatment at a hospital but is actually taken at home provided that:\ni. The medical practitioner advises the Insured Person to undergo treatment at home\nii. There is a continuous active line of treatment with monitoring of the health status by a medical practitioner for each day through the duration of the home care treatment\niii. Daily monitoring chart including records of treatment administered duly signed by the treating doctor are maintained\niv. Insured can avail ‘’Home Care Treatment’’ service on cashless basis from the list of our Network service providers given in our website ‘’www.starhealth.in’’\nv. Claim under this benefit forms part of Sum Insured List of treatments / conditions covered under Home Care Treatment:\na. F ever and infectious diseases which can be managed as In-patient\nb. Uncomplicated urinary tract infections but needing parenteral antibiotics\nc. A sthma and COPD-Mild Exacerbations needing Home Nebulization\nd. Acute Gastritis/Gastroenteritis\ne. I.V. Chemotherapy [Where advised by the doctor]\nf. P alliative Cancer Care requiring medical assistance\ng. Acute Vertigo\nh. Diabetic Foot and Cellulitis\ni. IVDP [Cervical and Lumbar Disc diseases]\nj. M ajor surgeries/Arthroplasties needing IV Antibiotics Post Discharge\nk. C are for Brain and Spinal Injury Cases Post Discharge\nl. Post CVA Care at Home after discharge",
     "page": 13,
     "policy": "star_health",
@@ -65,7 +577,7 @@
   },
   {
     "clause_id": "II.13",
-    "title": "Domiciliary Hospitalization: Coverage",
+    "title": "Domiciliary Hospitalization",
     "text": "Domiciliary Hospitalization: Coverage\nfor medical treatment (Including AYUSH) for a period exceeding three days, for an illness/disease/injury, which in the normal course, would require care and treatment at a Hospital but, on the advice of the attending Medical Practitioner, is taken whilst confined at home under any of the following circumstances\ni. The condition of the patient is such that he/she is not in a condition to be removed to a Hospital, or\nii. The patient takes treatment at home on account of non-availability of room in a hospital.\nHowever, this benefit shall not cover Asthma, Bronchitis, Chronic Nephritis and Nephritic Syndrome, Diarrhoea and all types of Dysenteries including Gastro-enteritis, Diabetes Mellitus and Insipidus, Epilepsy, Hypertension, Influenza, Cough and Cold, all Psychiatric or Psychosomatic Disorders, Pyrexia of unknown origin for less than 10 days, Tonsillitis and Upper Respiratory Tract infection including Laryngitis and Pharyngitis, Arthritis, Gout and Rheumatism.",
     "page": 14,
     "policy": "star_health",
@@ -73,7 +585,7 @@
   },
   {
     "clause_id": "II.14",
-    "title": "Loyalty Bonus: For the Sum Insured options",
+    "title": "Loyalty Bonus",
     "text": "Loyalty Bonus: For the Sum Insured options\nRs.3,00,000/- and above, the Insured Person shall be eligible for a Loyalty Bonus of 10% of the expiring Sum Insured subject to a maximum accumulation of 100% of the Sum Insured.\nThe Loyalty Bonus will be calculated on the expiring Sum Insured or on the renewed Sum Insured whichever is less. If the insured opts to reduce the Sum Insured at the subsequent renewal, the limit of indemnity by way of such Loyalty Bonus shall not exceed such reduced Sum Insured.\nLoyalty Bonus shall be available irrespective of a claim and only upon timely renewal without break or upon renewal within the grace period allowed. In case of a claim utilizing the available Loyalty Bonus, only the balance of Loyalty Bonus shall be carried forward to the subsequent Policy Year.",
     "page": 14,
     "policy": "star_health",
@@ -113,7 +625,7 @@
   },
   {
     "clause_id": "II.18",
-    "title": "Assisted Reproduction Treatment: The",
+    "title": "Assisted Reproduction Treatment",
     "text": "Assisted Reproduction Treatment: The\nCompany will reimburse medical expenses incurred on Assisted Reproduction Treatment, where indicated, for sub-fertility subject to:\ni. A waiting period of 36 months from the date of first inception of this policy with the Company for the Insured Person. The maximum liability of the Company for such treatment shall be limited to Rs.1,00,000/-for Sum Insured of Rs.5,00,000/- and Rs.2,00,000/- for Sum Insured of Rs.10,00,000/- and above for every block of 36 months and payable on renewal\nii. For the purpose of claiming under this benefit, in- patient treatment is not mandatory.\niii. Automatic Restoration of Sum Insured, Recharge Benefit shall not be applicable for this benefit.\nNote: To be eligible for this benefit both husband and spouse should stay insured continuously without break under this policy for every block. This coverage is available only for Sum Insured options of Rs.5,00,000/and above Special Exclusions:The Company shall not be liable to make any payments under this policy in respect of any expenses what so ever incurred by the Insured Person in connection with or in respect of:\ni. Pre and Post treatment expenses\nii. Sub-fertility services that are deemed to be unproven, experimental or investigational\niii. S ervices not in accordance with standards of good medical practice and not uniformly recognized and professionally endorsed by the general medical community at the time it is to be provided.\niv. Reversal of voluntary sterilization\nv. Treatment undergone for second or subsequent pregnancies except where the child from the first delivery/ previous deliveries is/are not alive at the time of treatment\nvi. Payment for services rendered to a surrogate\nvii. Costs associated with cryopreservation and storage of sperm, eggs and embryos\nviii. Selective termination of an embryo.\nix. Services done at unrecognized centre\nx. Surgery / procedures that enhances fertility like Tubal Occlusion, Bariatric Surgery, Diagnostic Laparoscopy with Ovarian Drilling and such other similar surgery / procedures",
     "page": 16,
     "policy": "star_health",
@@ -129,7 +641,7 @@
   },
   {
     "clause_id": "II.20",
-    "title": "Shared accommodation: If the Insured",
+    "title": "Shared accommodation",
     "text": "Shared accommodation: If the Insured\nPerson occupies, a shared accommodation during in-patient hospitalization, then amount as per table given below will be payable for each continuous and completed period of 24 hours of stay in such shared accommodation.\nSum Insured (Rs.) Limit per day (Rs.) 1,00,000/Not Available 2,00,000/3,00,000/4,00,000/5,00,000/- 800/- per day 10,00,000/15,00,000/20,00,000/1000/- per day 25,00,000/Note\ni. This benefit is applicable for Sum Insured of Rs. 3,00,000/- and above only.\nii. This benefit is payable only if there is an admissible claim for hospitalization under the policy\niii. This benefit will not be applicable where the sanction is on package rates\niv. Insured’s stay in Intensive Care Unit or High Dependency Units / wards will not be counted for this purpose\nv. Payment under this benefit does not form part of the Sum Insured",
     "page": 18,
     "policy": "star_health",
@@ -137,7 +649,7 @@
   },
   {
     "clause_id": "II.21",
-    "title": "Preventive Health Check-up: We will",
+    "title": "Preventive Health Check-up",
     "text": "Preventive Health Check-up: We will\narrange for a Preventive Health Check-up at Our Network Providers for the applicable package as specified below as per opted Sum Insured and subject to the conditions specified below:\nSum Insured (Rs.) Package applicable 1,00,000/Not Available 2,00,000/3,00,000/- Package A 4,00,000/- Package A 5,00,000/- Package A 10,00,000/- Package A 15,00,000/- Package B 20,00,000/- Package B 25,00,000/- Package B\ni. An initial waiting period of 30 days shall apply from the first inception of Policy. This waiting period shall not be applicable during subsequent renewals.\nii. Health Check-up can be availed once per Policy Year per Insured Person who is covered as Adult in the Policy and all the tests must have been done on the same date.\niii. For the updated and applicable list of tests available under such package, Insured Persons are required to check our website www.starhealth.in.\niv. The pre-defined health check-up packages may be modified from time to time without prior notice.\nv. This cover can be availed through Star health mobile application, other digital platforms, or by calling at our Toll free number: 1800 425 2255.\nvi. The Network Provider/Health Service Provider shall be assigned by Us upon receiving the Insured Person’s request to avail a Health Check-up under this cover.\nvii. U tilization of this Health Check-up shall not impact the Sum Insured.\nviii. In case of long term policies, Insured Person(s) are eligible for a Health Check-up once every Policy Year.",
     "page": 18,
     "policy": "star_health",
@@ -145,7 +657,7 @@
   },
   {
     "clause_id": "II.22",
-    "title": "E -Domestic Second Medical Opinion: The",
+    "title": "E -Domestic Second Medical Opinion",
     "text": "E -Domestic Second Medical Opinion: The\nInsured Person can obtain a Second Medical Opinion from a Doctor in the Company’s network of Medical Practitioners practicing in India. All the medical records provided by the Insured Person will be submitted to the Doctor chosen by him / her online and the medical opinion will be made available directly to the Insured by the Doctor. The Insured Person can obtain an E-Domestic Second Medical Opinion via Star Health Mobile App, by booking an appointment with a Doctor.\nSpecial Conditions:-\ni. This should be specifically requested for by the Insured Person\nii. This opinion is given based only on the medical records submitted without examining the patient,\niii. The second opinion should be only for medical reasons and not for medico-legal purposes.\niv. Any liability due to any errors or omission or consequences of any action taken in reliance of the second opinion provided by the Medical Practitioner is outside the scope of this policy.\nv. Utilizing this facility alone will not be considered as a claim Note: Medical Records / Documents submitted for utilizing this facility will not prejudice the Company’s right to reject a claim in terms of policy.",
     "page": 19,
     "policy": "star_health",
@@ -153,15 +665,15 @@
   },
   {
     "clause_id": "II.23",
-    "title": "U nlimited Tele-Consultation: We will arrange",
-    "text": "U nlimited Tele-Consultation: We will arrange\nTele Consultations with qualified Medical Practitioner or Healthcare professional through various modes of communication like audio, video, online portal, chat through Star Health mobile application or digital platforms.\nThe services provided under this cover will be made available subject to following conditions:\ni. T he Medical Practitioner may recommend over-the-counter medications based on the information provided.\nii. T ele Consultations should not substitute in-person consultation with independent Medical Practitioner/ Healthcare professional.\niii. T he proposer should seek assistance from a health care professional when interpreting and applying them to the Insured Person’s individual circumstances. If the Insured Person has any concerns about His/ her health, He/ She may consult His/ her general practitioner. We shall not hold any responsibility towards any loss or damage arising out of or in relation to any opinion, advice, prescription, actual or alleged errors, omissions and representations made by the Medical Practitioner/ Health care professional.\niv. T here shall be no maximum limit on the count of Tele-Consultations that can be availed in a Policy Year by each Insured Person.\nv. We/Medical Practitioner/Health care professional may refer the Insured Person to another specialist or a general physician (outside of our empaneled network) if required, and the charges for such specialist or a general physician will have to be borne by the Insured Person.\nvi. We shall not be liable for any discrepancy in the information provided under this cover.\nvii. Availing services is at the sole discretion and risk of the Insured Person.",
+    "title": "Unlimited Tele-Consultation",
+    "text": "Unlimited Tele-Consultation: We will arrange\nTele Consultations with qualified Medical Practitioner or Healthcare professional through various modes of communication like audio, video, online portal, chat through Star Health mobile application or digital platforms.\nThe services provided under this cover will be made available subject to following conditions:\ni. T he Medical Practitioner may recommend over-the-counter medications based on the information provided.\nii. T ele Consultations should not substitute in-person consultation with independent Medical Practitioner/ Healthcare professional.\niii. T he proposer should seek assistance from a health care professional when interpreting and applying them to the Insured Person’s individual circumstances. If the Insured Person has any concerns about His/ her health, He/ She may consult His/ her general practitioner. We shall not hold any responsibility towards any loss or damage arising out of or in relation to any opinion, advice, prescription, actual or alleged errors, omissions and representations made by the Medical Practitioner/ Health care professional.\niv. T here shall be no maximum limit on the count of Tele-Consultations that can be availed in a Policy Year by each Insured Person.\nv. We/Medical Practitioner/Health care professional may refer the Insured Person to another specialist or a general physician (outside of our empaneled network) if required, and the charges for such specialist or a general physician will have to be borne by the Insured Person.\nvi. We shall not be liable for any discrepancy in the information provided under this cover.\nvii. Availing services is at the sole discretion and risk of the Insured Person.",
     "page": 20,
     "policy": "star_health",
     "rule_type": "other"
   },
   {
     "clause_id": "II.24",
-    "title": "A I driven Face Scan: The Insured Person",
+    "title": "A I driven Face Scan",
     "text": "A I driven Face Scan: The Insured Person\ncan avail, AI-driven face scan facility by using Star Health mobile app to know the vital parameters such as heart rate, oxygen saturation, respiration rate up to two times per month per Insured Person in a Policy Year.\nNote: The AI-driven face scan facility is a software / AI based assessment and should not be used as substitute for professional medical advice.",
     "page": 20,
     "policy": "star_health",
@@ -169,7 +681,7 @@
   },
   {
     "clause_id": "II.25",
-    "title": "Compassionate travel: In the event of",
+    "title": "Compassionate travel",
     "text": "Compassionate travel: In the event of\nthe Insured Person being hospitalized for a life threatening emergency at a place away from his usual place of residence as recorded in the policy, the Company will reimburse the transportation expenses by air incurred up to Rs.5,000/- for one immediate family member (other than the travel companion) for travel towards the place where hospital is located, provided the claim for hospitalization is admissible under the policy.\nNote: This benefit is available for Sum Insured options of Rs.10,00,000/- and above only.\nPayment under this benefit does not form part of the Sum Insured",
     "page": 20,
     "policy": "star_health",
@@ -177,8 +689,8 @@
   },
   {
     "clause_id": "II.26",
-    "title": "R epatriation of Mortal Remains: Following",
-    "text": "R epatriation of Mortal Remains: Following\nan admissible claim for hospitalization under the policy, the Company shall reimburse up to Rs.5,000/- per Policy Period towards the cost of repatriation of mortal remains of the Insured Person (including the cost of embalming and coffin charges) to the residence of the Insured as recorded in the policy. Payment under this benefit does not form part of the Sum Insured.",
+    "title": "Repatriation of Mortal Remains",
+    "text": "Repatriation of Mortal Remains: Following\nan admissible claim for hospitalization under the policy, the Company shall reimburse up to Rs.5,000/- per Policy Period towards the cost of repatriation of mortal remains of the Insured Person (including the cost of embalming and coffin charges) to the residence of the Insured as recorded in the policy. Payment under this benefit does not form part of the Sum Insured.",
     "page": 20,
     "policy": "star_health",
     "rule_type": "other"
@@ -186,14 +698,14 @@
   {
     "clause_id": "II.27",
     "title": "Treatment in Valuable Service Providers",
-    "text": "Treatment in Valuable Service Providers\nIn the event of a medical contingency requiring hospitalization, if the insured seeks advice from the Company, the Company may suggest an appropriate hospital from the network for treatment. Where the insured accepts the same and undergoes treatment in the suggested hospital, an amount calculated at 1% of Sum Insured subject to a maximum of Rs.5,000/- per Policy Period is payable as lump sum.\nNote:\ni. This benefit is applicable for Sum Insured of Rs.3, 00,000/- and above only.\nii. This benefit is payable only if there is an admissible claim for hospitalization under the policy.\niii. This benefit shall be paid if a hospital is a part of the list as on date of admission\niv. Payment under this benefit does not form part of the Sum Insured\nv. T he Company shall not be responsible for the quality of the treatment in the Valuable Service Providers.\nvi. For list of Valuable Service Providers, please visit website: www.starhealth.in",
+    "text": "Treatment in Valuable Service Providers:\nIn the event of a medical contingency requiring hospitalization, if the insured seeks advice from the Company, the Company may suggest an appropriate hospital from the network for treatment. Where the insured accepts the same and undergoes treatment in the suggested hospital, an amount calculated at 1% of Sum Insured subject to a maximum of Rs.5,000/- per Policy Period is payable as lump sum.\nNote:\ni. This benefit is applicable for Sum Insured of Rs.3, 00,000/- and above only.\nii. This benefit is payable only if there is an admissible claim for hospitalization under the policy.\niii. This benefit shall be paid if a hospital is a part of the list as on date of admission\niv. Payment under this benefit does not form part of the Sum Insured\nv. T he Company shall not be responsible for the quality of the treatment in the Valuable Service Providers.\nvi. For list of Valuable Service Providers, please visit website: www.starhealth.in",
     "page": 21,
     "policy": "star_health",
     "rule_type": "other"
   },
   {
     "clause_id": "II.28",
-    "title": "Mandatory Co-payment (Applicable for",
+    "title": "Mandatory Co-payment (Applicable for Coverages II.1, II.2, II.3, II.4, II.5, II.6, II.7",
     "text": "Mandatory Co-payment (Applicable for\nCoverages II.1, II.2, II.3, II.4, II.5, II.6, II.7, II.8, II.9, II.11 and II.13):\nThis policy is subject to co-payment of 20% of each and every claim amount for fresh as well as renewal policies for Insured Persons whose age at the time of entry is\n61 years and above.",
     "page": 21,
     "policy": "star_health",
@@ -201,7 +713,7 @@
   },
   {
     "clause_id": "II.29",
-    "title": "Star Wellness Program: This program intends",
+    "title": "Star Wellness Program",
     "text": "Star Wellness Program: This program intends\nto promote, incentivize and to reward the Insured Persons' healthy life style through various wellness activities. The wellness activities as mentioned below are designed to help the Insured Person to earn wellness reward points which will be tracked and monitored by the Company. The wellness points earned by the Insured Person(s) under the wellness program, can be utilized to get discount in premium during the renewal.\nThis Wellness Program is enabled and administered online through “Star Health” Mobile App.\nNote: The Wellness Activities mentioned in the table below (from Serial Number 1 to 6) are applicable for the Insured Person(s) aged\n18 years and above only. The following table\nshows the discount on premium available under the Wellness Program;\nWellness Points Discount in Earned Premium\n200 to 350 4%\n351 to 600 10%\n601 to 750 14%\n751 and above 20%\nThe weightage is given as per the following table;\nFamily Size Weightage Self, Spouse** 1:1 Self, Spouse** and Dependent 1:1:0:0:0 Children (up to 17 years) Self, Spouse** and Dependent Children (aged 18 years and 2:2:1:1:1 above) **Spouse / Live-in Partner / Same Sex Partner Note: In case of two-year policy, total number of wellness points earned in two-year period will be divided by two.\nSTAR HEALTH AND ALLIED INSURANCE COMPANY LIMITED | POLICY WORDINGS Please refer the Illustrations to understand the calculation of discount in premium, weightage and the calculation.\nThe wellness services and activities are categorized as below:\nMaximum number of Wellness Points that Sr. No. Activity can be earned under each activity in a Policy Year",
     "page": 21,
     "policy": "star_health",
@@ -209,7 +721,7 @@
   },
   {
     "clause_id": "II.3",
-    "title": "A ffinity towards wellness: Insured earns",
+    "title": "A ffinity towards wellness",
     "text": "A ffinity towards wellness: Insured earns\nwellness reward points for undertaking any of the fitness and health related activities as given below. List of Fitness Initiatives and Wellness points Wellness Initiative Points Participating in Walkathon, Marathon, Cyclothon and similar activities - On submission of BIB Number along with the\na. details of the entry ticket 200 taken to participate in the event and/or - On Achieving 20,000 Step count on Star Health Mobile Application Membership in a health club (50 points for each quarter) - In a Gym / Yoga Centre / Zumba Classes / Aerobic\nb. 200 Exercise/ Sports Club/ Pilates Classes/ Swimming / Tai Chi/ Martial Arts / Gymnastics/ Dance Classes Note: In case if Insured is not a member of any health club, he/she should join into club within 3 months from the date of the policy risk commencement date. Insured Person should submit the health club membership.",
     "page": 23,
     "policy": "star_health",
@@ -217,7 +729,7 @@
   },
   {
     "clause_id": "II.4",
-    "title": "Stay Active: Insured earns wellness",
+    "title": "Stay Active",
     "text": "Stay Active: Insured earns wellness\nreward points on achieving the step count target on “Star Health” Mobile App as mentioned below:\nCriteria to get reward points If the number of steps per day are minimum 8,000 or above for 16 days in a month, it will be considered as one active month and insured will get 20 reward points.\nNote • I ncase if Insured achieves 10 active months in a Policy Year, he/ she will get\n50 additional points as bonus.\n• F irst month and last month in each Policy Year will not be taken into consideration for calculation of average number of steps per day under Stay Active.\n• T he “Star Health” Mobile App must be downloaded within 30 days of the policy risk start date to avail this benefit.\n• T he average step count completed by an Insured member would be tracked on “Star Health” Mobile App.",
     "page": 23,
     "policy": "star_health",
@@ -234,15 +746,15 @@
   {
     "clause_id": "II.6",
     "title": "Reward points for Preventive Care",
-    "text": "Reward points for Preventive Care\nInsured can earn wellness reward points for submitting the following health check-up reports once in a Policy Year which he/ she had during the Policy Year.\na. S ubmission of Vaccination Certificate/s:\nInsured can earn 20-wellness reward points by submitting the Vaccination certificate related to vaccine that he/ she have had during the Policy Year.\nEg: Vaccine for Covid, HPV, Swine Flu (H1N1), Hepatitis etc.\nb. Submission of Preventive Eye Checkup report: Insured can earn 20 wellness reward points for submitting Eye Check-up report which includes near and far vision (visual equity) and Colour vision test.\nc. Submission of Preventive Dental Check-up: Insured can earn 20 wellness reward points for submitting Dental Check-up report which includes screening of oral cavity done by a qualified Dentist.\nd. Submission of Mammography & PAP Test report: Insured can earn 20 wellness reward points for submitting x-ray Mammogramgraphy or coloured doppler mammogram for preventive breast screening and PAP smear (biopsy) report.\ne. Prostate specific antigen (PSA) test (applicable for Males aged > 50 years): Insured can earn 20 wellness reward points for submitting Prostate specific antigen blood report.\nf. Glaucoma Screening (for persons aged > 50 years): Insured can earn 20 wellness reward points by submitting reports of Glaucoma screening test of both eyes including tonometery.\n(slit lamp test), pachymeter test, visual field test, dilated eye test and gonioscopy examination.\nValue Added Services\na. M edical Concierge Services: The Insured can also contact Star Health to avail services like, Emergency assistance information such as nearest ambulance / hospital / blood bank etc.\nb. Digital Health Vault: A secured Personal Health records system for Insured to store/access and share health data with trusted recipients. Using this portal, Insured can store their health documents (prescriptions, lab reports, discharge summaries etc.), track health data add family members.\nc. Wellness Content: The wellness portal provides rich collection of health articles, blogs, tips and other health and wellness content. The contents have been written by experts drawn from various fields. Insured will benefit from having one single and reliable source for learning about various health aspects and incorporating positive health changes.\nd. Post Operative Care: It is done through follow up phone calls (primarily for surgical cases) for resolving their medical queries.\ne. Discounts from Network Providers:\nThe Insured can avail discounts on the services offered by our network providers which will be displayed in our website.\nTerms and conditions under wellness activity\ni. Any information provided by the Insured in this regard shall be kept confidential.\nii. There will not be any cash redemption against the wellness reward points.\niii. Insured should notify and submit relevant documents, reports, receipts etc for various wellness activities within 1 month of undertaking such activity/test.\niv. For services that are provided through empanelled service provider, Star Health is only acting as a facilitator;\nhence would not be liable for any incremental costs or the services.\nv. All medical services are being provided by empanelled health care service provider. We ensure full due diligence before empanelment.\nHowever Insured should consult his/ her doctor before availing/taking the medical advices/services. The decision to utilize these advices/ services is solely at Insured Person's discretion.\nvi. We reserve the right to remove the wellness reward points if found to be achieved in unfair manner.\nvii. Star Health, its group entities, or affiliates, their respective directors, officers, employees, agents, vendors, are not responsible or liable for, any actions, claims, demands, losses, damages, costs, charges and expenses which a Member claims to have suffered, sustained or incurred, by way of and / or on account of the Wellness Program.\nviii. Services offered are subject to guidelines issued by IRDAI from time to time.\nSTAR HEALTH AND ALLIED INSURANCE COMPANY LIMITED | POLICY WORDINGS Illustration of Benefit A 51 year old Individual Gopal and his wife Ramya along with their two dependent children (aged below 18 years) buy a Family Health Optima Insurance Plan with Sum Insured 10 Lacs, let's understand how they can earn Wellness Points. Gopal has declared that he is suffering from Diabetes. Ramya has declared her BMI as 27. Gopal and Ramya enrolled under the Star wellness program and completed the following wellness activities.\nSr. Wellness Points Wellness Points Activity No. Earned by Gopal Earned by Ramya",
+    "text": "Reward points for Preventive Care:\nInsured can earn wellness reward points for submitting the following health check-up reports once in a Policy Year which he/ she had during the Policy Year.\na. S ubmission of Vaccination Certificate/s:\nInsured can earn 20-wellness reward points by submitting the Vaccination certificate related to vaccine that he/ she have had during the Policy Year.\nEg: Vaccine for Covid, HPV, Swine Flu (H1N1), Hepatitis etc.\nb. Submission of Preventive Eye Checkup report: Insured can earn 20 wellness reward points for submitting Eye Check-up report which includes near and far vision (visual equity) and Colour vision test.\nc. Submission of Preventive Dental Check-up: Insured can earn 20 wellness reward points for submitting Dental Check-up report which includes screening of oral cavity done by a qualified Dentist.\nd. Submission of Mammography & PAP Test report: Insured can earn 20 wellness reward points for submitting x-ray Mammogramgraphy or coloured doppler mammogram for preventive breast screening and PAP smear (biopsy) report.\ne. Prostate specific antigen (PSA) test (applicable for Males aged > 50 years): Insured can earn 20 wellness reward points for submitting Prostate specific antigen blood report.\nf. Glaucoma Screening (for persons aged > 50 years): Insured can earn 20 wellness reward points by submitting reports of Glaucoma screening test of both eyes including tonometery.\n(slit lamp test), pachymeter test, visual field test, dilated eye test and gonioscopy examination.\nValue Added Services\na. M edical Concierge Services: The Insured can also contact Star Health to avail services like, Emergency assistance information such as nearest ambulance / hospital / blood bank etc.\nb. Digital Health Vault: A secured Personal Health records system for Insured to store/access and share health data with trusted recipients. Using this portal, Insured can store their health documents (prescriptions, lab reports, discharge summaries etc.), track health data add family members.\nc. Wellness Content: The wellness portal provides rich collection of health articles, blogs, tips and other health and wellness content. The contents have been written by experts drawn from various fields. Insured will benefit from having one single and reliable source for learning about various health aspects and incorporating positive health changes.\nd. Post Operative Care: It is done through follow up phone calls (primarily for surgical cases) for resolving their medical queries.\ne. Discounts from Network Providers:\nThe Insured can avail discounts on the services offered by our network providers which will be displayed in our website.\nTerms and conditions under wellness activity\ni. Any information provided by the Insured in this regard shall be kept confidential.\nii. There will not be any cash redemption against the wellness reward points.\niii. Insured should notify and submit relevant documents, reports, receipts etc for various wellness activities within 1 month of undertaking such activity/test.\niv. For services that are provided through empanelled service provider, Star Health is only acting as a facilitator;\nhence would not be liable for any incremental costs or the services.\nv. All medical services are being provided by empanelled health care service provider. We ensure full due diligence before empanelment.\nHowever Insured should consult his/ her doctor before availing/taking the medical advices/services. The decision to utilize these advices/ services is solely at Insured Person's discretion.\nvi. We reserve the right to remove the wellness reward points if found to be achieved in unfair manner.\nvii. Star Health, its group entities, or affiliates, their respective directors, officers, employees, agents, vendors, are not responsible or liable for, any actions, claims, demands, losses, damages, costs, charges and expenses which a Member claims to have suffered, sustained or incurred, by way of and / or on account of the Wellness Program.\nviii. Services offered are subject to guidelines issued by IRDAI from time to time.\nSTAR HEALTH AND ALLIED INSURANCE COMPANY LIMITED | POLICY WORDINGS Illustration of Benefit A 51 year old Individual Gopal and his wife Ramya along with their two dependent children (aged below 18 years) buy a Family Health Optima Insurance Plan with Sum Insured 10 Lacs, let's understand how they can earn Wellness Points. Gopal has declared that he is suffering from Diabetes. Ramya has declared her BMI as 27. Gopal and Ramya enrolled under the Star wellness program and completed the following wellness activities.\nSr. Wellness Points Wellness Points Activity No. Earned by Gopal Earned by Ramya",
     "page": 25,
     "policy": "star_health",
     "rule_type": "other"
   },
   {
     "clause_id": "II.30",
-    "title": "O ptional Cover - The following Optional",
-    "text": "O ptional Cover - The following Optional\nCover is available on discount as shown in the Policy Schedule Option to choose Voluntary Co-payment (Applicable for Coverages II.1, II.2, II.3, II.4, II.5, II.6, II.7, II.8, II.9, II.11 and II.13):\nIf the Insured Person chooses voluntary co-payment, the Company will provide a discount on premium as per the table given below;\nCo-payment % Discount % 10% 10% 20% 20% Note: If Insured Persons whose age at the time of entry is 61 years and above, the voluntary co-payment will be in addition to the mandatory co-payment mentioned under Coverage II.28 above. The opted co-payment is applicable for each and every claim.\nIII. EXCLUSIONS The Company shall not be liable to make any payments under this policy in respect of any expenses what so ever incurred by the Insured Person in connection with or in respect of;;\nS T A N D A R D E X C L U S I O N S",
+    "title": "Optional Cover - The following Optional",
+    "text": "Optional Cover - The following Optional\nCover is available on discount as shown in the Policy Schedule Option to choose Voluntary Co-payment (Applicable for Coverages II.1, II.2, II.3, II.4, II.5, II.6, II.7, II.8, II.9, II.11 and II.13):\nIf the Insured Person chooses voluntary co-payment, the Company will provide a discount on premium as per the table given below;\nCo-payment % Discount % 10% 10% 20% 20% Note: If Insured Persons whose age at the time of entry is 61 years and above, the voluntary co-payment will be in addition to the mandatory co-payment mentioned under Coverage II.28 above. The opted co-payment is applicable for each and every claim.\nIII. EXCLUSIONS The Company shall not be liable to make any payments under this policy in respect of any expenses what so ever incurred by the Insured Person in connection with or in respect of;;\nS T A N D A R D E X C L U S I O N S",
     "page": 28,
     "policy": "star_health",
     "rule_type": "other"
@@ -257,15 +769,15 @@
   },
   {
     "clause_id": "III.2",
-    "title": "S pecified disease / procedure waiting",
-    "text": "S pecified disease / procedure waiting\nperiod - Code Excl 02\na. E xpenses related to the treatment of the following listed Conditions, surgeries/ treatments shall be excluded until the expiry of 24 months of continuous coverage after the date of inception of the first policy with us. This exclusion shall not be applicable for claims arising due to an accident\nb. In case of enhancement of Sum Insured the exclusion shall apply afresh to the extent of Sum Insured increase\nc. If any of the specified disease/ procedure falls under the waiting period specified for pre-existing diseases, then the longer of the two waiting periods shall apply\nd. The waiting period for listed conditions shall apply even if contracted after the policy or declared and accepted without a specific exclusion\ne. I f the Insured Person is continuously covered without any break as defined under the applicable norms on portability stipulated by IRDAI, then waiting period for the same would be reduced to the extent of prior coverage\nf. List of specific diseases/procedures;",
+    "title": "Specified disease / procedure waiting",
+    "text": "Specified disease / procedure waiting\nperiod - Code Excl 02\na. E xpenses related to the treatment of the following listed Conditions, surgeries/ treatments shall be excluded until the expiry of 24 months of continuous coverage after the date of inception of the first policy with us. This exclusion shall not be applicable for claims arising due to an accident\nb. In case of enhancement of Sum Insured the exclusion shall apply afresh to the extent of Sum Insured increase\nc. If any of the specified disease/ procedure falls under the waiting period specified for pre-existing diseases, then the longer of the two waiting periods shall apply\nd. The waiting period for listed conditions shall apply even if contracted after the policy or declared and accepted without a specific exclusion\ne. I f the Insured Person is continuously covered without any break as defined under the applicable norms on portability stipulated by IRDAI, then waiting period for the same would be reduced to the extent of prior coverage\nf. List of specific diseases/procedures;",
     "page": 28,
     "policy": "star_health",
     "rule_type": "waiting_period"
   },
   {
     "clause_id": "III.5",
-    "title": "All treatments (conservative,",
+    "title": "All treatments (conservative",
     "text": "All treatments (conservative,\ninterventional, laparoscopic and open) related to Hepato-pancreatobiliary diseases including Gall bladder and Pancreatic calculi. All types of management for Kidney calculi and Genitourinary tract calculi.",
     "page": 29,
     "policy": "star_health",
@@ -297,39 +809,39 @@
   },
   {
     "clause_id": "III.7",
-    "title": "C hange-of-Gender treatments - Code",
-    "text": "C hange-of-Gender treatments - Code\nExcl 07: Expenses related to any treatment, including surgical management, to change characteristics of the body to those of the opposite sex.",
+    "title": "Change-of-Gender treatments - Code",
+    "text": "Change-of-Gender treatments - Code\nExcl 07: Expenses related to any treatment, including surgical management, to change characteristics of the body to those of the opposite sex.",
     "page": 30,
     "policy": "star_health",
     "rule_type": "non_payable"
   },
   {
     "clause_id": "III.8",
-    "title": "C osmetic or plastic Surgery - Code",
-    "text": "C osmetic or plastic Surgery - Code\nExcl 08: Expenses for cosmetic or plastic surgery or any treatment to change appearance unless for reconstruction following an Accident, Burn(s) or Cancer or as part of medically necessary treatment to remove a direct and immediate health risk to the insured. For this to be considered a medical necessity, it must be certified by the attending Medical Practitioner.",
+    "title": "Cosmetic or plastic Surgery - Code",
+    "text": "Cosmetic or plastic Surgery - Code\nExcl 08: Expenses for cosmetic or plastic surgery or any treatment to change appearance unless for reconstruction following an Accident, Burn(s) or Cancer or as part of medically necessary treatment to remove a direct and immediate health risk to the insured. For this to be considered a medical necessity, it must be certified by the attending Medical Practitioner.",
     "page": 30,
     "policy": "star_health",
     "rule_type": "non_payable"
   },
   {
     "clause_id": "III.9",
-    "title": "H azardous or Adventure sports - Code",
-    "text": "H azardous or Adventure sports - Code\nExcl 09: Expenses related to any treatment necessitated due to participation as a professional in hazardous or adventure sports, including but not limited to, para-jumping, rock climbing, mountaineering, rafting, motor racing, horse racing or scuba diving, hand gliding, sky diving, deep-sea diving.",
+    "title": "Hazardous or Adventure sports - Code",
+    "text": "Hazardous or Adventure sports - Code\nExcl 09: Expenses related to any treatment necessitated due to participation as a professional in hazardous or adventure sports, including but not limited to, para-jumping, rock climbing, mountaineering, rafting, motor racing, horse racing or scuba diving, hand gliding, sky diving, deep-sea diving.",
     "page": 30,
     "policy": "star_health",
     "rule_type": "non_payable"
   },
   {
     "clause_id": "III.10",
-    "title": "B reach of law - Code Excl 10: Expenses",
-    "text": "B reach of law - Code Excl 10: Expenses\nfor treatment directly arising from or consequent upon any Insured Person committing or attempting to commit a breach of law with criminal intent.",
+    "title": "Breach of law - Code Excl 10",
+    "text": "Breach of law - Code Excl 10: Expenses\nfor treatment directly arising from or consequent upon any Insured Person committing or attempting to commit a breach of law with criminal intent.",
     "page": 31,
     "policy": "star_health",
-    "rule_type": "other"
+    "rule_type": "non_payable"
   },
   {
     "clause_id": "III.11",
-    "title": "Excluded Providers - Code Excl 11: Expenses",
+    "title": "Excluded Providers - Code Excl 11",
     "text": "Excluded Providers - Code Excl 11: Expenses\nincurred towards treatment in any hospital or by any Medical Practitioner or any other provider specifically excluded by the Insurer and disclosed in its website / notified to the policyholders are not admissible. However, in case of life threatening situations or following an accident, expenses up to the stage of stabilization are payable but not the complete claim.",
     "page": 31,
     "policy": "star_health",
@@ -345,15 +857,15 @@
   },
   {
     "clause_id": "III.13",
-    "title": "Treatments received in health hydros,",
+    "title": "Treatments received in health hydros",
     "text": "Treatments received in health hydros,\nnature cure clinics, spas or similar establishments or private beds registered as a nursing home attached to such establishments or where admission is arranged wholly or partly for domestic reasons - Code Excl 13",
     "page": 31,
     "policy": "star_health",
-    "rule_type": "non_payable"
+    "rule_type": "other"
   },
   {
     "clause_id": "III.14",
-    "title": "Dietary supplements and substances that",
+    "title": "Dietary supplements and substances that can be purchased without prescription",
     "text": "Dietary supplements and substances that\ncan be purchased without prescription, including but not limited to Vitamins, minerals and organic substances unless prescribed by a medical practitioner as part of hospitalization claim or day care procedure - Code Excl 14",
     "page": 31,
     "policy": "star_health",
@@ -361,24 +873,24 @@
   },
   {
     "clause_id": "III.15",
-    "title": "Refractive Error - Code Excl 15: Expenses",
+    "title": "Refractive Error - Code Excl 15",
     "text": "Refractive Error - Code Excl 15: Expenses\nrelated to the treatment for correction of eyesight due to refractive error less than",
     "page": 31,
     "policy": "star_health",
-    "rule_type": "other"
+    "rule_type": "non_payable"
   },
   {
     "clause_id": "III.16",
-    "title": "U nproven Treatments - Code Excl 16",
-    "text": "U nproven Treatments - Code Excl 16\nExpenses related to any unproven treatment, services and supplies for or in connection with any treatment. Unproven treatments are treatments, procedures or supplies that lack significant medical documentation to support their effectiveness.",
+    "title": "Unproven Treatments - Code Excl 16",
+    "text": "Unproven Treatments - Code Excl 16:\nExpenses related to any unproven treatment, services and supplies for or in connection with any treatment. Unproven treatments are treatments, procedures or supplies that lack significant medical documentation to support their effectiveness.",
     "page": 31,
     "policy": "star_health",
     "rule_type": "other"
   },
   {
     "clause_id": "III.17",
-    "title": "S terility and Infertility - Code Excl 17",
-    "text": "S terility and Infertility - Code Excl 17\nExpenses related to sterility and infertility.\nThis includes;\na. Any type of contraception, sterilization\nb. Assisted Reproduction services including artificial insemination and advanced reproductive technologies such as IVF, ZIFT, GIFT, ICSI\nc. Gestational Surrogacy\nd. Reversal of sterilization Note: Except to the extent covered under Coverage II. 18",
+    "title": "Sterility and Infertility - Code Excl 17",
+    "text": "Sterility and Infertility - Code Excl 17:\nExpenses related to sterility and infertility.\nThis includes;\na. Any type of contraception, sterilization\nb. Assisted Reproduction services including artificial insemination and advanced reproductive technologies such as IVF, ZIFT, GIFT, ICSI\nc. Gestational Surrogacy\nd. Reversal of sterilization Note: Except to the extent covered under Coverage II. 18",
     "page": 31,
     "policy": "star_health",
     "rule_type": "other"
@@ -393,8 +905,8 @@
   },
   {
     "clause_id": "III.19",
-    "title": "C ircumcision (unless necessary for",
-    "text": "C ircumcision (unless necessary for\ntreatment of a disease not excluded under this policy or necessitated due to an accident), Preputioplasty, Frenuloplasty, Preputial Dilatation and Removal of SMEGMA - Code Excl 19",
+    "title": "Circumcision (unless necessary for treatment of a disease not excluded",
+    "text": "Circumcision (unless necessary for\ntreatment of a disease not excluded under this policy or necessitated due to an accident), Preputioplasty, Frenuloplasty, Preputial Dilatation and Removal of SMEGMA - Code Excl 19",
     "page": 32,
     "policy": "star_health",
     "rule_type": "other"
@@ -409,8 +921,8 @@
   },
   {
     "clause_id": "III.25",
-    "title": "E xpenses incurred on Enhanced",
-    "text": "E xpenses incurred on Enhanced\nExternal Counter Pulsation Therapy and related therapies, Chelation therapy, Hyperbaric Oxygen Therapy, Rotational Field Quantum Magnetic Resonance Therapy, VAX-D, Low level laser therapy, Photodynamic therapy and such other therapies similar to those mentioned herein under this exclusion - Code Excl 26",
+    "title": "Expenses incurred on Enhanced",
+    "text": "Expenses incurred on Enhanced\nExternal Counter Pulsation Therapy and related therapies, Chelation therapy, Hyperbaric Oxygen Therapy, Rotational Field Quantum Magnetic Resonance Therapy, VAX-D, Low level laser therapy, Photodynamic therapy and such other therapies similar to those mentioned herein under this exclusion - Code Excl 26",
     "page": 32,
     "policy": "star_health",
     "rule_type": "non_payable"
@@ -425,15 +937,15 @@
   },
   {
     "clause_id": "III.28",
-    "title": "Biologicals, except when administered as",
+    "title": "Biologicals, except when administered as an in-patient, when clinically indicated",
     "text": "Biologicals, except when administered as\nan in-patient, when clinically indicated and hospitalization warranted - Code Excl 29",
     "page": 32,
     "policy": "star_health",
-    "rule_type": "non_payable"
+    "rule_type": "other"
   },
   {
     "clause_id": "III.29",
-    "title": "Inoculation or Vaccination (except for",
+    "title": "Inoculation or Vaccination (except for post–bite treatment and for medical",
     "text": "Inoculation or Vaccination (except for\npost–bite treatment and for medical treatment for therapeutic reasons) Code Excl 31",
     "page": 32,
     "policy": "star_health",
@@ -441,8 +953,8 @@
   },
   {
     "clause_id": "III.30",
-    "title": "D ental treatment or surgery unless",
-    "text": "D ental treatment or surgery unless\nnecessitated due to accidental injuries and requiring hospitalization (Dental implants are not payable) - Code Excl 32",
+    "title": "Dental treatment or surgery unless",
+    "text": "Dental treatment or surgery unless\nnecessitated due to accidental injuries and requiring hospitalization (Dental implants are not payable) - Code Excl 32",
     "page": 32,
     "policy": "star_health",
     "rule_type": "non_payable"
@@ -457,7 +969,7 @@
   },
   {
     "clause_id": "III.32",
-    "title": "Cost of spectacles and contact lens,",
+    "title": "Cost of spectacles and contact lens",
     "text": "Cost of spectacles and contact lens,\nhearing aids, Cochlear implants and procedures, walkers and crutches, wheel chairs, CPAP, BIPAP, Continuous Ambulatory Peritoneal Dialysis, infusion pump and such other similar aids - Code Excl 35",
     "page": 32,
     "policy": "star_health",
@@ -481,8 +993,8 @@
   },
   {
     "clause_id": "IV.1",
-    "title": "D isclosure of Information: The policy shall",
-    "text": "D isclosure of Information: The policy shall\nbe void and all premium paid thereon shall be forfeited to the Company, in the event of mis-representation, mis description or non-disclosure of any material fact by the policyholder.",
+    "title": "Disclosure of Information",
+    "text": "Disclosure of Information: The policy shall\nbe void and all premium paid thereon shall be forfeited to the Company, in the event of mis-representation, mis description or non-disclosure of any material fact by the policyholder.",
     "page": 33,
     "policy": "star_health",
     "rule_type": "other"
@@ -497,7 +1009,7 @@
   },
   {
     "clause_id": "IV.1800",
-    "title": "425 2255, Senior Citizens may call at",
+    "title": "425 2255, Senior Citizens may call at 044-40020888",
     "text": "425 2255, Senior Citizens may call at\n044-40020888 For the comprehensive list of documents to be submitted while filing a reimbursement claim, please refer our website under the link https://www.starhealth.in/claims/#claimprocess.",
     "page": 34,
     "policy": "star_health",
@@ -505,8 +1017,8 @@
   },
   {
     "clause_id": "IV.3",
-    "title": "C omplete Discharge: Any payment to the",
-    "text": "C omplete Discharge: Any payment to the\npolicyholder, Insured Person or his/ her nominees or his/ her legal representative or assignee or to the Hospital, as the case may be, for any benefit under the policy shall be a valid discharge towards payment of claim by the Company to the extent of that amount for the particular claim.",
+    "title": "Complete Discharge",
+    "text": "Complete Discharge: Any payment to the\npolicyholder, Insured Person or his/ her nominees or his/ her legal representative or assignee or to the Hospital, as the case may be, for any benefit under the policy shall be a valid discharge towards payment of claim by the Company to the extent of that amount for the particular claim.",
     "page": 35,
     "policy": "star_health",
     "rule_type": "other"
@@ -521,7 +1033,7 @@
   },
   {
     "clause_id": "IV.5",
-    "title": "Fraud: lf any claim made by the Insured",
+    "title": "Fraud",
     "text": "Fraud: lf any claim made by the Insured\nPerson, is in any respect fraudulent, or if any false statement, or declaration is made or used in support thereof, or if any fraudulent means or devices are used by the Insured Person or anyone acting on his/her behalf to obtain any benefit under this policy, all benefits under this policy and the premium paid shall be forfeited.\nAny amount already paid against claims made under this policy but which are found fraudulent later shall be repaid by all recipient(s)/policyholder(s), who has made that particular claim, who shall be jointly and severally liable for such repayment to the insurer.\nFor the purpose of this clause, the expression \"fraud\" means any of the following acts committed by the Insured Person or by his agent or the hospital/ doctor/any other party acting on behalf of the Insured Person, with intent to deceive the insurer or to induce the insurer to issue an insurance policy:\ni. the suggestion, as a fact of that which is not true and which the Insured Person does not believe to be true;\nii. the active concealment of a fact by the Insured Person having knowledge or belief of the fact;\niii. any other act fitted to deceive; and\niv. any such act or omission as the law specially declares to be fraudulent The Company shall not repudiate the claim and / or forfeit the policy benefits on the ground of Fraud, if the Insured Person / beneficiary can prove that the misstatement was true to the best of his knowledge and there was no deliberate intention to suppress the fact or that such misstatement of or suppression of material fact are within the knowledge of the insurer.",
     "page": 35,
     "policy": "star_health",
@@ -537,8 +1049,8 @@
   },
   {
     "clause_id": "IV.7",
-    "title": "M igration: In case of migration of one",
-    "text": "M igration: In case of migration of one\npolicy to another with the same insurer, the Policyholder (including all members under family cover and group insurance policies) can transfer the credits gained to the extent of the Sum Insured, No Claim Bonus, Specific Waiting Periods, Waiting period for Pre-Existing Diseases, Moratorium period etc. in the previous policy to the migrated policy.",
+    "title": "Migration",
+    "text": "Migration: In case of migration of one\npolicy to another with the same insurer, the Policyholder (including all members under family cover and group insurance policies) can transfer the credits gained to the extent of the Sum Insured, No Claim Bonus, Specific Waiting Periods, Waiting period for Pre-Existing Diseases, Moratorium period etc. in the previous policy to the migrated policy.",
     "page": 36,
     "policy": "star_health",
     "rule_type": "other"
@@ -546,14 +1058,14 @@
   {
     "clause_id": "IV.8",
     "title": "Portability",
-    "text": "Portability\ni. The Policyholder has the choice to port his / her policy from one Insurer to another by applying to such Insurer to port the entire policy along with all the members of the family, if any, at least 30 days before, but not earlier than 60 days from the policy renewal date as per IRDAI guidelines related to portability.\nii. The Policyholder is entitled to transfer the credits gained to the extent of the Sum Insured, No Claim Bonus, Specific Waiting Periods, Waiting period for PreExisting Diseases, Moratorium period etc. from the existing Insurer to the Acquiring Insurer in the previous policy.",
+    "text": "Portability:\ni. The Policyholder has the choice to port his / her policy from one Insurer to another by applying to such Insurer to port the entire policy along with all the members of the family, if any, at least 30 days before, but not earlier than 60 days from the policy renewal date as per IRDAI guidelines related to portability.\nii. The Policyholder is entitled to transfer the credits gained to the extent of the Sum Insured, No Claim Bonus, Specific Waiting Periods, Waiting period for PreExisting Diseases, Moratorium period etc. from the existing Insurer to the Acquiring Insurer in the previous policy.",
     "page": 36,
     "policy": "star_health",
     "rule_type": "other"
   },
   {
     "clause_id": "IV.9",
-    "title": "Renewal of policy: The policy shall",
+    "title": "Renewal of policy",
     "text": "Renewal of policy: The policy shall\nbe renewable provided the product is not withdrawn, except in case of established fraud or non-disclosure or misrepresentation by the Policyholder. If the product is withdrawn, the policyholder shall be provided with suitable options to migrate as per the procedure stated under “withdrawal clause”\ni. At the end of the Policy Period, the policy shall terminate and can be renewed within the Grace Period of 30 days.\nii. While coverage is not available during the Grace Period, if the policy is renewed during the Grace Period, all the credits (Sum Insured, No Claim Bonus, Specific Waiting Periods, Waiting period for Pre-Existing Diseases, Moratorium period etc.) accrued under the policy shall be protected.\niii. At the time of renewal, if the dependent child covered under the policy is above 25 years of age, the policy shall be renewed on Individual basis for the said child.\niv. If at the time of renewal, adult(s) insured under the policy cease to be Insured Person on account of death, then the dependent child or children if any covered, shall be insured on Individual basis. Proof of death has to be submitted for this purpose.\nProposer (at the time of such renewal and its subsequent renewals) should have insurable interest to insure such child or children.\nv. Where the policy is issued for a family size of 2A (covering Self and Spouse / Live in Partner / Same Sex Partners), in the event of death of one of the adult or divorce or separation of the partners, the policy shall be renewed on Individual basis. Proof of death or separation has to be submitted for this purpose. Name of the person proposed to continue cover under this policy has to be specifically stated at the time of renewal.",
     "page": 36,
     "policy": "star_health",
@@ -569,7 +1081,7 @@
   },
   {
     "clause_id": "IV.11",
-    "title": "Moratorium Period: After completion of sixty",
+    "title": "Moratorium Period",
     "text": "Moratorium Period: After completion of sixty\ncontinuous months of coverage (including portability and migration) in health insurance policy, no policy and claim shall be contestable by the insurer on grounds of non-disclosure, misrepresentation, except on grounds of established fraud. This period of sixty continuous months is called as moratorium period. The moratorium would be applicable for the Sums Insured of the first policy. Wherever, the Sum Insured is enhanced, completion of sixty continuous months would be applicable from the date of enhancement of Sums Insured only on the enhanced limits.",
     "page": 37,
     "policy": "star_health",
@@ -577,7 +1089,7 @@
   },
   {
     "clause_id": "IV.12",
-    "title": "Premium Payment in Instalments: lf the",
+    "title": "Premium Payment in Instalments",
     "text": "Premium Payment in Instalments: lf the\nPolicyholder has opted for Payment of Premium on an instalment basis i.e. Half Yearly or Quarterly or Monthly, as mentioned in the Policy Schedule/Certificate of Insurance, the following conditions shall apply (notwithstanding any terms contrary elsewhere in the policy)\ni. For monthly instalment option: Grace Period of 15 days would be given to pay the instalment premium due for the policy.\nii. For Quarterly and Half yearly instalment option: Grace Period of\n30 days would be given to pay the\ninstalment premium due for the policy.\niii. T he Policyholder will get the accrued continuity benefit in respect of the (Sum Insured, No Claim Bonus, Specific Waiting Periods, Waiting period for Pre-Existing Diseases, Moratorium period etc.) in the event of payment of premium within the stipulated Grace Period.\niv. N o interest will be charged if the instalment premium is not paid on due date.\nv. l n case of instalment premium due not received within the Grace Period, the policy will get cancelled.\nvi. l n the event of a claim, all subsequent premium instalments shall immediately become due and payable.\nvii. T he company has the right to recover and deduct all the pending Instalments from the claim amount due under the policy.\nviii. For premium paid in instalments during the Policy Period, coverage is available during the Grace Period also.",
     "page": 38,
     "policy": "star_health",
@@ -585,7 +1097,7 @@
   },
   {
     "clause_id": "IV.13",
-    "title": "Possibility of Revision of Terms of the",
+    "title": "Possibility of Revision of Terms of the Policy including the Premium Rates",
     "text": "Possibility of Revision of Terms of the\nPolicy including the Premium Rates: The Company may revise or modify the terms of the policy including the premium rates, as per the extant Guidelines. The Insured Person shall be notified thirty days before the changes are effected.",
     "page": 38,
     "policy": "star_health",
@@ -593,7 +1105,7 @@
   },
   {
     "clause_id": "IV.14",
-    "title": "Free Look Period: The Free Look Period shall",
+    "title": "Free Look Period",
     "text": "Free Look Period: The Free Look Period shall\nbe applicable on new individual health insurance policies and not on renewals or at the time of porting/migrating the policy.\nThe Policyholder shall be allowed free look period of thirty days from date of receipt of the policy document whether electronically or otherwise to review the terms and conditions of the policy. If the Policyholder is not satisfied with any of the terms and conditions and has not made any claim, the Policyholder has the option to cancel his/her policy. This option is available in case of policies with a term of one year or more.\nThe Policyholder shall be entitled to a refund of the premium paid subject only to a deduction of a proportionate risk premium for the period of cover and the expenses, if any incurred by the Insurer on medical examination of the proposer and stamp duty charges",
     "page": 38,
     "policy": "star_health",
@@ -601,7 +1113,7 @@
   },
   {
     "clause_id": "IV.15",
-    "title": "Redressal of Grievance: Incase of any",
+    "title": "Redressal of Grievance",
     "text": "Redressal of Grievance: Incase of any\ngrievance the Insured Person may contact the Company through Website : www.starhealth.in E-mail : gro@starhealth.in, grievances@starhealth.in Ph. No : 044-69006900 | Toll Free No. 1800 425 2255 Senior Citizens may call at 044-69007500 Courier/ Post : Star Health and Allied Insurance Company imited., 4th Floor, Balaji Complex, No.15, Whites Lane, Whites Road, Royapettah, Chennai- 600014.\nlnsured person may also approach the grievance cell at any of the company's branches with the details of grievance.\nlf lnsured person is not satisfied with the redressal of grievance through one of the above methods, Insured Person may contact the grievance officer at 04443664600.\nFor updated details of grievance officer, kindly refer the link https://www.starhealth.in/grievanceredressal lf lnsured person is not satisfied with the redressal of grievance through above methods, the Insured Person may also approach the office of lnsurance Ombudsman of the respective area/ region for redressal of grievance as per lnsurance Ombudsman Rules 2017, as amended from time to time.\nGrievance may also be lodged at IRDAI lntegrated Grievance Management System - https://bimabharosa.irdai.gov.in/",
     "page": 39,
     "policy": "star_health",
@@ -609,7 +1121,7 @@
   },
   {
     "clause_id": "IV.16",
-    "title": "Nomination: The policyholder is required",
+    "title": "Nomination",
     "text": "Nomination: The policyholder is required\nat the inception of the policy to make a nomination for the purpose of payment of claims under the policy in the event of death of the policyholder. Any change of nomination shall be communicated to the company in writing and such change shall be effective only when an endorsement on the policy is made. ln the event of death of the policyholder, the Company will pay the nominee {as named in the Policy Schedule/Policy Certificate/Endorsement (if any)} and in case there is no subsisting nominee, to the legal heirs or legal representatives of the policyholder whose discharge shall be treated as full and final discharge of its liability under the policy.\nS P E C I F I C C O N D I T I O N S",
     "page": 39,
     "policy": "star_health",
@@ -617,16 +1129,16 @@
   },
   {
     "clause_id": "IV.17",
-    "title": "T he Insured Person/s shall obtain and",
-    "text": "T he Insured Person/s shall obtain and\nfurnish the Company with all original bills, receipts and other documents upon which a claim is based and shall also give the Company such additional information and assistance as the Company may require in dealing with the claim.",
+    "title": "The Insured Person/s shall obtain and furnish the Company with all original",
+    "text": "The Insured Person/s shall obtain and\nfurnish the Company with all original bills, receipts and other documents upon which a claim is based and shall also give the Company such additional information and assistance as the Company may require in dealing with the claim.",
     "page": 39,
     "policy": "star_health",
     "rule_type": "other"
   },
   {
     "clause_id": "IV.19",
-    "title": "T he premium under this policy shall",
-    "text": "T he premium under this policy shall\nbe payable in advance. No receipt of premium shall be valid except on the official form of the company signed by a duly authorized official of the company.\nThe due payment of premium and the observance of fulfilment of the terms, provision, conditions and endorsements of this policy by the Insured Person/s, in so far as they relate to anything to be done or complied with by the Insured Person/s, shall be a condition precedent to any liability of the Company to make any payment under this policy. No waiver of any terms, provisions, conditions, and endorsements of this policy shall be valid unless made in writing and signed by an authorized official of the Company.",
+    "title": "The premium under this policy shall be payable in advance. No receipt of premium shall be",
+    "text": "The premium under this policy shall\nbe payable in advance. No receipt of premium shall be valid except on the official form of the company signed by a duly authorized official of the company.\nThe due payment of premium and the observance of fulfilment of the terms, provision, conditions and endorsements of this policy by the Insured Person/s, in so far as they relate to anything to be done or complied with by the Insured Person/s, shall be a condition precedent to any liability of the Company to make any payment under this policy. No waiver of any terms, provisions, conditions, and endorsements of this policy shall be valid unless made in writing and signed by an authorized official of the Company.",
     "page": 40,
     "policy": "star_health",
     "rule_type": "other"
@@ -641,15 +1153,15 @@
   },
   {
     "clause_id": "IV.21",
-    "title": "N otice and communication",
-    "text": "N otice and communication\ni. Any direction or instruction given under this Policy shall be in writing and delivered by hand, post, or email to Star Health and Allied Insurance Company Limited, Registered Office: No. 1, New Tank Street, Valluvar Kottam High Road, Nungambakkam, Chennai - 600 034/ Corporate Office: No. 148, Acropolis, Dr. Radha Krishnan Salai, Mylapore, Chennai - 600 004.\nCustomer Care No. 044-69006900 or Toll-Free No. 1800 425 2255 e-mail: support@starhealth.in\nii. Any legal notice under this policy shall be in writing and delivered by hand, post, or email to Claims Department, 4th Floor, Balaji Complex, No.15, Whites Lane, Whites Road, Royapettah, Chennai- 600014;\na. e-mail for Consumer Matter: claims.\nlegal@starhealth.in\nb. e-mail for Ombudsman: claims.\nombudsman@starhealth.in Notices and instructions will be deemed served 7 days after posting or immediately upon receipt in the case of hand delivery or e-mail.\nIf notices or communications are not sent to the addresses or email IDs mentioned above, the Company will not be able to respond promptly.",
+    "title": "Notice and communication",
+    "text": "Notice and communication:\ni. Any direction or instruction given under this Policy shall be in writing and delivered by hand, post, or email to Star Health and Allied Insurance Company Limited, Registered Office: No. 1, New Tank Street, Valluvar Kottam High Road, Nungambakkam, Chennai - 600 034/ Corporate Office: No. 148, Acropolis, Dr. Radha Krishnan Salai, Mylapore, Chennai - 600 004.\nCustomer Care No. 044-69006900 or Toll-Free No. 1800 425 2255 e-mail: support@starhealth.in\nii. Any legal notice under this policy shall be in writing and delivered by hand, post, or email to Claims Department, 4th Floor, Balaji Complex, No.15, Whites Lane, Whites Road, Royapettah, Chennai- 600014;\na. e-mail for Consumer Matter: claims.\nlegal@starhealth.in\nb. e-mail for Ombudsman: claims.\nombudsman@starhealth.in Notices and instructions will be deemed served 7 days after posting or immediately upon receipt in the case of hand delivery or e-mail.\nIf notices or communications are not sent to the addresses or email IDs mentioned above, the Company will not be able to respond promptly.",
     "page": 40,
     "policy": "star_health",
     "rule_type": "other"
   },
   {
     "clause_id": "IV.23",
-    "title": "A utomatic Termination: The insurance",
+    "title": "A utomatic Termination",
     "text": "A utomatic Termination: The insurance\nunder this policy with respect to each relevant Insured Person shall expire immediately on the earlier of the following events\ni. Upon the death of the Insured Person. This means that, the cover for the surviving members of the family will continue, subject to other terms of the policy.\nii. Upon exhaustion of the Sum Insured, Limit of Coverage, Limit of Coverage plus Restore and / or Recharge Sum Insured.",
     "page": 40,
     "policy": "star_health",
@@ -657,7 +1169,7 @@
   },
   {
     "clause_id": "IV.24",
-    "title": "Policy disputes: Any dispute concerning",
+    "title": "Policy disputes",
     "text": "Policy disputes: Any dispute concerning\nthe interpretation of the terms, conditions, limitations and/or exclusions contained herein is understood and agreed to by both the Insured and the Company to be subject to Indian Law.",
     "page": 41,
     "policy": "star_health",
@@ -665,7 +1177,7 @@
   },
   {
     "clause_id": "IV.25",
-    "title": "Excluded Hospitals (providers): Insured",
+    "title": "Excluded Hospitals (providers)",
     "text": "Excluded Hospitals (providers): Insured\ncan refer the company website using the following link to get the list of excluded hospitals. https://www.starhealth.in/lookup/ hospital/#excluded-hospital",
     "page": 41,
     "policy": "star_health",
@@ -673,7 +1185,7 @@
   },
   {
     "clause_id": "IV.26",
-    "title": "Revision of Sum Insured: Reduction",
+    "title": "Revision of Sum Insured",
     "text": "Revision of Sum Insured: Reduction\nor enhancement of Sum Insured is permissible only at the time of renewal.\nThe acceptance for enhancement and the amount of enhancement will be at the discretion of the Company and subject to Exclusion Code Excl 01, Exclusion Code Excl 02 and Exclusion Code Excl 03.",
     "page": 41,
     "policy": "star_health",
@@ -681,7 +1193,7 @@
   },
   {
     "clause_id": "IV.27",
-    "title": "Relief under Section 80-D: Insured Person",
+    "title": "Relief under Section 80-D",
     "text": "Relief under Section 80-D: Insured Person\nis eligible for relief under Section 80-D of the IT Act in respect of the premium paid by any mode other than cash.",
     "page": 41,
     "policy": "star_health",
@@ -697,23 +1209,23 @@
   },
   {
     "clause_id": "IV.29",
-    "title": "C ustomer Service: If at any time the",
-    "text": "C ustomer Service: If at any time the\nInsured Person requires any clarification or assistance, the insured may contact Star Health and Allied Insurance Company Limited, Balaji Complex, No.15, Whites Lane, Whites Road, Royapettah, Chennai-600014, during normal business hours.",
+    "title": "Customer Service",
+    "text": "Customer Service: If at any time the\nInsured Person requires any clarification or assistance, the insured may contact Star Health and Allied Insurance Company Limited, Balaji Complex, No.15, Whites Lane, Whites Road, Royapettah, Chennai-600014, during normal business hours.",
     "page": 41,
     "policy": "star_health",
     "rule_type": "other"
   },
   {
     "clause_id": "IV.30",
-    "title": "T hird-Party Claims: Only the authorized",
-    "text": "T hird-Party Claims: Only the authorized\nThird-Party Administrator (TPA), legal heirs, Proposer, or approved Insurance Intermediaries have the right to make or follow up on reimbursement claims under this policy.\nThe claims will be settled directly to the Proposer’s account. In case of the Proposer's death, the settlement will be made to the nominee’s account as the case may be.\nClaims by unauthorized third party will not be entertained, and the Company reserves the right to reject such claims. This rejection does not breach the terms of the policy.",
+    "title": "Third-Party Claims",
+    "text": "Third-Party Claims: Only the authorized\nThird-Party Administrator (TPA), legal heirs, Proposer, or approved Insurance Intermediaries have the right to make or follow up on reimbursement claims under this policy.\nThe claims will be settled directly to the Proposer’s account. In case of the Proposer's death, the settlement will be made to the nominee’s account as the case may be.\nClaims by unauthorized third party will not be entertained, and the Company reserves the right to reject such claims. This rejection does not breach the terms of the policy.",
     "page": 41,
     "policy": "star_health",
     "rule_type": "other"
   },
   {
     "clause_id": "IV.31",
-    "title": "Professional Conduct: The Company shall",
+    "title": "Professional Conduct",
     "text": "Professional Conduct: The Company shall\nensure that its staff and representatives shall conduct themselves in courteous and professional manner in all their interactions with the insured/proposer, whether in person, through email, telephone or any other online or offline platforms. The insured/ proposer hereby irrevocably agrees to conduct themselves in courteous and professional manner in all interactions with the Company. Any unprofessional or inappropriate behaviour by the insured/ proposer may result in strict action by the Company, including without limitation, legal action under the Bharatiya Nyaya Sanhita, Act 2023, as amended from time to time.\nL I S T O F I N S U R A N Jurisdiction of Office Office Details Union Territory, District AHMEDABAD Office of the Insurance Ombudsman, Jeevan Prakash Building, 6th floor, Tilak Marg, Gujarat, Dadra & Nagar Relief Road, AHMEDABAD – Haveli, Daman and Diu.",
     "page": 41,
     "policy": "star_health",
@@ -1529,7 +2041,7 @@
   },
   {
     "clause_id": "B.3",
-    "title": "Renewal Benefit - Preventive Health Check-up",
+    "title": "Renewal Benefit - Preventive Health Check-up On completion of each Policy Year where-in",
     "text": "Renewal Benefit - Preventive Health Check-up\nOn completion of each Policy Year where-in this benefit was in force, the Company will indemnify the cost of a Preventive Health Check-up for the Insured Persons who were insured during the previous Policy Year, up to the amounts specified in this Cover below.\ni. This benefit is available every Policy Year post completion of the first Policy Year irrespective of the policy tenure opted.The tests must be taken only in the Policy Year where-in the Insured Person is eligible for this benefit.\nii. This benefit does NOT carry forward if it is not claimed during the applicable Policy Year and shall not be provided if the Policy is not Renewed further.\niii. The amount specified in the Policy schedule against this benefit denotes the Company's maximum liability in respect to the benefit and shall not reduce the Sum Insured of the policy.\niv. This cover shall be applicable only if the same is stipulated on the Policy Schedule to be in force\nv. In plans where in Preventive Health Check-Up benefit is available as an optional cover, this benefit can be opted only at inception or at renewals and once opted the same can be opted out at renewals only.\nvi. Preventive Health Check-Up amount that Insured Person is eligible for shall be as per Base Sum Insured of expiring Policy Year.\nFor Individual Policies, the below mentioned limits are applicable for each Insured Person per Policy Year.\nBase Sum Insured 5 & 7.5 Lacs 10 Lacs 15 Lacs 20, 25, 50 & 100 & 200 under the Policy 75 Lakhs Lacs Limit of Cover Rs. 1,500 Rs. 2,000 Rs. 4,000 Rs. 5,000 Rs. 8,000 For Family Floater Policies, the below mentioned limits are applicable cumulatively for all Insured Persons per Policy Year.\nBase Sum Insured 5 & 7.5 Lacs 10 Lacs 15 Lacs 20, 25, 50 & 100 & 200 under the Policy 75 Lakhs Lacs Limit of Cover Rs. 2,500 Rs. 5,000 Rs. 8,000 Rs. 10,000 Rs. 15,000 SECTION C. WAITING PERIOD AND EXCLUSIONS The Company shall not make payment for any claim in respect of any Insured Person caused by, arising from or attributable to any of the following unless expressly stated to the contrary in the Policy:",
     "page": 27,
     "policy": "hdfc_ergo",
@@ -1554,7 +2066,7 @@
   {
     "clause_id": "C.3",
     "title": "Specific Exclusions",
-    "text": "Specific Exclusions\nIn addition to the foregoing general exclusions, the Company shall not be liable to make any payment under this Policy caused by or arising out of or attributable to any of the following:\na. War or any act of war, invasion, act of foreign enemy, (whether war be declared or not or caused during service in the armed forces of any country), civil war, public defence, rebellion, revolution, insurrection, military or usurped acts, Nuclear, Chemical or Biological attack or weapons, radiation of any kind.\nb. Aggregate Deductible - Claims/claim amount falling within Aggregate Deductible limit if opted and in force, as specified in the Policy Schedule.\nc. Any Insured Person committing or attempting to commit intentional self-injury or attempted suicide or suicide.\nd. Any Insured Person’s participation or involvement in naval, military or air force operation.\ne. Investigative treatment for sleep-apnoea, general debility or exhaustion (“run-down condition”).\nf. Congenital external diseases, defects or anomalies.\ng. Stem cell harvesting.\nh. Investigative treatments for analysis and adjustments of spinal sub luxation, diagnosis and treatment by manipulation of the skeletal structure or for muscle stimulation by any means except treatment of fractures (excluding hairline fractures) and dislocations of the mandible and extremities.\ni. Circumcisions (unless necessitated by Illness or Injury and forming part of treatment).\nj. Vaccination including inoculation and immunisations (except post animal bite treatment).\nk. Non-Medical expenses such as food charges (other than patient’s diet provided by hospital), laundry charges, attendant charges, ambulance collar, ambulance equipment, baby food, baby utility charges and other such items. Full list of Non-Medical Expenses is attached as ANNEXURE B and also available at www.hdfcergo.com.\nl. Treatment taken on outpatient basis.\nm. The provision or fitting of hearing aids, spectacles or contact lenses.\nn. Any treatment and associated expenses for alopecia, baldness including cortico steroids and topical immuno therapy wigs, toupees, hair pieces, any non-surgical hair replacement methods, optometric therapy.\no. Expenses for Artificial limbs and/or device used for diagnosis or treatment (except when used intra-operatively), prosthesis, corrective devices external durable medical equipment of any kind, wheelchairs, crutches, and oxygen concentrator for bronchial asthma/ COPD conditions, cost of cochlear implant(s) unless necessitated by an Accident.\np. Any treatment or part of a treatment that is not of a reasonable charge and not Medically Necessary. Drugs or treatments which are not supported by a prescription.\nq. Any permanent exclusion applied on any medical or physical condition or treatment of an Insured Person as specifically mentioned in the Policy Schedule and as specifically accepted by Policyholder/Insured Person. Such exclusions shall be applied for the condition(s) or treatment(s) that otherwise would have resulted in rejection of insurance coverage under this Policy to such Insured Person as per Company’s Underwriting Policy.\nSECTION D. GENERAL TERMS AND CLAUSES",
+    "text": "Specific Exclusions:\nIn addition to the foregoing general exclusions, the Company shall not be liable to make any payment under this Policy caused by or arising out of or attributable to any of the following:\na. War or any act of war, invasion, act of foreign enemy, (whether war be declared or not or caused during service in the armed forces of any country), civil war, public defence, rebellion, revolution, insurrection, military or usurped acts, Nuclear, Chemical or Biological attack or weapons, radiation of any kind.\nb. Aggregate Deductible - Claims/claim amount falling within Aggregate Deductible limit if opted and in force, as specified in the Policy Schedule.\nc. Any Insured Person committing or attempting to commit intentional self-injury or attempted suicide or suicide.\nd. Any Insured Person’s participation or involvement in naval, military or air force operation.\ne. Investigative treatment for sleep-apnoea, general debility or exhaustion (“run-down condition”).\nf. Congenital external diseases, defects or anomalies.\ng. Stem cell harvesting.\nh. Investigative treatments for analysis and adjustments of spinal sub luxation, diagnosis and treatment by manipulation of the skeletal structure or for muscle stimulation by any means except treatment of fractures (excluding hairline fractures) and dislocations of the mandible and extremities.\ni. Circumcisions (unless necessitated by Illness or Injury and forming part of treatment).\nj. Vaccination including inoculation and immunisations (except post animal bite treatment).\nk. Non-Medical expenses such as food charges (other than patient’s diet provided by hospital), laundry charges, attendant charges, ambulance collar, ambulance equipment, baby food, baby utility charges and other such items. Full list of Non-Medical Expenses is attached as ANNEXURE B and also available at www.hdfcergo.com.\nl. Treatment taken on outpatient basis.\nm. The provision or fitting of hearing aids, spectacles or contact lenses.\nn. Any treatment and associated expenses for alopecia, baldness including cortico steroids and topical immuno therapy wigs, toupees, hair pieces, any non-surgical hair replacement methods, optometric therapy.\no. Expenses for Artificial limbs and/or device used for diagnosis or treatment (except when used intra-operatively), prosthesis, corrective devices external durable medical equipment of any kind, wheelchairs, crutches, and oxygen concentrator for bronchial asthma/ COPD conditions, cost of cochlear implant(s) unless necessitated by an Accident.\np. Any treatment or part of a treatment that is not of a reasonable charge and not Medically Necessary. Drugs or treatments which are not supported by a prescription.\nq. Any permanent exclusion applied on any medical or physical condition or treatment of an Insured Person as specifically mentioned in the Policy Schedule and as specifically accepted by Policyholder/Insured Person. Such exclusions shall be applied for the condition(s) or treatment(s) that otherwise would have resulted in rejection of insurance coverage under this Policy to such Insured Person as per Company’s Underwriting Policy.\nSECTION D. GENERAL TERMS AND CLAUSES",
     "page": 32,
     "policy": "hdfc_ergo",
     "rule_type": "non_payable"
@@ -1626,7 +2138,7 @@
   {
     "clause_id": "D.1.9",
     "title": "Renewal of Policy",
-    "text": "Renewal of Policy\nA health insurance policy shall be renewable except on grounds of established fraud or nondisclosure or misrepresentation by the insured, provided the policy is not withdrawn and also subject to conditions stated under Moratorium clause of this schedule.\na) Renewal of a health insurance policy shall not be denied on the ground that the insured had made a claim or claims in the preceding policy years, except for benefit based policies where the policy terminates following payment of the benefit covered under the policy like critical illness policies.\nb) The company shall condone a delay in renewal up to the grace period from the due date of renewal without considering such condonation as a break in policy.\nc) No loading shall apply on renewals based on individual claims experience\nd) The Company shall not resort to fresh underwriting unless there is an increase in sum insured. In case increase in sum insured is requested by the Policyholder, the Insurer may underwrite only to the extent of increased sum insured.\ne) Renewal premium due can be paid prior to the due date as per norms set out by the Company.",
+    "text": "Renewal of Policy:\nA health insurance policy shall be renewable except on grounds of established fraud or nondisclosure or misrepresentation by the insured, provided the policy is not withdrawn and also subject to conditions stated under Moratorium clause of this schedule.\na) Renewal of a health insurance policy shall not be denied on the ground that the insured had made a claim or claims in the preceding policy years, except for benefit based policies where the policy terminates following payment of the benefit covered under the policy like critical illness policies.\nb) The company shall condone a delay in renewal up to the grace period from the due date of renewal without considering such condonation as a break in policy.\nc) No loading shall apply on renewals based on individual claims experience\nd) The Company shall not resort to fresh underwriting unless there is an increase in sum insured. In case increase in sum insured is requested by the Policyholder, the Insurer may underwrite only to the extent of increased sum insured.\ne) Renewal premium due can be paid prior to the due date as per norms set out by the Company.",
     "page": 35,
     "policy": "hdfc_ergo",
     "rule_type": "other"
@@ -1905,7 +2417,7 @@
   },
   {
     "clause_id": "E.2.4",
-    "title": "Plus Benefit Not Covered Sum Insured, Sum Insured, Sum Insured, Base Sum Insured,",
+    "title": "Plus Benefit Not Covered Sum Insured, Sum Insured, Sum Insured, Base Sum Insured",
     "text": "Plus Benefit Not Covered Sum Insured, Sum Insured, Sum Insured, Base Sum Insured,\nmaximum upto Insured, maximum upto maximum upto maximum upto maximum upto 100%. maximum upto 100%. 100%. 100%. 100%) 100%) Equal to 100% Equal to 100% Equal to 200% Equal to 100% of of Base sum of Base sum",
     "page": 51,
     "policy": "hdfc_ergo",
@@ -1929,7 +2441,7 @@
   },
   {
     "clause_id": "E.2.10",
-    "title": "(Emergency & Not Covered Not Covered Not Covered Not Covered (Outside India Not Covered Not Covered",
+    "title": "(Emergency & Not Covered Not Covered Not Covered Not Covered (Outside India Not Covered",
     "text": "(Emergency & Not Covered Not Covered Not Covered Not Covered (Outside India Not Covered Not Covered\nPlanned Treatments) only) Covered upto Covered upto Overseas Travel sum insured sum insured",
     "page": 51,
     "policy": "hdfc_ergo",
@@ -1961,7 +2473,7 @@
   },
   {
     "clause_id": "E.8",
-    "title": "Parenthood: Covers Maternity Expenses, Embryo freezing costs and IVF treatments post waiting",
+    "title": "Parenthood",
     "text": "Parenthood: Covers Maternity Expenses, Embryo freezing costs and IVF treatments post waiting\nperiod of 2 years.\nNotes:\nFor in depth details on terms and conditions applicable to add-ons, Kindly refer to the Prospectus & Policy wording documents of the respective add-on available under downloads section on our website.\nCoverage and Sum Insured offered under the add-on’s are subject to declaration in proposal forms and internal underwriting guidelines.",
     "page": 53,
     "policy": "hdfc_ergo",
@@ -1977,7 +2489,7 @@
   },
   {
     "clause_id": "2.1.1",
-    "title": "Accident or Accidental means a sudden, unforeseen and involuntary event caused by external, visible and violent means.",
+    "title": "Accident or Accidental means a sudden, unforeseen and involuntary event caused by",
     "text": "Accident or Accidental means a sudden, unforeseen and involuntary event caused by external, visible and violent means.\n2.1.2. AYUSH Hospital is a healthcare facility wherein medical / surgical / para-surgical treatment procedures and interventions are carried out by AYUSH Medical Practitioner(s) comprising of any of the following:\na. Central or state government AYUSH Hospital; or\nb. Teaching Hospital attached to AYUSH college recognized by the Central Government / Central Council of Indian Medicine / Central Council of Homeopathy; or\nc. AYUSH Hospital, standalone or co-located with in-patient healthcare facility of any recognized system of medicine, registered with the local authorities, wherever applicable and is under the supervision of a qualified registered AYUSH Medical Practitioner and must comply with all the following criterion:\ni. Having at least five in-patient beds;\nii. Having qualified AYUSH Medical Practitioner in charge round the clock;\niii. Having dedicated AYUSH therapy sections as required and/or has equipped operation theatre where surgical procedures are to be carried out;\niv. Maintaining daily records of the patients and making them accessible to the insurance company’s authorized representative.\nAYUSH Hospitals referred above shall also obtain either pre-entry level certificate (or higher level of certificate) issued by National Accreditation Board for Hospitals and Healthcare Providers (NABH) or State Level Certificate (or higher level of certificate) under National Quality Assurance Standards (NQAS), issued by National Health Systems Resources Centre (NHSRC).",
     "page": 1,
     "policy": "niva_bupa",
@@ -1985,7 +2497,7 @@
   },
   {
     "clause_id": "2.1.4",
-    "title": "Break in Policy means the period of gap that occurs at the end of the existing policy term/instalment premium due date,",
+    "title": "Break in Policy means the period of gap that occurs at the end of the existing policy",
     "text": "Break in Policy means the period of gap that occurs at the end of the existing policy term/instalment premium due date,\nwhen the premium due for renewal on a given policy or instalment premium due is not paid on or before the premium renewal date or grace period.",
     "page": 1,
     "policy": "niva_bupa",
@@ -1993,7 +2505,7 @@
   },
   {
     "clause_id": "2.1.5",
-    "title": "Cashless Facility means a facility extended by the insurer to the insured where the payments, of the costs of treatment",
+    "title": "Cashless Facility means a facility extended by the insurer to the insured where the",
     "text": "Cashless Facility means a facility extended by the insurer to the insured where the payments, of the costs of treatment\nundergone by the insured in accordance with the policy terms and conditions, are directly made to the network provider by the insurer to the extent pre-authorization is approved.\n2.1.6. Congenital Anomaly means a condition which is present since birth, and which is abnormal with reference to form, structure or position.\na. Internal Congenital Anomaly: Congenital Anomaly which is not in the visible and accessible parts of the body.\nb. External Congenital Anomaly: Congenital Anomaly which is in the visible and accessible parts of the body.",
     "page": 1,
     "policy": "niva_bupa",
@@ -2001,7 +2513,7 @@
   },
   {
     "clause_id": "2.1.7",
-    "title": "Co-payment means a cost-sharing requirement under a health insurance policy that provides that the Policyholder/insured",
+    "title": "Co-payment means a cost-sharing requirement under a health insurance policy that provides",
     "text": "Co-payment means a cost-sharing requirement under a health insurance policy that provides that the Policyholder/insured\nwill bear a specified percentage of the admissible claim amount. A Co-payment does not reduce the Sum Insured.",
     "page": 2,
     "policy": "niva_bupa",
@@ -2009,7 +2521,7 @@
   },
   {
     "clause_id": "2.1.8",
-    "title": "Cumulative Bonus means any increase or addition in the Sum Insured granted by the insurer without an associated increase",
+    "title": "Cumulative Bonus means any increase or addition in the Sum Insured granted by the insurer",
     "text": "Cumulative Bonus means any increase or addition in the Sum Insured granted by the insurer without an associated increase\nin premium 2.1.9. Day Care Centre means any institution established for Day Care Treatment of Illness and/or Injuries or a medical set-up with a Hospital and which has been registered with the local authorities, wherever applicable, and is under the supervision of a registered and qualified Medical Practitioner AND must comply with all minimum criterion as under:\na. has Qualified Nursing staff under its employment;\nb. has qualified Medical Practitioner(s) in charge;\nc. has a fully equipped operation theatre of its own where Surgical Procedures are carried out;\nd. maintains daily records of patients and will make these accessible to the insurance company’s authorized personnel.",
     "page": 2,
     "policy": "niva_bupa",
@@ -2017,15 +2529,15 @@
   },
   {
     "clause_id": "2.1.10",
-    "title": "Day Care Treatment refers to medical treatment, and/or Surgical Procedure which is",
-    "text": "Day Care Treatment refers to medical treatment, and/or Surgical Procedure which is\na. undertaken under General or Local Anaesthesia in a Hospital/Day Care Centre in less than 24 hrs because of technological advancement, and\nb. which would have otherwise required a Hospitalization of more than 24 hours.\nTreatment normally taken on an out patient basis is not included in the scope of this definition.\n2.1.11. Dental Treatment means a treatment related to teeth or structures supporting teeth including examinations, fillings (where appropriate), crowns, extractions and Surgery.\n2.1.12. Deductible means a cost-sharing requirement under a health insurance policy that provides that the Insurer will not be liable for a specified rupee amount in case of indemnity policies and for a specified number of days/hours in case of hospital cash policies which will apply before any benefits are payable by the insurer. A deductible does not reduce the Sum Insured.\n2.1.13. Domiciliary Hospitalization means medical treatment for an Illness/disease/Injury which in the normal course would require care and treatment at a Hospital but is actually taken while confined at home under any of the following circumstances:\na. the condition of the patient is such that he/she is not in a condition to be removed to a Hospital, or\nb. the patient takes treatment at home on account of non availability of room in a Hospital.",
+    "title": "Day Care Treatment refers to medical treatment, and/or Surgical Procedure which is a.",
+    "text": "Day Care Treatment refers to medical treatment, and/or Surgical Procedure which is:\na. undertaken under General or Local Anaesthesia in a Hospital/Day Care Centre in less than 24 hrs because of technological advancement, and\nb. which would have otherwise required a Hospitalization of more than 24 hours.\nTreatment normally taken on an out patient basis is not included in the scope of this definition.\n2.1.11. Dental Treatment means a treatment related to teeth or structures supporting teeth including examinations, fillings (where appropriate), crowns, extractions and Surgery.\n2.1.12. Deductible means a cost-sharing requirement under a health insurance policy that provides that the Insurer will not be liable for a specified rupee amount in case of indemnity policies and for a specified number of days/hours in case of hospital cash policies which will apply before any benefits are payable by the insurer. A deductible does not reduce the Sum Insured.\n2.1.13. Domiciliary Hospitalization means medical treatment for an Illness/disease/Injury which in the normal course would require care and treatment at a Hospital but is actually taken while confined at home under any of the following circumstances:\na. the condition of the patient is such that he/she is not in a condition to be removed to a Hospital, or\nb. the patient takes treatment at home on account of non availability of room in a Hospital.",
     "page": 2,
     "policy": "niva_bupa",
     "rule_type": "other"
   },
   {
     "clause_id": "2.1.14",
-    "title": "Emergency care means management for an Illness or Injury which results in symptoms which occur suddenly and",
+    "title": "Emergency care means management for an Illness or Injury which results in symptoms which",
     "text": "Emergency care means management for an Illness or Injury which results in symptoms which occur suddenly and\nunexpectedly, and requires immediate care by a Medical Practitioner to prevent death or serious long term impairment of the Insured Person’s health.",
     "page": 2,
     "policy": "niva_bupa",
@@ -2033,7 +2545,7 @@
   },
   {
     "clause_id": "2.1.15",
-    "title": "Grace Period means the specified period of time, immediately following the premium due date during which premium",
+    "title": "Grace Period means the specified period of time, immediately following the premium due",
     "text": "Grace Period means the specified period of time, immediately following the premium due date during which premium\npayment can be made to renew or continue a policy in force without loss of continuity benefits pertaining to waiting periods and coverage of pre-existing diseases. Coverage need not be available during the period for which no premium is received.\nThe grace period for payment of the premium for all types of insurance policies shall be: fifteen days where premium payment mode is monthly and thirty days in all other cases.\nProvided the insurers shall offer coverage during the grace period, if the premium is paid in instalments during the policy period.\n2.1.16. Hospital means any institution established for Inpatient Care and Day Care Treatment of Illness and / or Injuries and which has been registered as a Hospital with the local authorities under the Clinical Establishments (Registration and Regulation) Act, 2010 or under the enactments specified under the Schedule of Section 56(1) of the said Act OR complies with all minimum criteria as under:\na. has Qualified Nursing staff under its employment round the clock;\nb. has at least 10 Inpatient beds in towns having a population of less than 10,00,000 and at least 15 Inpatient beds in all other places;\nc. has qualified Medical Practitioner(s) in charge round the clock;\nd. has a fully equipped operation theatre of its own where Surgical Procedures are carried out;\ne. maintains daily records of patients and makes these accessible to the Insurance company’s authorized personnel.",
     "page": 2,
     "policy": "niva_bupa",
@@ -2041,7 +2553,7 @@
   },
   {
     "clause_id": "2.1.17",
-    "title": "Hospitalization means admission in a Hospital for a minimum period of 24 consecutive ‘In-patient Care’ hours except for",
+    "title": "Hospitalization means admission in a Hospital for a minimum period of 24 consecutive",
     "text": "Hospitalization means admission in a Hospital for a minimum period of 24 consecutive ‘In-patient Care’ hours except for\nspecified procedures/treatments, where such admission could be for a period of less than 24 consecutive hours.\n2.1.18. Illness means a sickness or a disease or pathological condition leading to the impairment of normal physiological function and requires medical treatment.\na. Acute condition - Acute condition is a disease, illness or injury that is likely to respond quickly to treatment which aims to return the person to his or her state of health immediately before suffering the disease/ illness/ injury which leads to full recovery\nb. Chronic condition - A chronic condition is defined as a disease, illness, or injury that has one or more of the following characteristics:\na. it needs ongoing or long-term monitoring through consultations, examinations, check-ups, and /or tests\nb. it needs ongoing or long-term control or relief of symptoms\nc. it requires rehabilitation for the patient or for the patient to be specially trained to cope with it\nd. it continues indefinitely\ne. it recurs or is likely to recur 2.1.19. Injury means Accidental physical bodily harm excluding Illness or disease solely and directly caused by external, violent and visible and evident means which is verified and certified by a Medical Practitioner.\n2.1.20. In-patient Care means treatment for which the Insured Person has to stay in a Hospital for more than 24 hours for a covered event.",
     "page": 3,
     "policy": "niva_bupa",
@@ -2049,7 +2561,7 @@
   },
   {
     "clause_id": "2.1.21",
-    "title": "Intensive Care Unit means an identified section, ward or wing of a hospital which is under the constant supervision of a",
+    "title": "Intensive Care Unit means an identified section, ward or wing of a hospital which is",
     "text": "Intensive Care Unit means an identified section, ward or wing of a hospital which is under the constant supervision of a\ndedicated medical practitioner(s), and which is specially equipped for the continuous monitoring and treatment of patients who are in a critical condition, or require life support facilities and where the level of care and supervision is considerable more sophisticated and intensive than in the ordinary and other wards.",
     "page": 3,
     "policy": "niva_bupa",
@@ -2057,7 +2569,7 @@
   },
   {
     "clause_id": "2.1.22",
-    "title": "ICU (Intensive Care Unit) Charges means the amount charged by a Hospital towards ICU expenses on a per day basis which",
+    "title": "ICU (Intensive Care Unit) Charges means the amount charged by a Hospital towards ICU",
     "text": "ICU (Intensive Care Unit) Charges means the amount charged by a Hospital towards ICU expenses on a per day basis which\nshall include the expenses for ICU bed, general medical support services provided to any ICU patient including monitoring devices, critical care nursing and intensivist charges.",
     "page": 3,
     "policy": "niva_bupa",
@@ -2066,14 +2578,14 @@
   {
     "clause_id": "2.1.23",
     "title": "Maternity Expenses shall include",
-    "text": "Maternity Expenses shall include\na. Medical Treatment Expenses traceable to childbirth (including complicated deliveries and caesarean sections incurred during Hospitalization)\nb. Expenses towards lawful medical termination of pregnancy during Policy Period.\n2.1.24. Medical Advice means any consultation or advice from a Medical Practitioner including the issuance of any prescription or follow-up prescription.",
+    "text": "Maternity Expenses shall include:\na. Medical Treatment Expenses traceable to childbirth (including complicated deliveries and caesarean sections incurred during Hospitalization)\nb. Expenses towards lawful medical termination of pregnancy during Policy Period.\n2.1.24. Medical Advice means any consultation or advice from a Medical Practitioner including the issuance of any prescription or follow-up prescription.",
     "page": 3,
     "policy": "niva_bupa",
     "rule_type": "other"
   },
   {
     "clause_id": "2.1.25",
-    "title": "Medical Expenses means those expenses that an Insured Person has necessarily and actually incurred for medical treatment",
+    "title": "Medical Expenses means those expenses that an Insured Person has necessarily and actually",
     "text": "Medical Expenses means those expenses that an Insured Person has necessarily and actually incurred for medical treatment\non account of Illness or Accident on the advice of a Medical Practitioner, as long as these are no more than would have been payable if the Insured Person had not been insured and no more than other Hospitals or doctors in the same locality would have charged for the same medical treatment.",
     "page": 3,
     "policy": "niva_bupa",
@@ -2081,7 +2593,7 @@
   },
   {
     "clause_id": "2.1.26",
-    "title": "Medical Practitioner means a person who holds a valid registration from the Medical Council of any State or National",
+    "title": "Medical Practitioner means a person who holds a valid registration from the Medical",
     "text": "Medical Practitioner means a person who holds a valid registration from the Medical Council of any State or National\nMedical Commission or Medical Council of India or Council for Indian Medicine or for Homeopathy set up by the Government of India or a State Government and is thereby entitled to practice medicine within its jurisdiction; and is acting within the scope and jurisdiction of his licence.",
     "page": 4,
     "policy": "niva_bupa",
@@ -2089,7 +2601,7 @@
   },
   {
     "clause_id": "2.1.27",
-    "title": "Medically Necessary Treatment means any treatment, tests, medication, or stay in Hospital or part of a stay in Hospital",
+    "title": "Medically Necessary Treatment means any treatment, tests, medication, or stay in Hospital",
     "text": "Medically Necessary Treatment means any treatment, tests, medication, or stay in Hospital or part of a stay in Hospital\nwhich:\na. is required for the medical management of the Illness or Injury suffered by the insured;\nb. must not exceed the level of care necessary to provide safe, adequate and appropriate medical care in scope, duration, or intensity;\nc. must have been prescribed by a Medical Practitioner;\nd. must conform to the professional standards widely accepted in international medical practice or by the medical community in India.",
     "page": 4,
     "policy": "niva_bupa",
@@ -2097,7 +2609,7 @@
   },
   {
     "clause_id": "2.1.28",
-    "title": "Migration means a facility provided to policyholders (including all members under family cover and group policies), to",
+    "title": "Migration means a facility provided to policyholders (including all members under family",
     "text": "Migration means a facility provided to policyholders (including all members under family cover and group policies), to\ntransfer the credit gained for pre-existing conditions and specific waiting periods from one health insurance policy to another with the same insurer.\n2.1.29. Network Provider means Hospital enlisted by an insurer, TPA or jointly by an insurer and TPA to provide medical services to an insured by a Cashless Facility.",
     "page": 4,
     "policy": "niva_bupa",
@@ -2105,7 +2617,7 @@
   },
   {
     "clause_id": "2.1.30",
-    "title": "Non-Network Provider means any Hospital, Day Care Centre or other provider that is not part of the network.",
+    "title": "Non-Network Provider means any Hospital, Day Care Centre or other provider that is not",
     "text": "Non-Network Provider means any Hospital, Day Care Centre or other provider that is not part of the network.\n2.1.31. Notification of Claim means the process of intimating a claim to the insurer or TPA through any of the recognized modes of communication",
     "page": 4,
     "policy": "niva_bupa",
@@ -2113,7 +2625,7 @@
   },
   {
     "clause_id": "2.1.32",
-    "title": "Nominee means a person named in the policy schedule or as declared with Policyholder who is nominated to receive the",
+    "title": "Nominee means a person named in the policy schedule or as declared with Policyholder who",
     "text": "Nominee means a person named in the policy schedule or as declared with Policyholder who is nominated to receive the\nbenefits under this Policy in accordance with terms of the Policy, if the Insured Person is deceased.\n2.1.33. OPD Treatment means the one in which the Insured visits a clinic / Hospital or associated facility like a consultation room for diagnosis and treatment based on the advice of a Medical Practitioner. The Insured is not admitted as a day care or In-patient.",
     "page": 4,
     "policy": "niva_bupa",
@@ -2129,7 +2641,7 @@
   },
   {
     "clause_id": "2.1.35",
-    "title": "Pre-hospitalization Medical Expenses means medical expenses incurred during pre-defined number of days preceding the",
+    "title": "Pre-hospitalization Medical Expenses means medical expenses incurred during pre-defined",
     "text": "Pre-hospitalization Medical Expenses means medical expenses incurred during pre-defined number of days preceding the\nhospitalization of the Insured Person, provided that:\na. Such Medical Expenses are incurred for the same condition for which the Insured Person’s Hospitalization was required, and\nb. The Inpatient Hospitalization claim for such Hospitalization is admissible by the Insurance Company.",
     "page": 4,
     "policy": "niva_bupa",
@@ -2137,7 +2649,7 @@
   },
   {
     "clause_id": "2.1.36",
-    "title": "Post-hospitalization Medical Expenses means medical expenses incurred during pre-defined number of days immediately",
+    "title": "Post-hospitalization Medical Expenses means medical expenses incurred during pre-defined",
     "text": "Post-hospitalization Medical Expenses means medical expenses incurred during pre-defined number of days immediately\nafter the Insured Person is discharged from the Hospital, provided that:\na. Such Medical Expenses are for the same condition for which the Insured Person’s Hospitalization was required, and\nb. The Inpatient Hospitalization claim for such Hospitalization is admissible by the Insurance Company.\n2.1.37. Portability means a facility provided to the health insurance policyholders (including all members under family cover), to transfer the credits gained for, pre-existing disease and specific waiting periods from one insurer to another.",
     "page": 4,
     "policy": "niva_bupa",
@@ -2145,7 +2657,7 @@
   },
   {
     "clause_id": "2.1.38",
-    "title": "Reasonable and Customary Charges means the charges for services or supplies, which are the standard charges for the",
+    "title": "Reasonable and Customary Charges means the charges for services or supplies, which are",
     "text": "Reasonable and Customary Charges means the charges for services or supplies, which are the standard charges for the\nspecific provider and consistent with the prevailing charges in the geographical area for identical or similar services, taking into account the nature of the Illness / Injury involved.\nIt is clarified that Reasonable and Customary Charges shall be arrived at basis the tariff agreed with our Network Providers.",
     "page": 4,
     "policy": "niva_bupa",
@@ -2153,7 +2665,7 @@
   },
   {
     "clause_id": "2.1.39",
-    "title": "Renewal means the terms on which the contract of insurance can be renewed on mutual consent with a provision of Grace",
+    "title": "Renewal means the terms on which the contract of insurance can be renewed on mutual",
     "text": "Renewal means the terms on which the contract of insurance can be renewed on mutual consent with a provision of Grace\nPeriod for treating the renewal continuous for the purpose of gaining credit for pre-existing diseases, time bound exclusions and for all Waiting Periods.",
     "page": 5,
     "policy": "niva_bupa",
@@ -2161,7 +2673,7 @@
   },
   {
     "clause_id": "2.1.40",
-    "title": "Room Rent means the amount charged by a Hospital towards Room and Boarding expenses and shall include the associated",
+    "title": "Room Rent means the amount charged by a Hospital towards Room and Boarding expenses and",
     "text": "Room Rent means the amount charged by a Hospital towards Room and Boarding expenses and shall include the associated\nmedical expenses.\n2.1.41. Surgery or Surgical Procedure means manual and / or operative procedure (s) required for treatment of an Illness or Injury, correction of deformities and defects, diagnosis and cure of diseases, relief from suffering or prolongation of life, performed in a Hospital or Day Care Centre by a Medical Practitioner.",
     "page": 5,
     "policy": "niva_bupa",
@@ -2169,7 +2681,7 @@
   },
   {
     "clause_id": "2.1.42",
-    "title": "Specific Waiting period means a period up to 36 months from the commencement of a health insurance policy during which",
+    "title": "Specific Waiting period means a period up to 36 months from the commencement of a health",
     "text": "Specific Waiting period means a period up to 36 months from the commencement of a health insurance policy during which\nperiod specified diseases/treatments (except due to an accident) are not covered. On completion of the period, diseases/ treatments shall be covered provided the policy has been continuously renewed without any break",
     "page": 5,
     "policy": "niva_bupa",
@@ -2177,7 +2689,7 @@
   },
   {
     "clause_id": "2.1.43",
-    "title": "Unproven/Experimental treatment means the treatment including drug experimental therapy which is not based on",
+    "title": "Unproven/Experimental treatment means the treatment including drug experimental therapy",
     "text": "Unproven/Experimental treatment means the treatment including drug experimental therapy which is not based on\nestablished medical practice in India, is treatment experimental or unproven",
     "page": 5,
     "policy": "niva_bupa",
@@ -2185,7 +2697,7 @@
   },
   {
     "clause_id": "2.2.1",
-    "title": "Base Sum Insured means the coverage amount for which the premium is computed and charged for this policy.",
+    "title": "Base Sum Insured means the coverage amount for which the premium is computed and charged",
     "text": "Base Sum Insured means the coverage amount for which the premium is computed and charged for this policy.\n2.2.2. Insured Person is the one for whom the company has received full premium (including additional premium if any), completed the risk assessment and issued the policy. The names of the Insured persons covered in the policy are specified in the policy document, who are also referred as You/Your/Policyholder in this policy.\n2.2.3. Partner Network means Hospital, Diagnostic Centers, Clinics, Doctors, Health Care Workers, empanelled by the Insurer and/ or by a consolidated organization to provide health related medical services.",
     "page": 5,
     "policy": "niva_bupa",
@@ -2209,7 +2721,7 @@
   },
   {
     "clause_id": "4.1.2",
-    "title": "Air Ambulance: Only in case of Emergency. Maximum INR 2,50,000 per hospitalization.",
+    "title": "Air Ambulance",
     "text": "Air Ambulance: Only in case of Emergency. Maximum INR 2,50,000 per hospitalization.\nNote: This will be paid only if claim for hospitalization is paid by us. You must always use a registered ambulance / air ambulance provider.",
     "page": 5,
     "policy": "niva_bupa",
@@ -2249,11 +2761,11 @@
   },
   {
     "clause_id": "4.4.3",
-    "title": "Daily monitoring chart including records of treatment administered duly signed by the treating doctor is maintained",
+    "title": "Daily monitoring chart including records of treatment administered duly signed by the",
     "text": "Daily monitoring chart including records of treatment administered duly signed by the treating doctor is maintained\nNote:\n• We will pay for Pre & Post hospitalization benefit as per section 4.3 for Home Care / Domiciliary Treatment.\n• We pay for peritoneal dialysis, Chemotherapy taken at home.\n• We do NOT pay for any Medical & ambulatory devices used at home (like Pulse Oxymeter, BP monitors, Sugar monitors, automation device for peritoneal dialysis, CPAP, BiPAP, Crutches, wheel chair etc.)",
     "page": 6,
     "policy": "niva_bupa",
-    "rule_type": "other"
+    "rule_type": "non_payable"
   },
   {
     "clause_id": "4.5",
@@ -2281,7 +2793,7 @@
   },
   {
     "clause_id": "10",
-    "title": "Lakh 7 Lakh Insured) 3 Lakh 12 Lakh 12 Lakh Nil 11 Lakh 10 Lakh from",
+    "title": "Lakh 7 Lakh Insured) 3 Lakh 12 Lakh 12 Lakh Nil 11 Lakh 10 Lakh from ReAssure+",
     "text": "Lakh 7 Lakh Insured) 3 Lakh 12 Lakh 12 Lakh Nil 11 Lakh 10 Lakh from\nReAssure+ (3 Lakh from Base Sum Insured and 9 Lakh from ReAssure+ Year 2: Once the policy is renewed:\nBalance Balance Base ReAssure+ 2nd Base Claim amount Base 3rd Payable Claim amount Sum is already 1st Claim Paid payable Sum paid Sum claim paid Insured triggered claim Insured Insured",
     "page": 7,
     "policy": "niva_bupa",
@@ -2289,7 +2801,7 @@
   },
   {
     "clause_id": "4.7.2",
-    "title": "Lock the Clock: Your age is locked at entry when you buy the policy, till a claim is paid.",
+    "title": "Lock the Clock",
     "text": "Lock the Clock: Your age is locked at entry when you buy the policy, till a claim is paid.\nE.g. if you buy the policy at 25 years, you will keep paying the premium applicable for a 25 year old at each renewal, till a claim is paid in the policy. Post the claim is paid, the premium charged will be as per your current age and will continue to change as per the age slabs at each renewal.\nNote:\n• In case of multi tenure policies, the premium for the entire tenure will be charged as per the entry age. No additional premium will be charged In the middle of the tenure in case of claims.\nAt the time of renewal (in case of a claim), the premium will be charged as per the current age of the consumer at renewal.\n• If you add a member to the floater plan, then the premiums will be charged as per the entry age of the eldest member and will lock the premium at that age, till a claim is paid.\n• If you add a member to an individual plan and convert it into a Floater plan, then the premiums will be charged as per the entry age of the eldest member and will lock the premium at that age, till a claim is paid.\n• If the eldest member is no longer part of the Floater plan, then the Floater premium will be calculated as per the original entry age of the eldest member in the policy amongst the remaining members and lock at that age, till a claim is paid.\n• If a floater plan, splits into multiple policies, then we will carry forward the locked age at which the floater policies were taken by individuals (as per the claim history) in the policies carried forward, till a claim is paid.\n• In a multi individual policy, the age will unlock only for the individuals who claim.\n• In a floater policy, if a claim is paid for anyone in the plan then we will unlock the age for the entire policy.\n• We will consider a claim, if a claim is paid under the following: Expenses in reaching a Hospital, Expenses during Hospitalization, Expenses before and after hospitalization, Home Care / Domiciliary Treatment, Organ Donor.",
     "page": 8,
     "policy": "niva_bupa",
@@ -2305,7 +2817,7 @@
   },
   {
     "clause_id": "9",
-    "title": "Lakh from",
+    "title": "Lakh from ReAssureX",
     "text": "Lakh from\nReAssureX Year 2: Once the policy is renewed:\nBalance Balance Base ReAssureX 2nd Base Claim amount Base 3rd Payable Claim amount Sum Sum 1st Claim Paid payable Sum paid Sum claim paid Insured Insured claim Insured Insured",
     "page": 9,
     "policy": "niva_bupa",
@@ -2321,7 +2833,7 @@
   },
   {
     "clause_id": "1.10",
-    "title": "Crore Sum Insured (that is 10 Lakh base + 1 Crore Booster+). Don’t forget that you would have the Safeguard / Safeguard+",
+    "title": "Crore Sum Insured (that is 10 Lakh base + 1 Crore Booster+). Don’t forget that you would",
     "text": "Crore Sum Insured (that is 10 Lakh base + 1 Crore Booster+). Don’t forget that you would have the Safeguard / Safeguard+\n(this is a great benefit. You must choose it) and ReAssure “Forever” (in case of claim) over and above the 1.10 Crore.\nThat’s 11 times of Sum Insured than what you paid for.\nNote:\n• If you convert an Individual Sum Insured policy in any manner, into a floater plan, then the least of the Booster+ Sum Insured of individual insured members will be carried forward to the floater plan.\n• If a floater plan, splits into multiple policies, then the Booster+ Sum Insured of floater plan will be carried forward to the split policies, provided the Base Sum Insured is not reduced.\n• If you reduce the Base Sum Insured, Booster+ Sum Insured will be proportionately reduced. Let’s say if you reduce the current INR\n10 lakh Sum Insured to INR 5 lakh, your Booster+ Sum Insured will be halved.\n• You can and should regularly increase Sum Insured of your Health insurance policy. Medical inflation is a reality and current Sum Insured will fall short in future for advanced treatments. When you enhance your Sum Insured, the accumulated Booster+ Sum Insured will continue and grow even more (remember Booster+ is up to maximum 3/5/10 times (based on the plan you have chosen) of the Base Sum Insured. Higher the Base Sum insured higher the Booster+ Sum Insured).",
     "page": 9,
     "policy": "niva_bupa",
@@ -2393,15 +2905,15 @@
   },
   {
     "clause_id": "4.16.1",
-    "title": "Claim Safeguard: We will cover non-payable items mentioned in ‘List I – Expenses not covered’ of Annexure I’. Clause",
+    "title": "Claim Safeguard",
     "text": "Claim Safeguard: We will cover non-payable items mentioned in ‘List I – Expenses not covered’ of Annexure I’. Clause\n2.1.37 for Reasonable and Customary Charges will still apply.",
     "page": 13,
     "policy": "niva_bupa",
-    "rule_type": "other"
+    "rule_type": "non_payable"
   },
   {
     "clause_id": "4.16.2",
-    "title": "Booster+ Safeguard: Booster+ will not be impacted if the total claim in a policy year is up to INR 50,000",
+    "title": "Booster+ Safeguard",
     "text": "Booster+ Safeguard: Booster+ will not be impacted if the total claim in a policy year is up to INR 50,000\n4.16.3. Sum Insured Safeguard: Preserves the value of Sum Insured. Safeguards it against inflation. We will increase the Base Sum Insured on cumulative basis at each renewal by the rate of inflation in the previous year. Inflation rate would be the average consumer price index (CPI) of the entire calendar year published by the Central Statistical Organization (CSO).\nNote: You will lose all accumulated Sum Insured Safeguard if you opt out of this benefit at any point in time.",
     "page": 13,
     "policy": "niva_bupa",
@@ -2417,7 +2929,7 @@
   },
   {
     "clause_id": "4.17.3",
-    "title": "Sum Insured Safeguard+: Preserves the value of Sum Insured. Safeguards it against inflation. We will increase the Base",
+    "title": "Sum Insured Safeguard+",
     "text": "Sum Insured Safeguard+: Preserves the value of Sum Insured. Safeguards it against inflation. We will increase the Base\nSum Insured on cumulative basis at each renewal by the rate of inflation in the previous year. Inflation rate would be the average consumer price index (CPI) of the entire calendar year published by the Central Statistical Organization (CSO).\nNote: You will lose all accumulated Sum Insured Safeguard+ if you opt out of this benefit at any point in time.\nNote: You can either choose Safeguard or Safeguard+ at a given point in time.",
     "page": 13,
     "policy": "niva_bupa",
@@ -2434,7 +2946,7 @@
   {
     "clause_id": "4.19",
     "title": "Co-Payment",
-    "text": "Co-Payment\nIt is the percentage of admissible claim amount You would have to bear, Rest we will pay.\nNote: Co-payment will NOT apply to Annual Health Check-up, Live Healthy, Second Medical Opinion, Shared Accommodation Cash, e-consultation, Personal Accident, Hospital Daily Caswh benefits.",
+    "text": "Co-Payment:\nIt is the percentage of admissible claim amount You would have to bear, Rest we will pay.\nNote: Co-payment will NOT apply to Annual Health Check-up, Live Healthy, Second Medical Opinion, Shared Accommodation Cash, e-consultation, Personal Accident, Hospital Daily Caswh benefits.",
     "page": 14,
     "policy": "niva_bupa",
     "rule_type": "copay"
@@ -2458,7 +2970,7 @@
   {
     "clause_id": "5.1.1",
     "title": "Pre-existing Diseases (Code–Excl01)",
-    "text": "Pre-existing Diseases (Code–Excl01)\na. Expenses related to the treatment of a Pre-existing Disease (PED) and its direct complications shall be excluded until the expiry of 36 months of continuous coverage after the date of inception of the first Policy.\nb. In case of enhancement of Sum Insured the exclusion shall apply afresh to the extent of Sum Insured increase.\nc. If the Insured Person is continuously covered without any break as defined under the portability norms of the extant IRDAI (Insurance Products) Regulations, 20.4 then waiting period for the same would be reduced to the extent of prior coverage.\nd. Coverage under the Policy after the expiry of 36 months for any Pre-existing Disease is subject to the same being declared at the time of application and accepted by Us.",
+    "text": "Pre-existing Diseases (Code–Excl01):\na. Expenses related to the treatment of a Pre-existing Disease (PED) and its direct complications shall be excluded until the expiry of 36 months of continuous coverage after the date of inception of the first Policy.\nb. In case of enhancement of Sum Insured the exclusion shall apply afresh to the extent of Sum Insured increase.\nc. If the Insured Person is continuously covered without any break as defined under the portability norms of the extant IRDAI (Insurance Products) Regulations, 20.4 then waiting period for the same would be reduced to the extent of prior coverage.\nd. Coverage under the Policy after the expiry of 36 months for any Pre-existing Disease is subject to the same being declared at the time of application and accepted by Us.",
     "page": 14,
     "policy": "niva_bupa",
     "rule_type": "other"
@@ -2474,7 +2986,7 @@
   {
     "clause_id": "5.1.3",
     "title": "30-day waiting period (Code- Excl03)",
-    "text": "30-day waiting period (Code- Excl03)\na. Expenses related to the treatment of any Illness within 30 days from the first Policy commencement date shall be excluded except claims arising due to an Accident, provided the same are covered.\nb. This exclusion shall not, however, apply if the Insured Person has continuous coverage for more than twelve months\nc. The within referred waiting period is made applicable to the enhanced Sum Insured in the event of granting higher Sum Insured subsequently.",
+    "text": "30-day waiting period (Code- Excl03):\na. Expenses related to the treatment of any Illness within 30 days from the first Policy commencement date shall be excluded except claims arising due to an Accident, provided the same are covered.\nb. This exclusion shall not, however, apply if the Insured Person has continuous coverage for more than twelve months\nc. The within referred waiting period is made applicable to the enhanced Sum Insured in the event of granting higher Sum Insured subsequently.",
     "page": 15,
     "policy": "niva_bupa",
     "rule_type": "waiting_period"
@@ -2537,11 +3049,11 @@
   },
   {
     "clause_id": "5.1.12",
-    "title": "Treatments received in heath hydros, nature cure clinics, spas or similar establishments or private beds registered as a",
+    "title": "Treatments received in heath hydros, nature cure clinics, spas or similar establishments",
     "text": "Treatments received in heath hydros, nature cure clinics, spas or similar establishments or private beds registered as a\nnursing home attached to such establishments or where admission is arranged wholly or partly for domestic reasons.\n(Code-Excl13)",
     "page": 17,
     "policy": "niva_bupa",
-    "rule_type": "other"
+    "rule_type": "non_payable"
   },
   {
     "clause_id": "5.1.13",
@@ -2586,7 +3098,7 @@
   {
     "clause_id": "5.2.2",
     "title": "Conflict & Disaster",
-    "text": "Conflict & Disaster\nTreatment for any Injury or Illness resulting directly or indirectly from nuclear, radiological emissions, war or war like situations (whether war is declared or not), rebellion (act of armed resistance to an established government or leader), acts of terrorism.",
+    "text": "Conflict & Disaster:\nTreatment for any Injury or Illness resulting directly or indirectly from nuclear, radiological emissions, war or war like situations (whether war is declared or not), rebellion (act of armed resistance to an established government or leader), acts of terrorism.",
     "page": 17,
     "policy": "niva_bupa",
     "rule_type": "other"
@@ -2594,7 +3106,7 @@
   {
     "clause_id": "5.2.3",
     "title": "External Congenital Anomaly",
-    "text": "External Congenital Anomaly\nScreening, counseling or treatment related to external Congenital Anomaly.",
+    "text": "External Congenital Anomaly:\nScreening, counseling or treatment related to external Congenital Anomaly.",
     "page": 18,
     "policy": "niva_bupa",
     "rule_type": "other"
@@ -2602,7 +3114,7 @@
   {
     "clause_id": "5.2.4",
     "title": "Dental treatment",
-    "text": "Dental treatment\nAll dental treatments other than due to accidents and cancers.",
+    "text": "Dental treatment:\nAll dental treatments other than due to accidents and cancers.",
     "page": 18,
     "policy": "niva_bupa",
     "rule_type": "other"
@@ -2610,14 +3122,14 @@
   {
     "clause_id": "5.2.5",
     "title": "Unrecognized Physician or Hospital",
-    "text": "Unrecognized Physician or Hospital\na. Treatment or Medical Advice provided by a Medical Practitioner not recognized by the Medical Council of India or by Central Council of Indian Medicine or by Central council of Homeopathy.\nb. Treatment provided by anyone with the same residence as an Insured Person or who is a member of the Insured Person’s immediate family or relatives.\nc. Treatment provided by Hospital or health facility that is not recognized by the relevant authorities in India.",
+    "text": "Unrecognized Physician or Hospital:\na. Treatment or Medical Advice provided by a Medical Practitioner not recognized by the Medical Council of India or by Central Council of Indian Medicine or by Central council of Homeopathy.\nb. Treatment provided by anyone with the same residence as an Insured Person or who is a member of the Insured Person’s immediate family or relatives.\nc. Treatment provided by Hospital or health facility that is not recognized by the relevant authorities in India.",
     "page": 18,
     "policy": "niva_bupa",
     "rule_type": "other"
   },
   {
     "clause_id": "6.1.1",
-    "title": "Free Look Period Simplified for you",
+    "title": "Free Look Period Simplified for you The Free Look Period shall be applicable on",
     "text": "Free Look Period Simplified for you\nThe Free Look Period shall be applicable on individual health insurance Free look is a 30 days period during policies and not on renewals. which you can return back your policy, if you don’t like what you have The insured person shall be allowed free look period of thirty days from date purchased.\nof receipt of the policy document to review the terms and conditions of the policy. If he/she is not satisfied with any of the terms and conditions, he/she has the option to cancel his/her policy.\nIn the event the policyholder disagrees to any of the policy terms or conditions, or otherwise and has not made any claim, he/she shall have the option to return the policy to the insurer for cancellation, stating the reasons for the same.\nIrrespective of the reasons mentioned, the policyholder shall be entitled to a refund of the premium paid subject only to a deduction of a proportionate risk premium for the period of cover and the expenses, if any, incurred by the insurer on medical examination of the proposer and stamp duty charges.",
     "page": 19,
     "policy": "niva_bupa",
@@ -2625,7 +3137,7 @@
   },
   {
     "clause_id": "6.1.2",
-    "title": "Cancellation Simplified for you",
+    "title": "Cancellation Simplified for you The policy holder may cancel his/her policy at any time",
     "text": "Cancellation Simplified for you\nThe policy holder may cancel his/her policy at any time during the term, by You can cancel your policy whenever giving 7 days’ notice in writing. The insurer shall: you wish.\na. Refund proportionate premium for unexpired policy period, if the term Note: We will NOT refund any premium of the policy upto one year and there is no claim(s) made during the if we have paid a claim.\npolicy period.\nWe will refund part of the premium\nb. Refund premium for the unexpired policy period, in respect of policies depending on how many days your policy has been running for, if there is with term more than 1 year and risk coverage for such policy years are no claim.\nnot commenced.\nIf we ever cancel your policy, it will be for Fraud or Non disclosure only.\nInsurance contract is a legal contract too and it’s based on trust.\nFraud is an action by you or anyone acting on your behalf where you receive benefits, financial or otherwise, for which you are either not eligible at all or not to the extent under the policy.",
     "page": 19,
     "policy": "niva_bupa",
@@ -2633,7 +3145,7 @@
   },
   {
     "clause_id": "6.1.3",
-    "title": "Renewal of Policy Simplified for you",
+    "title": "Renewal of Policy Simplified for you Pay your renewal premium before end",
     "text": "Renewal of Policy Simplified for you\nPay your renewal premium before end A health insurance policy shall be renewable except on grounds of established of policy period to maintain continuity fraud or non-disclosure or misrepresentation by the insured.\nof benefits. A grace period is also An insurer shall not deny the renewal of a health insurance policy on the available to pay the premium after policy expiry.\nground that the insured had made a claim or claims in the preceding policy years, except for benefit based policies where the policy terminates following payment of the benefit covered under the policy.\na. Request for renewal along with requisite premium shall be received by the Company before the end of the policy period.\nb. At the end of the policy period, the policy shall terminate and can be renewed within the Grace Period of 30 days (annual installment) to maintain continuity of benefits without break in policy.\nc. No loading shall apply on renewals based on individual claims experience. However, discount in premium may be provided by insurers to individual policyholders for good claims experience.\nd. Insurer shall not resort to fresh underwriting by calling for medical examination, fresh proposal form etc at renewal stage where there is no change in sum insured offered. In case increase in sum insured is requested by the policyholder, the Insurer may underwrite only to the extent of increased sum insured.",
     "page": 19,
     "policy": "niva_bupa",
@@ -2657,7 +3169,7 @@
   },
   {
     "clause_id": "6.1.6",
-    "title": "Fraud Simplified for you",
+    "title": "Fraud Simplified for you lf any claim made by the insured person, is in any respect",
     "text": "Fraud Simplified for you\nlf any claim made by the insured person, is in any respect fraudulent, or if We will cancel your policy, will not pay any false statement, or declaration is made or used in support thereof, or if any claim, will not refund any premium any fraudulent means or devices are used by the insured person or anyone paid and have right to take all possible acting on his/her behalf to obtain any benefit under this policy, all benefits legal action against you including for under this policy and the premium paid shall be forfeited. recovery of benefits paid earlier, if Any amount already paid against claims made under this policy but which • You withheld any information are found fraudulent later shall be repaid by all recipient(s)/policyholder(s), from us, whole or part that would who has made that particular claim, who shall be jointly and severally liable have invited any decision other for such repayment to the insurer. than a ‘standard acceptance’ of your application for insurance.\nFor the purpose of this clause, the expression “fraud” means any of the following acts committed by the insured person or by his agent or the Note: Non standard decisions are:\nhospital/doctor/any other party acting on behalf of the insured person, with o Loading – We ask for additional intent to deceive the insurer or to induce the insurer to issue an insurance premium policy: a) the suggestion, as a fact of that which is not true and which the o Exclusions – We apply a additional insured person does not believe to be true; b) the active concealment of waiting period for health a fact by the insured person having knowledge or belief of the fact; c) conditions or treatments any other act fitted to deceive; and d) any such act or omission as the law o Rejection – We hate to do this. But specially declares to be fraudulent sometimes are compelled to say no to a customer The Company shall not repudiate the claim and / or forfeit the policy benefits on the ground of Fraud, if the insured person / beneficiary can IMPORTANT: We understand you prove that the misstatement was true to the best of his knowledge and may not know how important is the information on your health and it’s there was no deliberate intention to suppress the fact or that such impact on your policy. Hence it’s very misstatement of or suppression of material fact are within the knowledge important that you disclose all health of the insurer.\ninformation and we would decide how important (we call it ‘material’) it is.\n• Cause fraud of any kind",
     "page": 20,
     "policy": "niva_bupa",
@@ -2674,14 +3186,14 @@
   {
     "clause_id": "6.1.8",
     "title": "Redressal of Grievance",
-    "text": "Redressal of Grievance\nln case of any grievance the insured person may contact the company through:\nWebsite: www.nivabupa.com Toll- Free: 1860-500-8888 E-mail: Email us through our service platform https://rules.\nnivabupa.com/customer-service/ (Senior citizens may write to us at: seniorcitizensupport@nivabupa.com) Fax : 011-41743397 Courier: Customer Services Department Niva Bupa Health Insurance Company Limited D-5, 2nd Floor, Logix Infotech Park opp. Metro Station, Sector 59, Noida, Uttar Pradesh, 201301 lnsured person may also approach the grievance cell at any of the company’s branches with the details of grievance. If lnsured person is not satisfied with the redressal of grievance through one of the above methods, insured person may contact the grievance officer at:\nGrievance Redressal Officer Niva Bupa Health Insurance Company Limited D-5, 2nd Floor, Logix Infotech Park opp. Metro Station, Sector 59, Noida, Uttar Pradesh, 201301 Contact No: 1860-500-8888 Fax No.: 011-41743397 Email our Grievance officer through our Grievance Redressal platform https://transactions.nivabupa.com/pages/grievance-redressal.aspx For updated details of grievance officer, kindly refer the link https://www.\nnivabupa.com/customer-care/health-services/grievance-redressal.aspx If the Insured person is not satisfied with the above, they can escalate to GRO@nivabupa.com.\nlf lnsured person is not satisfied with the redressal of grievance through above methods, the insured person may also approach the office of lnsurance Ombudsman of the respective area/region for redressal of grievance as per lnsurance Ombudsman Rules 2017 ( at the addresses given in Annexure II).\nGrievance may also be lodged at IRDAI integrated Grievance Management System – www.bimabharosa.irdai.gov.in",
+    "text": "Redressal of Grievance:\nln case of any grievance the insured person may contact the company through:\nWebsite: www.nivabupa.com Toll- Free: 1860-500-8888 E-mail: Email us through our service platform https://rules.\nnivabupa.com/customer-service/ (Senior citizens may write to us at: seniorcitizensupport@nivabupa.com) Fax : 011-41743397 Courier: Customer Services Department Niva Bupa Health Insurance Company Limited D-5, 2nd Floor, Logix Infotech Park opp. Metro Station, Sector 59, Noida, Uttar Pradesh, 201301 lnsured person may also approach the grievance cell at any of the company’s branches with the details of grievance. If lnsured person is not satisfied with the redressal of grievance through one of the above methods, insured person may contact the grievance officer at:\nGrievance Redressal Officer Niva Bupa Health Insurance Company Limited D-5, 2nd Floor, Logix Infotech Park opp. Metro Station, Sector 59, Noida, Uttar Pradesh, 201301 Contact No: 1860-500-8888 Fax No.: 011-41743397 Email our Grievance officer through our Grievance Redressal platform https://transactions.nivabupa.com/pages/grievance-redressal.aspx For updated details of grievance officer, kindly refer the link https://www.\nnivabupa.com/customer-care/health-services/grievance-redressal.aspx If the Insured person is not satisfied with the above, they can escalate to GRO@nivabupa.com.\nlf lnsured person is not satisfied with the redressal of grievance through above methods, the insured person may also approach the office of lnsurance Ombudsman of the respective area/region for redressal of grievance as per lnsurance Ombudsman Rules 2017 ( at the addresses given in Annexure II).\nGrievance may also be lodged at IRDAI integrated Grievance Management System – www.bimabharosa.irdai.gov.in",
     "page": 21,
     "policy": "niva_bupa",
     "rule_type": "other"
   },
   {
     "clause_id": "6.1.9",
-    "title": "Claim settlement (Provision for Penal interest) Simplified for you",
+    "title": "Claim settlement (Provision for Penal interest) Simplified for you i. The Company shall",
     "text": "Claim settlement (Provision for Penal interest) Simplified for you\ni. The Company shall settle or reject a claim, as the case may be, within 15 We will provide our decision on claim days from the claim submission date. within 15 days from submission of all necessary claim documents. For any\nii. ln the case of delay in the payment of a claim, the Company shall be delay in payment of claim, we will pay liable to pay interest to the policyholder from the date of receipt of interest on the claim amount at a rate claim intimation till the date of payment of claim at a rate of 2% above 2% above bank rate.\nthe bank rate.\n(Explanation: “Bank rate” shall mean the rate fixed by the Reserve Bank of lndia (RBl) at the beginning of the financial year in which claim has fallen due)",
     "page": 22,
     "policy": "niva_bupa",
@@ -2689,7 +3201,7 @@
   },
   {
     "clause_id": "6.1.10",
-    "title": "Moratorium Period Simplified for you",
+    "title": "Moratorium Period Simplified for you After completion of sixty continuous months of",
     "text": "Moratorium Period Simplified for you\nAfter completion of sixty continuous months of coverage (including portability After 5 years, no health insurance claim and migration) in health insurance policy, no policy and claim shall be shall be contestable except for proven contestable by the insurer on the grounds of non-disclosure, misrepresentation, fraud and permanent exclusions.\nexcept on grounds of established fraud. The period of sixty continuous months is called as moratorium period. The moratorium will be applicable for the sums insured of the first policy. Wherever, the sum insured is enhanced, completion of sixty continuous months would applicable from the date of enhancement of sums insured only on the enhanced limits.\nThe policies would however be subject to all limits, sub limits, co-payments, deductibles as per the Policy contract.\nNote: the accrued credits gained under the ported and migrated policies shall be counted for the purpose of calculating the Moratorium Period.",
     "page": 22,
     "policy": "niva_bupa",
@@ -2697,7 +3209,7 @@
   },
   {
     "clause_id": "6.1.11",
-    "title": "Multiple Policies Simplified for you",
+    "title": "Multiple Policies Simplified for you A. Indemnity Based Policies",
     "text": "Multiple Policies Simplified for you\nA. Indemnity Based Policies: In case you have multiple policies, you can choose the policy from which you\na. In case of multiple policies taken by an Insured Person during a want to claim first.\nperiod from one or more insurers to indemnify treatment costs, the Insured Person shall have the right to require a settlement of his If claim amount exceeds the Sum / her claim in terms of any of his / her policies. In all such cases Insured of first policy you claim from;\nthe insurer chosen by the Policyholder shall be considered as the then you can claim the balance amount Primary Insurer and will be obliged to settle the claim as long as from the second policy.\nthe claim is within the limits of and according to the terms of the chosen Policy.\nb. If the amount to be claimed exceeds the available coverage of the said policy, then the primary insurer shall seek the details of other available policies of the policyholder and shall coordinate with other insurers to ensure settlement pf the balance amount as per the policy conditions, without causing any hassles to the policy holder.\nB. Benefit Based Policies:\na. On occurrence of the insured event, the policy holder can claim from all Insurers under all policies.",
     "page": 23,
     "policy": "niva_bupa",
@@ -2705,7 +3217,7 @@
   },
   {
     "clause_id": "6.1.12",
-    "title": "Migration Simplified for you",
+    "title": "Migration Simplified for you In case of migration of one policy to another with the same",
     "text": "Migration Simplified for you\nIn case of migration of one policy to another with the same Insurer, the You can shift your policy to any other policyholder (including all members under family cover and group insurance health insurance product / plan offered policies) can transfer the credits gained to the extent of the Sum Insured, by us as per migration guidelines.\nNo Claim Bonus, Specific Waiting periods, waiting period for pre-existing diseases, Moratorium period etc. in the previous policy to the migrated policy.\nThe insurer may underwrite the proposal in case of migration, if the insured is not continuously covered for 36 months.",
     "page": 23,
     "policy": "niva_bupa",
@@ -2713,7 +3225,7 @@
   },
   {
     "clause_id": "6.1.13",
-    "title": "Portability Simplified for you",
+    "title": "Portability Simplified for you A Policyholder has the choice to port his/ her policies",
     "text": "Portability Simplified for you\nA Policyholder has the choice to port his/ her policies from one Insurer You can also shift your policy to to another irrespective of individual or group policy subject to the Board any other insurer as per portability approved underwriting policy of the insurers. guidelines.\nThe policyholder is entitled to transfer the credits gained to the extent of the Sum Insured, No Claim Bonus, specific waiting periods, waiting period for pre-existing disease, Moratorium period etc. from the Existing Insurer to the Acquiring Insurer in the previous policy.",
     "page": 23,
     "policy": "niva_bupa",
@@ -2754,7 +3266,7 @@
   {
     "clause_id": "6.2.1",
     "title": "Automatic Cancellation",
-    "text": "Automatic Cancellation\nThe Policy shall automatically terminate in the event of death of the all Insured Person(s). A refund in accordance with the table in Section 6.1.2 shall be payable provided that no claim has been admitted or lodged or not benefit has been availed by the insured person under the policy.",
+    "text": "Automatic Cancellation:\nThe Policy shall automatically terminate in the event of death of the all Insured Person(s). A refund in accordance with the table in Section 6.1.2 shall be payable provided that no claim has been admitted or lodged or not benefit has been availed by the insured person under the policy.",
     "page": 25,
     "policy": "niva_bupa",
     "rule_type": "other"
@@ -2770,7 +3282,7 @@
   {
     "clause_id": "6.2.3",
     "title": "Other Renewal Conditions",
-    "text": "Other Renewal Conditions\na. Renewal Premium:\nRenewal premium will alter based on Age (in case of claim). For Floater plan, the age of eldest insured person will be considered for calculating the premium.\nb. Addition of Insured Persons on Renewal:\nIf a new member is added in the Policy, either by way of endorsement or at the time of Renewal, the Pre-existing Disease clause, exclusions, loading (if any) and Waiting Periods will be applicable afresh for that member.\nc. Changes to Sum Insured on Renewal:\nYou may opt for enhancement of Sum Insured at the time of Renewal, subject to underwriting. All Waiting Periods as defined in the Policy shall apply afresh for this enhanced limit from the effective date of such enhancement.",
+    "text": "Other Renewal Conditions:\na. Renewal Premium:\nRenewal premium will alter based on Age (in case of claim). For Floater plan, the age of eldest insured person will be considered for calculating the premium.\nb. Addition of Insured Persons on Renewal:\nIf a new member is added in the Policy, either by way of endorsement or at the time of Renewal, the Pre-existing Disease clause, exclusions, loading (if any) and Waiting Periods will be applicable afresh for that member.\nc. Changes to Sum Insured on Renewal:\nYou may opt for enhancement of Sum Insured at the time of Renewal, subject to underwriting. All Waiting Periods as defined in the Policy shall apply afresh for this enhanced limit from the effective date of such enhancement.",
     "page": 25,
     "policy": "niva_bupa",
     "rule_type": "other"
