@@ -330,6 +330,7 @@ pydantic-core==2.46.5
     # via pydantic
 pydantic-settings==2.15.0
     # via
+    #   bill-auditor
     #   chromadb
     #   langchain-community
 pygments==2.21.0
@@ -347,6 +348,7 @@ python-dateutil==2.9.0.post0
     # via kubernetes
 python-dotenv==1.2.3
     # via
+    #   bill-auditor
     #   pydantic-settings
     #   uvicorn
 pyyaml==6.0.3
