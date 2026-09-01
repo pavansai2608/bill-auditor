@@ -40,6 +40,8 @@ from core.models import (
 )
 from core.money import allowed_for_line, per_day_limit
 from core.retrieve import RetrievedClause, search
+from core.room_limit import lookup as room_lookup
+from core.room_limit import room_rank
 
 log = get_logger(__name__)
 
@@ -182,6 +184,119 @@ def classify(state: AgentState) -> AgentState:
             break
     state["rule_type"] = rule_type
     _note(state, "classify", rule_type=rule_type)
+    return state
+
+
+def room_limit(state: AgentState) -> AgentState:
+    """Path B - settle the room line from the table, with no model call.
+
+    Room rent is a lookup: policy plus sum insured names the row. Asking the
+    model to read that table cost a wrong figure on B05 - 800/day against a
+    table granting a room category - and because room rent gates the second
+    pass, that one figure rescaled three further lines. The model cannot
+    misread a number it is never shown.
+
+    Only a row that does not exist falls through to the judge, and the trace
+    says so, because a silent fallback would look exactly like a lookup.
+    """
+    from core.audit import SCHEDULE_MISSING_REASON
+
+    if state["rule_type"] != "room_rent":
+        return state
+
+    line = state["line"]
+    entitlement = room_lookup(state["policy"], state["sum_insured"], state.get("schedule"))
+
+    if entitlement is None:
+        _note(
+            state,
+            "room_limit",
+            resolved=False,
+            fallback="judge",
+            why=f"no room rent table row for sum insured {int(state['sum_insured']):,}",
+        )
+        return state
+
+    if entitlement.per_day is not None:
+        output = JudgeOutput(
+            clause_id=entitlement.clause_id,
+            limits=[Limit(amount=entitlement.per_day, basis="per_day")],
+            confident=True,
+            reasoning=entitlement.source,
+        )
+        allowed, over_limit = allowed_for_line(line, output, state["sum_insured"])
+        state["verdict"] = LineVerdict(
+            item=line.item,
+            charged=line.amount,
+            allowed=allowed,
+            clause_id=entitlement.clause_id,
+            reason=(
+                f"{entitlement.source}; {entitlement.per_day:,.0f} x {line.qty} = "
+                f"{entitlement.per_day * line.qty:,.0f}, "
+                f"min({line.amount:,.0f}, {entitlement.per_day * line.qty:,.0f}) = {allowed:,.0f}"
+            ),
+            over_limit=over_limit,
+            limit_per_day=entitlement.per_day,
+        )
+    elif entitlement.at_actuals:
+        state["verdict"] = LineVerdict(
+            item=line.item,
+            charged=line.amount,
+            allowed=round(line.amount, 2),
+            clause_id=entitlement.clause_id,
+            reason=f"{entitlement.source}, so the room charge is payable in full",
+        )
+    elif entitlement.category:
+        occupied = room_rank(line.item)
+        entitled = room_rank(entitlement.category)
+        if occupied is not None and entitled is not None and occupied <= entitled:
+            state["verdict"] = LineVerdict(
+                item=line.item,
+                charged=line.amount,
+                allowed=round(line.amount, 2),
+                clause_id=entitlement.clause_id,
+                reason=(
+                    f"{entitlement.source}; the room occupied is at or below that "
+                    "category, so nothing is deducted"
+                ),
+            )
+        else:
+            # A room above the entitlement does breach it, but the policy
+            # states no rupee figure to build a ratio from. Guessing one would
+            # produce a confident deduction with nothing behind it.
+            state["verdict"] = LineVerdict(
+                item=line.item,
+                charged=line.amount,
+                allowed=None,
+                clause_id=entitlement.clause_id,
+                reason=(
+                    f"{entitlement.source}, and the room billed is not clearly within "
+                    "it - no rupee limit exists to compute a deduction from"
+                ),
+                needs_human=True,
+            )
+    else:  # defers to the schedule, and none was given
+        state["verdict"] = LineVerdict(
+            item=line.item,
+            charged=line.amount,
+            allowed=None,
+            clause_id=entitlement.clause_id,
+            reason=SCHEDULE_MISSING_REASON,
+            needs_human=True,
+        )
+
+    verdict = state["verdict"]
+    _note(
+        state,
+        "room_limit",
+        resolved=True,
+        clause_id=entitlement.clause_id,
+        per_day=entitlement.per_day,
+        category=entitlement.category,
+        source=entitlement.source,
+        allowed=verdict.allowed,
+        needs_human=verdict.needs_human,
+    )
     return state
 
 
@@ -364,6 +479,11 @@ def after_non_payable(state: AgentState) -> str:
     return "done" if state.get("verdict") else "continue"
 
 
+def after_room_limit(state: AgentState) -> str:
+    """A resolved room line is finished. Everything else goes to retrieval."""
+    return "done" if state.get("verdict") else "continue"
+
+
 def after_grade(state: AgentState) -> str:
     """The stopping rules, in the order they may fire. Pure - decides only."""
     if state.get("verdict"):
@@ -393,6 +513,7 @@ def build_graph():
     graph = StateGraph(AgentState)
     graph.add_node("check_non_payable", check_non_payable)
     graph.add_node("classify", classify)
+    graph.add_node("room_limit", room_limit)
     graph.add_node("build_query", build_query)
     graph.add_node("retrieve", retrieve)
     graph.add_node("judge", judge)
@@ -403,7 +524,10 @@ def build_graph():
     graph.add_conditional_edges(
         "check_non_payable", after_non_payable, {"done": END, "continue": "classify"}
     )
-    graph.add_edge("classify", "build_query")
+    graph.add_edge("classify", "room_limit")
+    graph.add_conditional_edges(
+        "room_limit", after_room_limit, {"done": END, "continue": "build_query"}
+    )
     graph.add_edge("build_query", "retrieve")
     graph.add_edge("retrieve", "judge")
     graph.add_edge("judge", "grade")
