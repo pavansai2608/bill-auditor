@@ -1,0 +1,109 @@
+# Six containers. Only gateway and frontend are published to the host; the
+# three inner services are reachable on the compose network and nowhere else.
+#
+#   docker compose build
+#   docker compose up -d
+#   docker compose ps          # healthchecks make this honest
+#   docker compose logs -f audit-service
+#   docker compose down        # add -v to drop the volumes too
+
+name: bill-auditor
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    volumes:
+      # The model is a 5 GB volume, never a layer in an image. Baking it in
+      # would mean re-downloading it on every rebuild.
+      - ollama-models:/root/.ollama
+    healthcheck:
+      test: ["CMD-SHELL", "ollama list >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+
+  ingestion-service:
+    build:
+      context: .
+      dockerfile: services/ingestion/Dockerfile
+    environment:
+      BA_LOG_LEVEL: INFO
+    volumes:
+      # The clause index and the embeddings are shared state, written here and
+      # read by retrieval.
+      - clause-data:/app/data/db
+      - ./data/policies:/app/data/policies:ro
+    restart: unless-stopped
+
+  retrieval-service:
+    build:
+      context: .
+      dockerfile: services/retrieval/Dockerfile
+    environment:
+      BA_LOG_LEVEL: INFO
+    volumes:
+      - clause-data:/app/data/db
+    depends_on:
+      ingestion-service:
+        condition: service_started
+    restart: unless-stopped
+
+  audit-service:
+    build:
+      context: .
+      dockerfile: services/audit/Dockerfile
+    environment:
+      BA_OLLAMA_BASE_URL: http://ollama:11434
+      BA_RETRIEVAL_URL: http://retrieval-service:8000
+      BA_NUM_CTX: "8192"
+      BA_LOG_LEVEL: INFO
+    volumes:
+      # The model cache survives restarts, which is what makes a re-run fast.
+      - llm-cache:/app/data/llm_cache
+    depends_on:
+      retrieval-service:
+        condition: service_healthy
+      ollama:
+        condition: service_started
+    restart: unless-stopped
+
+  gateway:
+    build:
+      context: .
+      dockerfile: services/gateway/Dockerfile
+    environment:
+      BA_AUDIT_URL: http://audit-service:8000
+      BA_INGESTION_URL: http://ingestion-service:8000
+      BA_RETRIEVAL_URL: http://retrieval-service:8000
+      BA_CORS_ORIGINS: '["http://localhost:5173","http://localhost:3000","http://localhost"]'
+      BA_LOG_LEVEL: INFO
+    ports:
+      - "8000:8000"
+    volumes:
+      - clause-data:/app/data/db
+    depends_on:
+      audit-service:
+        condition: service_healthy
+      ingestion-service:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE: http://localhost:8000
+    ports:
+      - "5173:80"
+    depends_on:
+      gateway:
+        condition: service_started
+    restart: unless-stopped
+
+volumes:
+  ollama-models:
+  clause-data:
+  llm-cache:
