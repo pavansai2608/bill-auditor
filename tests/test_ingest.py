@@ -129,17 +129,30 @@ class CheckpointTest(unittest.TestCase):
 @unittest.skipIf(not settings.non_payable_path.exists(), "run ingestion first")
 class NonPayableTest(unittest.TestCase):
     def test_list_is_populated_and_clean(self):
-        items = load_non_payable()
-        self.assertGreater(len(items), 30)
-        self.assertEqual(len(items), len({i.lower() for i in items}), "duplicates present")
-        for item in items:
-            self.assertNotIn("\n", item)
-            self.assertEqual(item, item.strip())
+        entries = load_non_payable()
+        self.assertGreater(len(entries), 30)
+        names = [e["item"] for e in entries]
+        self.assertEqual(len(names), len({n.lower() for n in names}), "duplicates present")
+        for name in names:
+            self.assertNotIn("\n", name)
+            self.assertEqual(name, name.strip())
+
+    def test_every_entry_is_numbered(self):
+        """A verdict cites IRDAI-List-I #44, so the serial has to survive."""
+        numbers = [e["no"] for e in load_non_payable()]
+        self.assertTrue(all(isinstance(n, int) and n > 0 for n in numbers))
+        self.assertEqual(len(numbers), len(set(numbers)), "duplicate serial numbers")
 
     def test_contains_known_consumables(self):
-        lowered = {i.lower() for i in load_non_payable()}
-        for expected in ("baby food", "beauty services", "laundry charges"):
+        lowered = {e["item"].lower() for e in load_non_payable()}
+        for expected in ("baby food", "beauty services", "laundry charges", "gloves"):
             self.assertIn(expected, lowered)
+
+    def test_syringes_are_not_on_the_list(self):
+        """Gloves are excluded, syringes are not - the key has to decide it."""
+        lowered = " | ".join(e["item"].lower() for e in load_non_payable())
+        self.assertIn("gloves", lowered)
+        self.assertNotIn("syringe", lowered)
 
 
 if __name__ == "__main__":

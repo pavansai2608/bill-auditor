@@ -44,6 +44,29 @@ this system exists to avoid.
 For Star Health at Rs 3,00,000 or Rs 4,00,000 the flow stays exactly as
 intended: one upload, three dropdowns, no fourth field needed.
 
+## Results
+
+The evaluation set is 44 hand-designed hospital bills across the three policies,
+with 330 line items.
+
+**The answer key was derived by reading the policy documents directly rather
+than by running the pipeline.** `eval/derive_key.py` reads the PDFs page by page
+with pdfplumber and imports no retriever, judge or audit code, so a bug in the
+pipeline cannot write itself into the key and then be scored as a success. Every
+answered line quotes the policy sentence it came from and shows the arithmetic:
+
+```
+"II.1 p10 table: Sum Insured 300,000 -> Up to 5,000/- per day;
+ 5,000 x 5 = 25,000, min(40,000, 25,000) = 25,000"
+```
+
+Of 330 lines, 303 are answered and 27 are marked as undecidable from the
+documents. Manual verification against the source PDFs is in progress; the ten
+bills selected for it are listed in `eval/answer_key_provenance.md`, along with
+the judgement calls made and the entries with the lowest confidence.
+
+The v0-v4 metrics table lands here once the evaluation has been run.
+
 ## Known assumptions
 
 Some rules depend on facts no bill carries. Where that happens the audit makes

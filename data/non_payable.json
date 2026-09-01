@@ -1,70 +1,274 @@
 [
-  "Baby Food",
-  "Oxygen Cylinder (for Usage Outside The Hospital)",
-  "Baby Utilities Charges",
-  "Spacer",
-  "Beauty Services",
-  "Spirometre",
-  "Belts / Braces",
-  "Nebulizer Kit",
-  "Buds",
-  "Steam Inhaler",
-  "Cold Pack / Hot Pack",
-  "Armsling",
-  "Carry Bags",
-  "Thermometer",
-  "Email / Internet Charges",
-  "Cervical Collar",
-  "Food Charges (other than patient’s diet provided by hospital)",
-  "Splint",
-  "Leggings",
-  "Diabetic Foot Wear",
-  "Laundry Charges",
-  "Knee Braces (long / Short / Hinged)",
-  "Mineral Water",
-  "Knee Immobilizer / Shoulder Immobilizer",
-  "Sanitary Pad",
-  "Lumbo Sacral Belt",
-  "Telephone Charges",
-  "Nimbus Bed Or Water Or Air Bed Charges",
-  "Guest Services",
-  "Ambulance Collar",
-  "Crepe Bandage",
-  "Ambulance Equipment",
-  "Diaper of Any Type",
-  "Abdominal Binder",
-  "Eyelet Collar",
-  "Private Nurses Charges - Special Nursing Charges",
-  "Slings",
-  "Sugar Free Tablets",
-  "Blood Grouping and Cross Matching of Donors Samples",
-  "Creams Powders Lotions (toiletries are not payable, only prescribed medical pharmaceuticals payable)",
-  "Service Charges where Nursing Charge also Charged",
-  "Ecg Electrodes",
-  "Television Charges",
-  "Gloves",
-  "Surcharges",
-  "Nebulisation Kit",
-  "Attendant Charges",
-  "Any Kit With No Details Mentioned [delivery Kit, Orthokit, Recovery Kit, etc]",
-  "Extra Diet Of Patient (other than that which forms part of bed charge)",
-  "Kidney Tray",
-  "Birth Certificate",
-  "Mask",
-  "Certificate Charges",
-  "Ounce Glass",
-  "Courier Charges",
-  "Oxygen Mask",
-  "Conveyance Charges",
-  "Pelvic Traction Belt",
-  "Medical Certificate",
-  "Pan Can",
-  "Medical Records",
-  "Trolly Cover",
-  "Photocopies Charges",
-  "Urometer, Urine Jug",
-  "Mortuary Charges",
-  "Ambulance",
-  "Walking Aids Charges",
-  "Vasofix Safety"
+  {
+    "no": 1,
+    "item": "Baby Food"
+  },
+  {
+    "no": 2,
+    "item": "Baby Utilities Charges"
+  },
+  {
+    "no": 3,
+    "item": "Beauty Services"
+  },
+  {
+    "no": 4,
+    "item": "Belts / Braces"
+  },
+  {
+    "no": 5,
+    "item": "Buds"
+  },
+  {
+    "no": 6,
+    "item": "Cold Pack / Hot Pack"
+  },
+  {
+    "no": 7,
+    "item": "Carry Bags"
+  },
+  {
+    "no": 8,
+    "item": "Email / Internet Charges"
+  },
+  {
+    "no": 9,
+    "item": "Food Charges (other than patient’s diet provided by hospital)"
+  },
+  {
+    "no": 10,
+    "item": "Leggings"
+  },
+  {
+    "no": 11,
+    "item": "Laundry Charges"
+  },
+  {
+    "no": 12,
+    "item": "Mineral Water"
+  },
+  {
+    "no": 13,
+    "item": "Sanitary Pad"
+  },
+  {
+    "no": 14,
+    "item": "Telephone Charges"
+  },
+  {
+    "no": 15,
+    "item": "Guest Services"
+  },
+  {
+    "no": 16,
+    "item": "Crepe Bandage"
+  },
+  {
+    "no": 17,
+    "item": "Diaper of Any Type"
+  },
+  {
+    "no": 18,
+    "item": "Eyelet Collar"
+  },
+  {
+    "no": 19,
+    "item": "Slings"
+  },
+  {
+    "no": 20,
+    "item": "Blood Grouping and Cross Matching of Donors Samples"
+  },
+  {
+    "no": 21,
+    "item": "Service Charges where Nursing Charge also Charged"
+  },
+  {
+    "no": 22,
+    "item": "Television Charges"
+  },
+  {
+    "no": 23,
+    "item": "Surcharges"
+  },
+  {
+    "no": 24,
+    "item": "Attendant Charges"
+  },
+  {
+    "no": 25,
+    "item": "Extra Diet Of Patient (other than that which forms part of bed charge)"
+  },
+  {
+    "no": 26,
+    "item": "Birth Certificate"
+  },
+  {
+    "no": 27,
+    "item": "Certificate Charges"
+  },
+  {
+    "no": 28,
+    "item": "Courier Charges"
+  },
+  {
+    "no": 29,
+    "item": "Conveyance Charges"
+  },
+  {
+    "no": 30,
+    "item": "Medical Certificate"
+  },
+  {
+    "no": 31,
+    "item": "Medical Records"
+  },
+  {
+    "no": 32,
+    "item": "Photocopies Charges"
+  },
+  {
+    "no": 33,
+    "item": "Mortuary Charges"
+  },
+  {
+    "no": 34,
+    "item": "Walking Aids Charges"
+  },
+  {
+    "no": 35,
+    "item": "Oxygen Cylinder (for Usage Outside The Hospital)"
+  },
+  {
+    "no": 36,
+    "item": "Spacer"
+  },
+  {
+    "no": 37,
+    "item": "Spirometre"
+  },
+  {
+    "no": 38,
+    "item": "Nebulizer Kit"
+  },
+  {
+    "no": 39,
+    "item": "Steam Inhaler"
+  },
+  {
+    "no": 40,
+    "item": "Armsling"
+  },
+  {
+    "no": 41,
+    "item": "Thermometer"
+  },
+  {
+    "no": 42,
+    "item": "Cervical Collar"
+  },
+  {
+    "no": 43,
+    "item": "Splint"
+  },
+  {
+    "no": 44,
+    "item": "Diabetic Foot Wear"
+  },
+  {
+    "no": 45,
+    "item": "Knee Braces (long / Short / Hinged)"
+  },
+  {
+    "no": 46,
+    "item": "Knee Immobilizer / Shoulder Immobilizer"
+  },
+  {
+    "no": 47,
+    "item": "Lumbo Sacral Belt"
+  },
+  {
+    "no": 48,
+    "item": "Nimbus Bed Or Water Or Air Bed Charges"
+  },
+  {
+    "no": 49,
+    "item": "Ambulance Collar"
+  },
+  {
+    "no": 50,
+    "item": "Ambulance Equipment"
+  },
+  {
+    "no": 51,
+    "item": "Abdominal Binder"
+  },
+  {
+    "no": 52,
+    "item": "Private Nurses Charges - Special Nursing Charges"
+  },
+  {
+    "no": 53,
+    "item": "Sugar Free Tablets"
+  },
+  {
+    "no": 54,
+    "item": "Creams Powders Lotions (toiletries are not payable, only prescribed medical pharmaceuticals payable)"
+  },
+  {
+    "no": 55,
+    "item": "Ecg Electrodes"
+  },
+  {
+    "no": 56,
+    "item": "Gloves"
+  },
+  {
+    "no": 57,
+    "item": "Nebulisation Kit"
+  },
+  {
+    "no": 58,
+    "item": "Any Kit With No Details Mentioned [delivery Kit, Orthokit, Recovery Kit, etc]"
+  },
+  {
+    "no": 59,
+    "item": "Kidney Tray"
+  },
+  {
+    "no": 60,
+    "item": "Mask"
+  },
+  {
+    "no": 61,
+    "item": "Ounce Glass"
+  },
+  {
+    "no": 62,
+    "item": "Oxygen Mask"
+  },
+  {
+    "no": 63,
+    "item": "Pelvic Traction Belt"
+  },
+  {
+    "no": 64,
+    "item": "Pan Can"
+  },
+  {
+    "no": 65,
+    "item": "Trolly Cover"
+  },
+  {
+    "no": 66,
+    "item": "Urometer, Urine Jug"
+  },
+  {
+    "no": 67,
+    "item": "Ambulance"
+  },
+  {
+    "no": 68,
+    "item": "Vasofix Safety"
+  }
 ]
