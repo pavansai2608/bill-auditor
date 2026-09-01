@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+  namespace: bill-auditor
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: gateway }
+  template:
+    metadata:
+      labels: { app: gateway }
+    spec:
+      containers:
+        - name: gateway
+          image: bill-auditor/gateway:latest
+          # minikube image load puts the image on the node; never pull it.
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef: { name: bill-auditor-config }
+            - secretRef: { name: bill-auditor-secrets }
+          resources:
+            requests: { cpu: "200m", memory: "256Mi" }
+            limits: { cpu: "1", memory: "512Mi" }
+          readinessProbe:
+            httpGet: { path: /health, port: 8000 }
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /health, port: 8000 }
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          volumeMounts:
+            - name: clause-data
+              mountPath: /app/data/db
+      volumes:
+        - name: clause-data
+          persistentVolumeClaim:
+            claimName: clause-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway
+  namespace: bill-auditor
+spec:
+  type: NodePort
+  selector: { app: gateway }
+  ports:
+    - port: 8000
+      targetPort: 8000
+      nodePort: 30800

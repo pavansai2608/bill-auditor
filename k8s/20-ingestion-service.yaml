@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ingestion-service
+  namespace: bill-auditor
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: ingestion-service }
+  template:
+    metadata:
+      labels: { app: ingestion-service }
+    spec:
+      containers:
+        - name: ingestion-service
+          image: bill-auditor/ingestion-service:latest
+          # minikube image load puts the image on the node; never pull it.
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef: { name: bill-auditor-config }
+            - secretRef: { name: bill-auditor-secrets }
+          resources:
+            requests: { cpu: "500m", memory: "1Gi" }
+            limits: { cpu: "2", memory: "3Gi" }
+          readinessProbe:
+            httpGet: { path: /health, port: 8000 }
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /health, port: 8000 }
+            initialDelaySeconds: 90
+            periodSeconds: 30
+          volumeMounts:
+            - name: clause-data
+              mountPath: /app/data/db
+      volumes:
+        - name: clause-data
+          persistentVolumeClaim:
+            claimName: clause-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ingestion-service
+  namespace: bill-auditor
+spec:
+  selector: { app: ingestion-service }
+  ports:
+    - port: 8000
+      targetPort: 8000
