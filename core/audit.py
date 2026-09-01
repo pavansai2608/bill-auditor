@@ -12,6 +12,7 @@ the worst output this system can produce.
 """
 
 import re
+from collections.abc import Callable
 
 from core import waiting
 from core.assumptions import Assumptions
@@ -236,6 +237,7 @@ def audit_lines(
     second_pass: bool = False,
     policy_start_date: str | None = None,
     admission_date: str | None = None,
+    on_progress: Callable[[int, int], None] | None = None,
 ) -> AuditReport:
     """Judge each line, then optionally look across the lines once.
 
@@ -245,6 +247,9 @@ def audit_lines(
 
     `second_pass` adds v3: a breached room rent rescales the associated medical
     expenses, which no per-line judgement can ever see.
+
+    `on_progress(done, total)` is called after each line. An audit takes 30-60
+    seconds, so the API needs something truthful to report while it waits.
     """
     valid_ids = {c.clause_id for c in load_clauses() if c.policy == policy}
     if not valid_ids:
@@ -285,6 +290,8 @@ def audit_lines(
             for line in lines
         ]
         log.info("waiting period applies (%s): every line is nil", waiting_verdict.clause_id)
+        if on_progress is not None:
+            on_progress(len(lines), len(lines))
         return AuditReport(
             lines=verdicts,
             total_charged=round(sum(v.charged for v in verdicts), 2),
@@ -301,8 +308,14 @@ def audit_lines(
             verdict, line_trace = agent_audit_line(line, policy, sum_insured, valid_ids, schedule)
             verdicts.append(verdict)
             trace.extend(line_trace)
+            if on_progress is not None:
+                on_progress(len(verdicts), len(lines))
     else:
-        verdicts = [audit_line(line, policy, sum_insured, valid_ids, schedule) for line in lines]
+        verdicts = []
+        for line in lines:
+            verdicts.append(audit_line(line, policy, sum_insured, valid_ids, schedule))
+            if on_progress is not None:
+                on_progress(len(verdicts), len(lines))
 
     # A waiting period that has demonstrably expired cannot exclude anything.
     # On B03 the judge zeroed a cataract line under niva_bupa 5.1.2, a 24-month
