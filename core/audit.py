@@ -13,6 +13,7 @@ the worst output this system can produce.
 
 import re
 
+from core import waiting
 from core.assumptions import Assumptions
 from core.ingest import load_clauses
 from core.llm import LLMError, complete_structured
@@ -233,6 +234,8 @@ def audit_lines(
     assumptions: Assumptions | None = None,
     use_agent: bool = False,
     second_pass: bool = False,
+    policy_start_date: str | None = None,
+    admission_date: str | None = None,
 ) -> AuditReport:
     """Judge each line, then optionally look across the lines once.
 
@@ -253,6 +256,43 @@ def audit_lines(
         assumptions.note_differential_billing(clause_id, quote)
 
     trace: list[dict] = list(assumptions.as_trace())
+
+    # Waiting periods are decided before anything is judged, because they are
+    # decided by two dates rather than by any clause a search could rank. When
+    # one bites the whole admission is excluded, so no line needs a model call
+    # at all.
+    waiting_verdict = waiting.assess(
+        [line.item for line in lines], policy, policy_start_date, admission_date
+    )
+    trace.append(
+        {
+            "node": "waiting",
+            "excluded": waiting_verdict.excluded,
+            "clause_id": waiting_verdict.clause_id,
+            "kind": waiting_verdict.kind,
+            "why": waiting_verdict.reason or waiting_verdict.note,
+        }
+    )
+    if waiting_verdict.excluded:
+        verdicts = [
+            LineVerdict(
+                item=line.item,
+                charged=line.amount,
+                allowed=0.0,
+                clause_id=waiting_verdict.clause_id,
+                reason=waiting_verdict.reason,
+            )
+            for line in lines
+        ]
+        log.info("waiting period applies (%s): every line is nil", waiting_verdict.clause_id)
+        return AuditReport(
+            lines=verdicts,
+            total_charged=round(sum(v.charged for v in verdicts), 2),
+            total_allowed=0.0,
+            flagged_count=0,
+            policy=policy,
+            trace=trace,
+        )
     if use_agent:
         from core.agent import audit_line as agent_audit_line
 
@@ -263,6 +303,14 @@ def audit_lines(
             trace.extend(line_trace)
     else:
         verdicts = [audit_line(line, policy, sum_insured, valid_ids, schedule) for line in lines]
+
+    # A waiting period that has demonstrably expired cannot exclude anything.
+    # On B03 the judge zeroed a cataract line under niva_bupa 5.1.2, a 24-month
+    # exclusion, on an admission 61 months into the policy - confident, cited,
+    # and wrong by five years. The dates outrank the model here.
+    verdicts = [
+        _reject_expired_exclusion(verdict, policy, waiting_verdict, trace) for verdict in verdicts
+    ]
 
     if second_pass:
         from core import second_pass as second_pass_module
@@ -280,6 +328,37 @@ def audit_lines(
     )
 
 
+def _reject_expired_exclusion(
+    verdict: LineVerdict, policy: str, waiting_verdict: waiting.WaitingVerdict, trace: list[dict]
+) -> LineVerdict:
+    """Refuse a nil verdict that rests on a waiting period already served."""
+    if waiting_verdict.excluded or verdict.allowed != 0.0:
+        return verdict
+    if not waiting.is_waiting_clause(policy, verdict.clause_id):
+        return verdict
+    if not waiting_verdict.note:
+        return verdict
+
+    trace.append(
+        {
+            "node": "waiting",
+            "item": verdict.item,
+            "rejected": verdict.clause_id,
+            "why": f"the cited waiting period does not apply: {waiting_verdict.note}",
+        }
+    )
+    return verdict.model_copy(
+        update={
+            "allowed": None,
+            "needs_human": True,
+            "reason": (
+                f"the model excluded this line under {verdict.clause_id}, a waiting period, "
+                f"but {waiting_verdict.note}"
+            ),
+        }
+    )
+
+
 def audit_bill(
     bill_text: str,
     policy: str,
@@ -289,16 +368,23 @@ def audit_bill(
     assumptions: Assumptions | None = None,
     use_agent: bool = False,
     second_pass: bool = False,
+    admission_date: str | None = None,
 ) -> AuditReport:
-    """Full naive path: parse the bill, then judge every line.
-
-    `policy_start_date` is accepted but unused at v0 - waiting periods need it,
-    and they arrive with the agent in Phase 6.
-    """
+    """Full path: parse the bill, decide waiting periods, then judge each line."""
     from core.bill import parse_bill
 
     lines = parse_bill(bill_text)
-    return audit_lines(lines, policy, sum_insured, schedule, assumptions, use_agent, second_pass)
+    return audit_lines(
+        lines,
+        policy,
+        sum_insured,
+        schedule,
+        assumptions,
+        use_agent,
+        second_pass,
+        policy_start_date,
+        admission_date,
+    )
 
 
 def format_report(report: AuditReport) -> str:
@@ -344,6 +430,8 @@ def main() -> None:
     parser.add_argument(
         "--second-pass", action="store_true", help="rescale associated medical expenses"
     )
+    parser.add_argument("--policy-start-date", help="ISO date the first policy began")
+    parser.add_argument("--admission-date", help="ISO date of admission")
     parser.add_argument(
         "--no-differential-billing",
         action="store_true",
@@ -359,6 +447,8 @@ def main() -> None:
         assumptions=Assumptions(differential_billing=not args.no_differential_billing),
         use_agent=args.agent,
         second_pass=args.second_pass,
+        policy_start_date=args.policy_start_date,
+        admission_date=args.admission_date,
     )
     print()
     print(format_report(report))
