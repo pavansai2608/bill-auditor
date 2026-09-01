@@ -74,3 +74,36 @@ Average attempts per line: 1.71
 Lines that went past attempt 1: 39  
 ...of which a later attempt actually produced an answer: **14** (36%)
 
+### v5 - 2026-09-01
+
+Bills run: 10   
+Bills with no answers filled in yet: 0   
+Lines scored: 82   Lines skipped (key not filled): 0
+
+| metric | value |
+|---|---|
+| Line accuracy (allowed within Rs 1) | 68.3% |
+| Citation accuracy | 56.8% |
+| Payout error | 44.0% |
+| Abstention recall (flagged when it should) | 100.0% |
+| Abstention precision (flagged and was right) | 27.6% |
+| False answers (answered, should have flagged) | 0 |
+| Dodges (flagged, key has an answer) | 21 |
+| **Fabricated clauses** | **0** |
+| p95 latency per bill | 36.2s |
+| Avg tool calls per bill | 15.0 |
+
+| category | lines | line acc | citation acc | dodges | false answers |
+|---|---|---|---|---|---|
+| clean | 15 | 73.3% | 20.0% | 4 | 0 |
+| non_payable | 29 | 79.3% | 72.4% | 6 | 0 |
+| room_rent_over | 25 | 60.0% | 58.3% | 5 | 0 |
+| sub_limit | 6 | 0.0% | 16.7% | 6 | 0 |
+| waiting_period | 7 | 100.0% | 100.0% | 0 | 0 |
+
+**Retry loop**  
+Lines settled on the non-payable fast path (no search, no judge call): 34  
+Average attempts per line: 1.72  
+Lines that went past attempt 1: 36  
+...of which a later attempt actually produced an answer: **13** (36%)
+

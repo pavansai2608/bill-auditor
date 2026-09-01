@@ -201,6 +201,8 @@ def score_bill(
             Assumptions(),
             use_agent=use_agent,
             second_pass=second_pass,
+            policy_start_date=expected.get("policy_start_date"),
+            admission_date=expected.get("admission_date"),
         )
     finally:
         restore()
