@@ -16,5 +16,8 @@ FROM nginx:1.27-alpine
 COPY --from=builder /build/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
+# 127.0.0.1, not localhost: nginx listens on 0.0.0.0:80 (IPv4 only) while
+# busybox wget resolves localhost to ::1 first and is refused, which marked a
+# perfectly healthy container unhealthy.
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
-  CMD wget -qO- http://localhost/ >/dev/null || exit 1
+  CMD wget -qO- http://127.0.0.1/ >/dev/null || exit 1
