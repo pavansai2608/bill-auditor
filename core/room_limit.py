@@ -187,6 +187,26 @@ def table_lookup(policy: str, sum_insured: float) -> RoomEntitlement | None:
     return None
 
 
+# The sums insured the built-in policies are sold at. Used only when a policy
+# states no room table of its own - hdfc_ergo and niva_bupa put the room
+# entitlement on the schedule instead, so their tables cannot supply this.
+STANDARD_SUM_INSURED = [300000, 500000, 1000000, 2500000]
+
+
+def sum_insured_options(policy: str) -> list[int]:
+    """The sums insured this policy actually supports, for the dropdown.
+
+    star_health prices its room limit by sum insured, so its own table is the
+    list. The other two do not, so they fall back to the standard set rather
+    than to a number invented per policy.
+    """
+    for clause in _room_clauses(policy):
+        rows = _rows(clause)
+        if rows:
+            return sorted(rows)
+    return list(STANDARD_SUM_INSURED)
+
+
 def wording_lookup(policy: str) -> RoomEntitlement | None:
     """What the wording says when there is no table to read."""
     for clause in _room_clauses(policy):
