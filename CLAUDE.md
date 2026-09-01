@@ -35,7 +35,12 @@ Built and passing:
 - The eval harness: **44 bills** in `eval/bills/`, an answer key derived
   straight from the PDFs by `eval/derive_key.py`, and `eval/evaluate.py`
   (`--agent` scores the loop, without it scores naive v0).
-- 233 PyUnit tests, all passing (231 unit plus 2 Selenium end-to-end).
+  `eval/make_text_bills.py` writes each bill out as pasteable text under
+  `eval/bills/text/` with an `INDEX.md` of the form inputs, and checks the
+  `bill_text` and the `lines` array of every bill against each other — the two
+  halves of a fixture can drift and nothing else compares them. `--llm` runs
+  the same check through `core.bill.parse_bill` instead of the regex.
+- 259 PyUnit tests, all passing, `unittest discover -s tests` in 59s.
 
 Not built yet — do not assume these exist:
 
@@ -45,8 +50,15 @@ Not built yet — do not assume these exist:
   `audit.py`, **7** (PII) in `core/masking.py`. There is no central module and
   not all 8 are implemented.
 - Nothing from `PHASES.md` is unbuilt. What is *unverified* is in
-  `BLOCKED.md`: minikube is not installed here, the Docker daemon was not
-  available to build images, and no Jenkins server has ever run this pipeline.
+  `BLOCKED.md`: minikube is not installed here and no Jenkins server has ever
+  run this pipeline. **Docker is no longer unverified** — as of 2026-09-01 all
+  five images build, all six containers report healthy and B01 was audited end
+  to end through the gateway. Running it found four defects that syntax
+  checking could not: the four Python images could not build at all (`-e .` in
+  `requirements.txt` with no `src/` in the builder stage), ingestion had no
+  Ollama URL so all 402 clauses were labelled `other`, the frontend
+  healthcheck probed `localhost` against an IPv4-only nginx, and `qwen3:8b`
+  was OOM-killed in a 7.7 GB VM. See B-02.
 
 Last recorded eval: **v5, line accuracy 68.3%** — v0 24.4% → v2 51.2% → v3
 54.9% → v4 59.8% → v5 68.3%. Citation accuracy 56.8%, fabricated clauses 0,
