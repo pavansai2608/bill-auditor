@@ -1,0 +1,49 @@
+{
+  "bill_id": "B44",
+  "policy": "niva_bupa",
+  "sum_insured": 500000,
+  "policy_start_date": "2022-01-24",
+  "admission_date": "2026-05-25",
+  "discharge_date": "2026-05-29",
+  "category": "schedule_missing",
+  "policy_schedule": null,
+  "lines": [
+    {
+      "item": "Room Rent (Single Private) 8,500 x 4 days",
+      "amount": 34000.0,
+      "qty": 4
+    },
+    {
+      "item": "Surgeon Fee",
+      "amount": 74000.0,
+      "qty": 1
+    },
+    {
+      "item": "Anaesthetist Charges",
+      "amount": 16000.0,
+      "qty": 1
+    },
+    {
+      "item": "Operation Theatre Charges",
+      "amount": 22000.0,
+      "qty": 1
+    },
+    {
+      "item": "Medicines and Drugs",
+      "amount": 27500.0,
+      "qty": 1
+    },
+    {
+      "item": "Investigations - Ultrasound and Labs",
+      "amount": 9200.0,
+      "qty": 1
+    },
+    {
+      "item": "Gloves",
+      "amount": 1200.0,
+      "qty": 20
+    }
+  ],
+  "total_charged": 183900.0,
+  "bill_text": "SANJEEVANI HEALTHCARE\nKochi - 682 016\n\nPatient Name: Thomas Varghese\nUHID: B44500\nPhone: 9847556677\nAdmission: 2026-05-25    Discharge: 2026-05-29\n\n--------------------------------------------------------------\nDESCRIPTION                                   QTY       AMOUNT\n--------------------------------------------------------------\nRoom Rent (Single Private) 8,500 x 4 days       4    34,000.00\nSurgeon Fee                                     1    74,000.00\nAnaesthetist Charges                            1    16,000.00\nOperation Theatre Charges                       1    22,000.00\nMedicines and Drugs                             1    27,500.00\nInvestigations - Ultrasound and Labs            1     9,200.00\nGloves                                         20     1,200.00\n--------------------------------------------------------------\nGRAND TOTAL                                         183,900.00\n--------------------------------------------------------------"
+}

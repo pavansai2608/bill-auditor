@@ -62,6 +62,109 @@ Two things measured in Phase 3 that matter later:
 - **The rerank score tracks query specificity, the ranking does not.** "higher room category pro-rata deduction" scores 0.58 against Niva Bupa; a fuller phrasing scores 0.98 — but clause 6.2.4 ranks first either way. Guardrail 5 keys off the score, so a vague query can cause a *false abstention*. That is the agent's problem to fix by rewriting, not the retriever's.
 - **Niva Bupa has no per-day room rent cap at all.** ReAssure 2.0 caps by room *category* with a pro-rata rule (6.2.4). Querying it for a "limit per day" correctly returns low scores. Do not treat that as a retrieval bug.
 
+### The optional 4th input: policy schedule
+
+The UI's three dropdowns (insurer, sum insured, policy start date) are enough
+for Star Health, whose wording carries a room rent table keyed on sum insured.
+They are **not** enough for the other two:
+
+- **HDFC Ergo** — "Room rent limit shall be *'At Actuals'* unless otherwise specified in the Policy Schedule" (B.1.1). No figure in the document.
+- **Niva Bupa** — caps by room *category* "as specified in your Policy Schedule" (6.2.4), with the pro-rata formula `(Eligible Room Rent limit / Room Rent actually incurred) x Associated Medical Expenses`.
+
+So there is a fourth input: **"room limit as per your policy schedule"**, blank
+by default, carrying either a rupee per-day figure or a room category.
+
+**Blank is a valid answer.** When it is blank and the wording defers the limit
+to the schedule, every room-rent-dependent line returns `needs_human` with the
+reason *"room limit is set by the policy schedule, which was not provided"* —
+not a default, not a guess. `SCHEDULE_DEFERRAL_RE` in `core/audit.py` detects
+the deferral; `PolicySchedule` in `core/models.py` carries the value.
+
+This keeps the one-upload-three-dropdown flow intact for Star Health and makes
+the other two auditable when the insured knows their own limit. Bills B43 and
+B44 exist to test that the abstention actually happens rather than being
+assumed.
+
+### Tables are read structurally, never flattened
+
+`extract_text()` reads straight across a table and interleaves the columns.
+Star Health's room rent table came out as `...3,00,000/Up to 5,000/- per day
+4,00,000/5,00,000/...` — with `5,00,000` sitting next to the limit that belongs
+to 3L and 4L. A judge reading that picks the wrong row and sounds certain.
+
+Table regions are therefore removed from the flowing text and re-inserted at
+the same vertical position as one labelled line per row, marked `[table]`:
+
+```
+[table] Sum Insured (Rs.) 3,00,000/- - Limit (Rs.) Up to 5,000/- per day
+[table] Sum Insured (Rs.) 5,00,000/- - Limit (Rs.) Single Standard A/C Room
+```
+
+Four details that matter, each found the hard way:
+
+- **Cell geometry, not forward-fill alone.** A merged cell is one tall cell covering several rows; each row takes the cell whose vertical span contains its midpoint. Forward-fill then handles what is left.
+- **Word centres, not crops.** Cropping a cell catches the tail of the line above, putting `2,00,000/- 3,00,000/-` in one cell.
+- **The header band.** Star Health rules its table from the second row down, so the header and the first data row sit outside the detected table. The 48pt band above is read as part of it, filtered to lines that look like labels.
+- **A data-table guard** (`is_data_table`). `find_tables()` also fires on prose layout boxes; without the guard, clause headings inside them are swallowed — this cost 97 clauses.
+
+### Limits are a list, not three fields
+
+`JudgeOutput.limits` is `list[Limit]`, each with its own `basis` (`per_day`,
+`per_hospitalization`, `per_policy_period`, `absolute`) and either a rupee
+`amount` or a `percentage` of sum insured. `money.allowed_for_line` resolves
+every limit to rupees for the bill in hand and takes the **minimum**.
+
+Three separate fields could not hold what the wording says. `star_health II.8`
+states two limits in one sentence — "Rs.750/- per hospitalization **and**
+Rs.1,500/- per Policy Period" — and several benefits read "10% of Sum Insured
+**or** Rs 1,00,000, whichever is less" (`II.11`, `II.19`, `II.27`). With one
+field the model had to discard one limit silently. One list plus a minimum
+handles both shapes through the same code path, and the model still only
+reports what it read.
+
+`over_limit` is set only by a breached **per-day** cap, because that is what
+triggers the proportionate-deduction second pass; an absolute cap reduces one
+line and nothing else.
+
+### The table code is frozen by golden files
+
+`tests/test_tables_golden.py` stores the exact extracted text of the eight
+rule-bearing table clauses under `tests/fixtures/tables/`, and fails on any
+diff. It splits straight from the PDFs, so it tests the splitter rather than
+the checkpoint.
+
+It exists because this code broke three times and **every break was silent** —
+the output still looked like text, so nothing failed and the damage only showed
+when someone read a clause by eye. One of those breaks put `5,00,000` next to a
+limit belonging to the 3L and 4L rows.
+
+If a change to the splitter is intended, regenerate deliberately:
+
+```bash
+uv run python tests/test_tables_golden.py --update
+```
+
+Read the diff before you do. Regenerating without reading it is how the fourth
+regression gets in.
+
+### Cross-references travel with the clause
+
+`Clause.refs` holds clause ids a clause names, extracted at ingest
+(`find_refs`, plus an IRDAI exclusion-code index so "Code Excl 02" resolves to
+the clause that defines it). `retrieve.with_references` pulls those clauses in
+alongside the parent.
+
+This exists because `star_health II.28` applies co-payment only to "Coverages
+II.1, II.2, … II.13" — retrieving it without that list invites applying a 20%
+cut to a line it does not cover — and `II.19` disapplies three exclusions by
+code.
+
+**It is deliberately the cheap half.** A reference stated in prose is not
+caught: `III.2` says *"the longer of the two waiting periods shall apply"*,
+naming the PED period in words with no id to match. Fixing that needs the judge
+to be able to say *"I need another clause, and here is which one"* — which is
+the motivation for the Phase 6 agent loop, not something to bolt onto retrieval.
+
 Per request, each bill line runs through a LangGraph loop: non-payable fast path (zero LLM calls) → classify rule type → build query → hybrid retrieve (Chroma 20 + BM25 20 via EnsembleRetriever, 0.6/0.4) → cross-encoder rerank to top 3 → LLM judge → guardrails → **Python computes the amount**. On low confidence the query is rewritten from a different angle and retried, capped at 3 attempts and 8 tool calls, then abstains.
 
 **The second pass is the point of the project.** After all lines are judged, if any line breached its room-rent limit, a proportionate-deduction clause is retrieved and its ratio applied to every other eligible line. Judging lines independently can never find this — nothing in the surgeon's-fee line mentions room rent, yet one breached limit silently rewrites every other line.

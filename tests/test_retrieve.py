@@ -202,15 +202,44 @@ class EndToEndSearchTest(unittest.TestCase):
             for result in search("room rent limit", policy):
                 self.assertEqual(result.clause.policy, policy)
 
-    def test_returns_at_most_top_n(self):
+    def test_returns_at_most_top_n_scored_results(self):
+        """Referenced clauses ride along on top of the scored ones."""
         from core.retrieve import search
 
-        self.assertLessEqual(len(search("room rent", "hdfc_ergo")), settings.rerank_top_n)
+        results = search("room rent", "hdfc_ergo")
+        scored = [r for r in results if r.via_ref_of is None]
+        self.assertLessEqual(len(scored), settings.rerank_top_n)
+        for extra in results:
+            if extra.via_ref_of is not None:
+                self.assertEqual(extra.score, 0.0)
+
+    def test_follow_refs_can_be_turned_off(self):
+        from core.retrieve import search
+
+        results = search("co-payment percentage", "star_health", follow_refs=False)
+        self.assertLessEqual(len(results), settings.rerank_top_n)
+        self.assertTrue(all(r.via_ref_of is None for r in results))
+
+    def test_a_scoping_list_is_pulled_in_with_its_clause(self):
+        """star_health II.28 applies co-payment only to named coverages.
+
+        Retrieving it without that list invites applying a 20% cut to a line it
+        does not cover, and the judge cannot ask for a clause it was not given.
+        """
+        from core.retrieve import search
+
+        results = search("mandatory co-payment 20% age 61", "star_health")
+        ids = {r.clause.clause_id for r in results}
+        if "II.28" in ids:
+            pulled = {r.clause.clause_id for r in results if r.via_ref_of == "II.28"}
+            self.assertTrue(pulled, "II.28's scoping list should come with it")
 
     def test_scores_are_ordered_best_first(self):
         from core.retrieve import search
 
-        scores = [r.score for r in search("co-payment percentage", "star_health")]
+        scores = [
+            r.score for r in search("co-payment percentage", "star_health", follow_refs=False)
+        ]
         self.assertEqual(scores, sorted(scores, reverse=True))
 
 

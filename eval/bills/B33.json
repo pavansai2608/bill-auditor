@@ -1,7 +1,7 @@
 {
   "bill_id": "B33",
   "policy": "star_health",
-  "sum_insured": 2500000,
+  "sum_insured": 400000,
   "policy_start_date": "2020-04-23",
   "admission_date": "2026-03-02",
   "discharge_date": "2026-03-08",

@@ -1,0 +1,9 @@
+Hospitalization Expenses
+The Company shall indemnify Medical Expenses necessarily incurred by the Insured Person for Hospitalization of the Insured Person during the Policy Year due to Illness or Injury, up to the Sum Insured specified in the Policy Schedule for:
+a. Room Rent, boarding, nursing expenses as provided by the Hospital / Nursing Home. Room rent limit shall be ‘At Actuals’ unless otherwise specified in the Policy Schedule.
+b. Intensive Care Unit (ICU) / Intensive Cardiac Care Unit (ICCU) expenses. ICU limit (including ICCU) for bed charges shall be ‘At Actuals’ unless otherwise specified in the Policy Schedule.
+c. Surgeon, anaesthetist, Medical Practitioner, consultants, specialist Fees during Hospitalization forming part of Hospital bill.
+d. Investigative treatments and diagnostic procedures directly related to Hospitalization.
+e. Medicines and drugs prescribed in writing by Medical Practitioner.
+f. Intravenous fluids, blood transfusion, surgical appliances, allowable consumables and/or enteral feedings. Operation theatre charges.
+g. The cost of prosthetics and other devices or equipment, if implanted internally during Surgery.

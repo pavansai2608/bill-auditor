@@ -1,0 +1,4 @@
+Procedure for Reimbursement Claims
+[table] Type of Claim - Prescribed Time limit
+[table] Reimbursement of Hospitalization, Day Care Treatment or Pre-Hospitalization Expenses - Within 30 days of date of discharge from Hospital.
+[table] Reimbursement of Post-Hospitalization Expenses - Within 15 days from completion of post Hospitalization treatment.

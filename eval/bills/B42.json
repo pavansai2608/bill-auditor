@@ -1,0 +1,49 @@
+{
+  "bill_id": "B42",
+  "policy": "star_health",
+  "sum_insured": 1000000,
+  "policy_start_date": "2020-08-02",
+  "admission_date": "2026-05-12",
+  "discharge_date": "2026-05-16",
+  "category": "room_category_limit",
+  "policy_schedule": null,
+  "lines": [
+    {
+      "item": "Room Rent (Deluxe) 9,800 x 4 days",
+      "amount": 39200.0,
+      "qty": 4
+    },
+    {
+      "item": "Surgeon Fee",
+      "amount": 88000.0,
+      "qty": 1
+    },
+    {
+      "item": "Anaesthetist Charges",
+      "amount": 19000.0,
+      "qty": 1
+    },
+    {
+      "item": "Operation Theatre Charges",
+      "amount": 26000.0,
+      "qty": 1
+    },
+    {
+      "item": "Medicines and Drugs",
+      "amount": 31000.0,
+      "qty": 1
+    },
+    {
+      "item": "Investigations - MRI and Labs",
+      "amount": 14500.0,
+      "qty": 1
+    },
+    {
+      "item": "Consultant Visit Charges",
+      "amount": 4800.0,
+      "qty": 4
+    }
+  ],
+  "total_charged": 222500.0,
+  "bill_text": "ASHIRVAD SUPER SPECIALITY HOSPITAL\nAhmedabad - 380 015\n\nPatient Name: Priya Deshmukh\nUHID: B421000\nPhone: 9825443322\nAdmission: 2026-05-12    Discharge: 2026-05-16\n\n--------------------------------------------------------------\nDESCRIPTION                                   QTY       AMOUNT\n--------------------------------------------------------------\nRoom Rent (Deluxe) 9,800 x 4 days               4    39,200.00\nSurgeon Fee                                     1    88,000.00\nAnaesthetist Charges                            1    19,000.00\nOperation Theatre Charges                       1    26,000.00\nMedicines and Drugs                             1    31,000.00\nInvestigations - MRI and Labs                   1    14,500.00\nConsultant Visit Charges                        4     4,800.00\n--------------------------------------------------------------\nGRAND TOTAL                                         222,500.00\n--------------------------------------------------------------"
+}
