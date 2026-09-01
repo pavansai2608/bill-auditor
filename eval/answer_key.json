@@ -3380,79 +3380,61 @@
       "category": "schedule_missing",
       "policy_schedule": null,
       "total_charged": 264000.0,
-      "expected_total_allowed": 261500.0,
+      "expected_total_allowed": 40300.0,
       "lines": [
         {
-          "item": "Room Rent (Single Private) 10,000 x 5 days",
-          "charged": 50000.0,
+          "item": "Room Rent (Shared) 3,200 x 5 days",
+          "charged": 16000.0,
           "qty": 5,
-          "allowed": 50000.0,
+          "allowed": 16000.0,
           "clause_id": "B.1.1",
           "needs_human": false,
           "derivation": "B.1.1 p11: \"Room rent limit shall be 'At Actuals' unless otherwise specified in the Policy Schedule\"; no schedule supplied, so At Actuals applies; charge is within entitlement -> paid in full"
         },
         {
-          "item": "ICU Charges 15,000 x 1 day",
-          "charged": 15000.0,
+          "item": "AYUSH Inpatient Treatment Package",
+          "charged": 88000.0,
           "qty": 1,
-          "allowed": 15000.0,
-          "clause_id": "B.1.1",
-          "needs_human": false,
-          "derivation": "A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; ICU is outside associated medical expenses, so no proportionate deduction -> paid in full"
+          "allowed": null,
+          "clause_id": null,
+          "needs_human": true,
+          "derivation": "B.1.4 p12: AYUSH is payable \"up to the Sub-limit specified against this Cover in the Policy Schedule\" - the wording states no figure and no schedule was supplied"
         },
         {
-          "item": "Surgeon Fee",
-          "charged": 96000.0,
-          "qty": 1,
-          "allowed": 96000.0,
-          "clause_id": "B.1.1",
-          "needs_human": false,
-          "derivation": "room rent within the eligible limit, so no proportionate deduction -> paid in full"
-        },
-        {
-          "item": "Anaesthetist Charges",
-          "charged": 21000.0,
-          "qty": 1,
-          "allowed": 21000.0,
+          "item": "Consultant Visit Charges",
+          "charged": 6000.0,
+          "qty": 3,
+          "allowed": 6000.0,
           "clause_id": "B.1.1",
           "needs_human": false,
           "derivation": "room rent within the eligible limit, so no proportionate deduction -> paid in full"
         },
         {
-          "item": "Medicines and Drugs",
-          "charged": 36000.0,
+          "item": "Medicines - Ayurvedic Preparations",
+          "charged": 14500.0,
           "qty": 1,
-          "allowed": 36000.0,
+          "allowed": 14500.0,
           "clause_id": "B.1.1",
           "needs_human": false,
           "derivation": "A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
         {
-          "item": "Operation Theatre Charges",
-          "charged": 28000.0,
+          "item": "Investigations - Basic Panel",
+          "charged": 3800.0,
           "qty": 1,
-          "allowed": 28000.0,
-          "clause_id": "B.1.1",
-          "needs_human": false,
-          "derivation": "room rent within the eligible limit, so no proportionate deduction -> paid in full"
-        },
-        {
-          "item": "Investigations - Labs and CT",
-          "charged": 15500.0,
-          "qty": 1,
-          "allowed": 15500.0,
+          "allowed": 3800.0,
           "clause_id": "B.1.1",
           "needs_human": false,
           "derivation": "A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
         {
-          "item": "Attendant Charges",
-          "charged": 2500.0,
-          "qty": 5,
+          "item": "Gloves",
+          "charged": 900.0,
+          "qty": 15,
           "allowed": 0.0,
           "clause_id": "IRDAI-List-I",
           "needs_human": false,
-          "derivation": "IRDAI-List-I #24 \"attendant charges\" is a non-payable item -> nil"
+          "derivation": "IRDAI-List-I #56 \"gloves\" is a non-payable item -> nil"
         }
       ]
     },
