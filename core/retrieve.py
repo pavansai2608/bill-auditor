@@ -44,6 +44,9 @@ log = get_logger(__name__)
 # Clauses longer than this are scored as sentence windows instead of whole.
 SUB_CHUNK_THRESHOLD = 1500
 SUB_CHUNK_TARGET = 600
+# Cross-referenced clauses ride along with the clause that names them.
+MAX_REF_PULLS = 4
+MAX_REF_CHARS = 900
 # Sentence boundary. Deliberately hand-rolled: a LangChain text splitter would
 # cut mid-clause on a character count and is banned on these documents.
 SENTENCE_RE = re.compile(r"(?<=[.;:])\s+")
@@ -230,18 +233,69 @@ def get_retriever(policy: str) -> ContextualCompressionRetriever:
 class RetrievedClause:
     """A clause the retriever surfaced, with the score that got it there."""
 
-    def __init__(self, clause: Clause, score: float, matched_text: str) -> None:
+    def __init__(
+        self,
+        clause: Clause,
+        score: float,
+        matched_text: str,
+        via_ref_of: str | None = None,
+    ) -> None:
         self.clause = clause
         self.score = score
         # The window that actually scored, which is what the judge should read
         # when the parent clause is long.
         self.matched_text = matched_text
+        # Set when this clause was pulled in because another clause named it,
+        # rather than because it matched the query.
+        self.via_ref_of = via_ref_of
 
     def __repr__(self) -> str:
-        return f"<RetrievedClause {self.clause.policy}:{self.clause.clause_id} {self.score:.3f}>"
+        via = f" via {self.via_ref_of}" if self.via_ref_of else ""
+        return (
+            f"<RetrievedClause {self.clause.policy}:{self.clause.clause_id} {self.score:.3f}{via}>"
+        )
 
 
-def search(query: str, policy: str, *, top_n: int | None = None) -> list[RetrievedClause]:
+def with_references(
+    results: list[RetrievedClause], policy: str, *, limit: int = MAX_REF_PULLS
+) -> list[RetrievedClause]:
+    """Pull in clauses that the retrieved ones name.
+
+    Star Health's co-payment clause applies only to "Coverages II.1, II.2, ...
+    II.13" - retrieving it without that list invites applying a 20% cut to a
+    line it does not cover. The judge cannot ask for a clause it was not given,
+    so the clauses a clause names come along with it.
+
+    This is the cheap half of the problem. A reference stated in prose ("the
+    waiting period specified for pre-existing diseases") is not caught here,
+    and needs the agent to say what it is missing - Phase 6.
+    """
+    index = {c.clause_id: c for c in _clauses_for(policy)}
+    have = {r.clause.clause_id for r in results}
+    extra: list[RetrievedClause] = []
+
+    for result in results:
+        for ref in result.clause.refs:
+            if ref in have or len(extra) >= limit:
+                continue
+            clause = index.get(ref)
+            if clause is None:
+                continue
+            have.add(ref)
+            extra.append(
+                RetrievedClause(
+                    clause=clause,
+                    score=0.0,
+                    matched_text=clause.text[:MAX_REF_CHARS],
+                    via_ref_of=result.clause.clause_id,
+                )
+            )
+    return results + extra
+
+
+def search(
+    query: str, policy: str, *, top_n: int | None = None, follow_refs: bool = True
+) -> list[RetrievedClause]:
     """Find the clauses most likely to decide this query, best first."""
     retriever = get_retriever(policy)
     documents = retriever.invoke(query)
@@ -264,7 +318,8 @@ def search(query: str, policy: str, *, top_n: int | None = None) -> list[Retriev
         )
 
     limit = top_n if top_n is not None else settings.rerank_top_n
-    return results[:limit]
+    results = results[:limit]
+    return with_references(results, policy) if follow_refs else results
 
 
 def main() -> None:
