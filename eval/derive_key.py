@@ -273,7 +273,9 @@ def derive_bill(bill: dict, entries: list[dict]) -> list[dict]:
                 # Niva Bupa states no default. Only the lowest category is safe.
                 room_unresolved = occupied is None or occupied > 1
                 if not room_unresolved:
-                    limit_note += "; a shared room is the lowest category and cannot exceed any entitlement"
+                    limit_note += (
+                        "; a shared room is the lowest category and cannot exceed any entitlement"
+                    )
 
     for line in bill["lines"]:
         item, charged, qty = line["item"], line["amount"], line["qty"]
