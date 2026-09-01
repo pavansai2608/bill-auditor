@@ -186,9 +186,13 @@ def print_bill(bill: dict) -> None:
         if schedule.get("room_category"):
             parts.append(f"room category {schedule['room_category']}")
         print(f"        policy schedule: {', '.join(parts)}")
+    elif bill["policy"] == "star_health":
+        # The wording carries its own table, so a missing schedule is not a gap.
+        print("        policy schedule: not provided - not needed, the II.1 table")
+        print("                         gives a limit by sum insured")
     else:
-        print("        policy schedule: NOT PROVIDED - a room limit that depends on it")
-        print("                         must come back needs_human, not a guess")
+        print("        policy schedule: NOT PROVIDED - this policy states no rupee table,")
+        print("                         so a room limit may not be derivable at all")
     print(f"        category: {bill['category']}")
     print(RULE)
     print(f"{'#':>3}  {'item':<52}{'qty':>5}{'charged':>14}")
@@ -327,7 +331,8 @@ def main() -> None:
         print_brief(bill)
         print()
         print(RULE)
-        print("Fill these in by hand in eval/answer_key.json. Do not run the auditor to get them.")
+        print("Answers are in eval/answer_key.json with a quoted derivation on every line.")
+        print("How they were derived, and what is uncertain: eval/answer_key_provenance.md")
         print(RULE)
         return
 
@@ -344,7 +349,8 @@ def main() -> None:
         print_non_payable(bill, show_all=args.list_all)
     print()
     print(RULE)
-    print("Fill these in by hand in eval/answer_key.json. Do not run the auditor to get them.")
+    print("Answers are in eval/answer_key.json with a quoted derivation on every line.")
+    print("How they were derived, and what is uncertain: eval/answer_key_provenance.md")
     print(RULE)
 
 
