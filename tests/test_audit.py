@@ -163,7 +163,14 @@ class ScheduleTest(unittest.TestCase):
                 PolicySchedule(**schedule) if schedule is not None else None,
             )
 
+    # Niva Bupa hands over the figure and offers no fallback.
     DEFERRING = (
+        "If you opt for a Hospital room which is higher than the eligible room category "
+        "as specified in your Policy Schedule, then We will pay only a pro-rated portion "
+        "of the total Associated Medical Expenses."
+    )
+    # HDFC names the schedule but states a default, so it decides the question.
+    STATES_DEFAULT = (
         "Room Rent, boarding, nursing expenses as provided by the Hospital. Room rent "
         "limit shall be 'At Actuals' unless otherwise specified in the Policy Schedule."
     )
@@ -192,6 +199,19 @@ class ScheduleTest(unittest.TestCase):
     def test_a_clause_that_states_its_own_limit_needs_no_schedule(self):
         verdict = self._run(None, "Room rent is limited to Rs 5,000 per day.")
         self.assertFalse(verdict.needs_human, "no deferral, so no abstention")
+
+    def test_at_actuals_is_a_decision_not_a_gap(self):
+        """HDFC names the schedule but gives a fallback, so it must not abstain.
+
+        "Room rent limit shall be 'At Actuals' unless otherwise specified in the
+        Policy Schedule" answers the question when no schedule is supplied.
+        Abstaining there refuses to audit a bill the policy does decide.
+        """
+        verdict = self._run(None, self.STATES_DEFAULT)
+        self.assertFalse(
+            verdict.needs_human,
+            "'At Actuals' is the stated default and must not trigger an abstention",
+        )
 
 
 class AuditReportTest(unittest.TestCase):

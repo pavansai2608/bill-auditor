@@ -26,10 +26,16 @@ log = get_logger(__name__)
 # A clause that hands the number to the policy schedule instead of stating it.
 SCHEDULE_DEFERRAL_RE = re.compile(
     r"(?:specified|stipulated|mentioned|opted)\s+(?:by you\s+)?in\s+(?:the\s+|your\s+)?Policy\s+Schedule"
-    r"|At Actuals.{0,40}unless otherwise specified"
     r"|as per the limits.{0,30}Policy Schedule",
     re.I,
 )
+
+# A clause can name the schedule and still decide the question. HDFC says
+# "Room rent limit shall be 'At Actuals' unless otherwise specified in the
+# Policy Schedule" - absent a schedule, At Actuals is what the policy says
+# applies. That is an answer, not a gap, so it must not trigger an abstention.
+# Niva Bupa states no such fallback, which is why it still abstains.
+STATES_A_DEFAULT_RE = re.compile(r"At Actuals", re.I)
 SCHEDULE_MISSING_REASON = "room limit is set by the policy schedule, which was not provided"
 
 # The carve-out that makes proportionate deduction conditional on a fact no
@@ -120,7 +126,12 @@ def _build_query(line: BillLine) -> str:
 
 
 def _defers_to_schedule(candidates: list[RetrievedClause]) -> bool:
-    return any(SCHEDULE_DEFERRAL_RE.search(c.matched_text) for c in candidates)
+    """True only where the clause hands over the figure and offers no fallback."""
+    return any(
+        SCHEDULE_DEFERRAL_RE.search(c.matched_text)
+        and not STATES_A_DEFAULT_RE.search(c.matched_text)
+        for c in candidates
+    )
 
 
 def audit_line(
@@ -220,8 +231,14 @@ def audit_lines(
     sum_insured: float,
     schedule: PolicySchedule | None = None,
     assumptions: Assumptions | None = None,
+    use_agent: bool = False,
 ) -> AuditReport:
-    """Judge each line independently. Nothing here looks across lines."""
+    """Judge each line independently. Nothing here looks across lines.
+
+    `use_agent` swaps the single-shot path (v0) for the retry loop (v2). Both
+    stay callable so the baseline remains reproducible: a number you cannot
+    re-measure is not a baseline.
+    """
     valid_ids = {c.clause_id for c in load_clauses() if c.policy == policy}
     if not valid_ids:
         raise ValueError(f"no clauses indexed for policy {policy!r}")
@@ -231,7 +248,17 @@ def audit_lines(
     if quote:
         assumptions.note_differential_billing(clause_id, quote)
 
-    verdicts = [audit_line(line, policy, sum_insured, valid_ids, schedule) for line in lines]
+    trace: list[dict] = list(assumptions.as_trace())
+    if use_agent:
+        from core.agent import audit_line as agent_audit_line
+
+        verdicts = []
+        for line in lines:
+            verdict, line_trace = agent_audit_line(line, policy, sum_insured, valid_ids, schedule)
+            verdicts.append(verdict)
+            trace.extend(line_trace)
+    else:
+        verdicts = [audit_line(line, policy, sum_insured, valid_ids, schedule) for line in lines]
 
     return AuditReport(
         lines=verdicts,
@@ -239,7 +266,7 @@ def audit_lines(
         total_allowed=round(sum(v.allowed or 0 for v in verdicts), 2),
         flagged_count=sum(1 for v in verdicts if v.needs_human),
         policy=policy,
-        trace=assumptions.as_trace(),
+        trace=trace,
     )
 
 
@@ -250,6 +277,7 @@ def audit_bill(
     policy_start_date: str | None = None,
     schedule: PolicySchedule | None = None,
     assumptions: Assumptions | None = None,
+    use_agent: bool = False,
 ) -> AuditReport:
     """Full naive path: parse the bill, then judge every line.
 
@@ -259,7 +287,7 @@ def audit_bill(
     from core.bill import parse_bill
 
     lines = parse_bill(bill_text)
-    return audit_lines(lines, policy, sum_insured, schedule, assumptions)
+    return audit_lines(lines, policy, sum_insured, schedule, assumptions, use_agent)
 
 
 def format_report(report: AuditReport) -> str:

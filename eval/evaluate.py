@@ -99,6 +99,11 @@ class Run:
     by_category: dict[str, Counts] = field(default_factory=lambda: defaultdict(Counts))
     latencies: list[float] = field(default_factory=list)
     tool_calls: list[int] = field(default_factory=list)
+    # Retry accounting, so the loop's value is measured rather than assumed.
+    attempts: list[int] = field(default_factory=list)
+    fast_path_lines: int = 0
+    retries_that_changed_the_answer: int = 0
+    lines_needing_a_retry: int = 0
     bills_run: int = 0
     bills_unfilled: int = 0
 
@@ -130,7 +135,9 @@ def is_filled(entry: dict) -> bool:
     return entry.get("allowed") is not None or entry.get("needs_human") is not None
 
 
-def score_bill(bill_id: str, expected: dict, valid_ids: set[str], run: Run) -> dict | None:
+def score_bill(
+    bill_id: str, expected: dict, valid_ids: set[str], run: Run, use_agent: bool = False
+) -> dict | None:
     from core.audit import audit_lines
 
     filled = [line for line in expected["lines"] if is_filled(line)]
@@ -158,6 +165,7 @@ def score_bill(bill_id: str, expected: dict, valid_ids: set[str], run: Run) -> d
             expected["sum_insured"],
             schedule,
             Assumptions(),
+            use_agent=use_agent,
         )
     finally:
         restore()
@@ -166,6 +174,17 @@ def score_bill(bill_id: str, expected: dict, valid_ids: set[str], run: Run) -> d
     run.latencies.append(elapsed)
     run.tool_calls.append(tally["search"] + tally["judge"])
     run.bills_run += 1
+
+    for entry in report.trace:
+        if entry.get("node") != "summary":
+            continue
+        run.attempts.append(entry["attempts"])
+        if entry.get("fast_path"):
+            run.fast_path_lines += 1
+        if entry["attempts"] > 1:
+            run.lines_needing_a_retry += 1
+            if entry.get("retry_changed_answer"):
+                run.retries_that_changed_the_answer += 1
 
     category = expected.get("category", "uncategorised")
     buckets = (run.overall, run.by_category[category])
@@ -266,6 +285,21 @@ def render(run: Run, version: str) -> str:
             f"| {name} | {c.lines_scored} | {pct(c.line_accuracy)} | "
             f"{pct(c.citation_accuracy)} | {c.false_abstentions} | {c.false_answers} |"
         )
+    if run.attempts:
+        avg_attempts = statistics.mean(run.attempts)
+        changed = run.retries_that_changed_the_answer
+        needed = run.lines_needing_a_retry
+        rows += [
+            "",
+            "**Retry loop**  ",
+            f"Lines settled on the non-payable fast path (no search, no judge call): "
+            f"{run.fast_path_lines}  ",
+            f"Average attempts per line: {avg_attempts:.2f}  ",
+            f"Lines that went past attempt 1: {needed}  ",
+            f"...of which a later attempt actually produced an answer: **{changed}**"
+            + (f" ({changed / needed * 100:.0f}%)" if needed else ""),
+            "",
+        ]
     rows.append("")
     return "\n".join(rows)
 
@@ -296,6 +330,9 @@ def main() -> int:
     parser.add_argument("--write", action="store_true", help="append the row to eval/results.md")
     parser.add_argument("--bills", nargs="*", help="run only these bill ids")
     parser.add_argument("--key", type=Path, default=KEY_PATH, help="answer key to score against")
+    parser.add_argument(
+        "--agent", action="store_true", help="score the retry loop (v2), not the naive path (v0)"
+    )
     args = parser.parse_args()
 
     setup_logging("WARNING")
@@ -320,7 +357,7 @@ def main() -> int:
     for position, bill_id in enumerate(wanted, start=1):
         expected = key[bill_id]
         print(f"[{position}/{len(wanted)}] {bill_id} ({expected['policy']})", flush=True)
-        score_bill(bill_id, expected, valid_by_policy[expected["policy"]], run)
+        score_bill(bill_id, expected, valid_by_policy[expected["policy"]], run, args.agent)
 
     report = render(run, args.version)
     print()
