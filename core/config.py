@@ -59,6 +59,26 @@ class Settings(BaseSettings):
     max_tool_calls: int = 8
     structured_output_retries: int = 2
 
+    # --- Services (Phase 10) ---
+    # Empty means "do it in this process", which is how the monolith in api/
+    # and the eval both run. docker-compose fills these in with service names.
+    retrieval_url: str = ""
+    audit_url: str = "http://audit-service:8000"
+    ingestion_url: str = "http://ingestion-service:8000"
+    service_timeout_s: int = 300
+
+    # --- API ---
+    # The React dev server. Listed here rather than in api/ so every setting
+    # stays in one file and can be overridden with BA_CORS_ORIGINS.
+    cors_origins: list[str] = [
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:5173",
+    ]
+    max_upload_mb: int = 25
+    max_jobs_kept: int = 100
+
     # --- Logging --------------------------------------------------------
     log_level: str = "INFO"
 
