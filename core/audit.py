@@ -232,12 +232,16 @@ def audit_lines(
     schedule: PolicySchedule | None = None,
     assumptions: Assumptions | None = None,
     use_agent: bool = False,
+    second_pass: bool = False,
 ) -> AuditReport:
-    """Judge each line independently. Nothing here looks across lines.
+    """Judge each line, then optionally look across the lines once.
 
     `use_agent` swaps the single-shot path (v0) for the retry loop (v2). Both
     stay callable so the baseline remains reproducible: a number you cannot
     re-measure is not a baseline.
+
+    `second_pass` adds v3: a breached room rent rescales the associated medical
+    expenses, which no per-line judgement can ever see.
     """
     valid_ids = {c.clause_id for c in load_clauses() if c.policy == policy}
     if not valid_ids:
@@ -260,6 +264,12 @@ def audit_lines(
     else:
         verdicts = [audit_line(line, policy, sum_insured, valid_ids, schedule) for line in lines]
 
+    if second_pass:
+        from core import second_pass as second_pass_module
+
+        verdicts, second_pass_trace = second_pass_module.apply(lines, verdicts, policy, assumptions)
+        trace.extend(second_pass_trace)
+
     return AuditReport(
         lines=verdicts,
         total_charged=round(sum(v.charged for v in verdicts), 2),
@@ -278,6 +288,7 @@ def audit_bill(
     schedule: PolicySchedule | None = None,
     assumptions: Assumptions | None = None,
     use_agent: bool = False,
+    second_pass: bool = False,
 ) -> AuditReport:
     """Full naive path: parse the bill, then judge every line.
 
@@ -287,7 +298,7 @@ def audit_bill(
     from core.bill import parse_bill
 
     lines = parse_bill(bill_text)
-    return audit_lines(lines, policy, sum_insured, schedule, assumptions, use_agent)
+    return audit_lines(lines, policy, sum_insured, schedule, assumptions, use_agent, second_pass)
 
 
 def format_report(report: AuditReport) -> str:
@@ -329,10 +340,26 @@ def main() -> None:
     parser.add_argument("bill", type=Path, help="path to a bill text file")
     parser.add_argument("--policy", default="star_health")
     parser.add_argument("--sum-insured", type=float, default=500000)
+    parser.add_argument("--agent", action="store_true", help="use the retry loop, not naive v0")
+    parser.add_argument(
+        "--second-pass", action="store_true", help="rescale associated medical expenses"
+    )
+    parser.add_argument(
+        "--no-differential-billing",
+        action="store_true",
+        help="the hospital does not bill differentially, so no proportionate deduction",
+    )
     args = parser.parse_args()
 
     setup_logging()
-    report = audit_bill(args.bill.read_text(encoding="utf-8"), args.policy, args.sum_insured)
+    report = audit_bill(
+        args.bill.read_text(encoding="utf-8"),
+        args.policy,
+        args.sum_insured,
+        assumptions=Assumptions(differential_billing=not args.no_differential_billing),
+        use_agent=args.agent,
+        second_pass=args.second_pass,
+    )
     print()
     print(format_report(report))
 
