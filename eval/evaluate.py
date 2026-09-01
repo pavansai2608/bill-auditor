@@ -27,8 +27,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from core.agent import IRDAI_CITATION
 from core.assumptions import Assumptions
-from core.ingest import load_clauses
+from core.ingest import load_clauses, load_non_payable
 from core.logging_conf import setup_logging
 from core.models import BillLine, PolicySchedule
 
@@ -108,26 +109,54 @@ class Run:
     bills_unfilled: int = 0
 
 
+def citable_ids(policy: str, clauses=None) -> set[str]:
+    """Every citation a verdict may legitimately carry for this policy.
+
+    The policy's own clause ids, plus `IRDAI-List-I`. The IRDAI non-payable
+    list is not in `clauses.json` but it is a real, checkable source committed
+    as `data/non_payable.json`, it is what the non-payable fast path cites, and
+    it is what the answer key cites for the same lines. Scoring it as a
+    fabrication counted 18 correct citations as the worst failure the system
+    can produce - which is why this is a named function with a test on it
+    rather than a set comprehension inline in `main`.
+    """
+    clauses = load_clauses() if clauses is None else clauses
+    ids = {c.clause_id for c in clauses if c.policy == policy}
+    if load_non_payable():
+        ids.add(IRDAI_CITATION)
+    return ids
+
+
 def _calls():
-    """Count retrievals and judge calls without touching production code."""
+    """Count retrievals and judge calls without touching production code.
+
+    Both paths are patched. `audit.py` and `agent.py` each import `search` and
+    `complete_structured` into their own namespace, so patching one module
+    leaves the other uncounted - which is how an agent run came to report 0.0
+    tool calls per bill while plainly making thousands.
+    """
+    import core.agent as agent
     import core.audit as audit
 
     tally = {"search": 0, "judge": 0}
-    real_search, real_judge = audit.search, audit.complete_structured
+    originals = [(mod, mod.search, mod.complete_structured) for mod in (audit, agent)]
 
-    def counted_search(*args, **kwargs):
-        tally["search"] += 1
-        return real_search(*args, **kwargs)
+    def counted(kind, real):
+        def wrapper(*args, **kwargs):
+            tally[kind] += 1
+            return real(*args, **kwargs)
 
-    def counted_judge(*args, **kwargs):
-        tally["judge"] += 1
-        return real_judge(*args, **kwargs)
+        return wrapper
 
-    audit.search, audit.complete_structured = counted_search, counted_judge
-    return tally, lambda: (
-        setattr(audit, "search", real_search),
-        setattr(audit, "complete_structured", real_judge),
-    )
+    for mod, real_search, real_judge in originals:
+        mod.search = counted("search", real_search)
+        mod.complete_structured = counted("judge", real_judge)
+
+    def restore():
+        for mod, real_search, real_judge in originals:
+            mod.search, mod.complete_structured = real_search, real_judge
+
+    return tally, restore
 
 
 def is_filled(entry: dict) -> bool:
@@ -360,9 +389,9 @@ def main() -> int:
         wanted = wanted[:QUICK_BILLS]
 
     clauses = load_clauses()
-    valid_by_policy = defaultdict(set)
-    for clause in clauses:
-        valid_by_policy[clause.policy].add(clause.clause_id)
+    valid_by_policy = {
+        policy: citable_ids(policy, clauses) for policy in {c.policy for c in clauses}
+    }
 
     run = Run()
     for position, bill_id in enumerate(wanted, start=1):
@@ -371,7 +400,7 @@ def main() -> int:
         score_bill(
             bill_id,
             expected,
-            valid_by_policy[expected["policy"]],
+            valid_by_policy.get(expected["policy"], set()),
             run,
             args.agent,
             args.second_pass,
