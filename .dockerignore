@@ -1,0 +1,20 @@
+.venv/
+venv/
+__pycache__/
+*.pyc
+.ruff_cache/
+.git/
+.githooks/
+node_modules/
+frontend/node_modules/
+frontend/dist/
+# Generated, and big. The image builds the index or mounts it.
+data/db/
+data/llm_cache/
+data/traces/
+# The model is a mounted volume, never a layer.
+models/
+*.md
+!README.md
+tests/
+eval/bills/

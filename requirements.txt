@@ -10,13 +10,16 @@ aiohttp==3.14.3
 aiosignal==1.4.0
     # via aiohttp
 annotated-doc==0.0.5
-    # via typer
+    # via
+    #   fastapi
+    #   typer
 annotated-types==0.8.0
     # via pydantic
 anyio==4.14.2
     # via
     #   httpx
     #   langsmith
+    #   starlette
     #   watchfiles
 attrs==26.1.0
     # via
@@ -36,10 +39,14 @@ certifi==2026.7.22
     #   kubernetes
     #   requests
     #   selenium
-cffi==2.1.1 ; implementation_name != 'pypy' and os_name == 'nt'
-    # via trio
+cffi==2.1.1 ; (implementation_name != 'pypy' and os_name == 'nt') or platform_python_implementation != 'PyPy'
+    # via
+    #   cryptography
+    #   trio
 charset-normalizer==3.5.1
-    # via requests
+    # via
+    #   pdfminer-six
+    #   requests
 chromadb==1.5.9
     # via
     #   bill-auditor
@@ -54,6 +61,8 @@ colorama==0.4.6 ; os_name == 'nt' or sys_platform == 'win32'
     #   pytest
     #   tqdm
     #   typer
+cryptography==50.0.1
+    # via pdfminer-six
 cuda-bindings==13.3.1 ; python_full_version < '3.15' and sys_platform == 'linux'
     # via torch
 cuda-pathfinder==1.8.0 ; python_full_version < '3.15' and sys_platform == 'linux'
@@ -64,6 +73,8 @@ distro==1.9.0
     # via langsmith
 durationpy==0.11
     # via kubernetes
+fastapi==0.141.1
+    # via bill-auditor
 filelock==3.32.4
     # via
     #   huggingface-hub
@@ -300,6 +311,12 @@ packaging==26.3
     #   onnxruntime
     #   pytest
     #   transformers
+pdfminer-six==20260107
+    # via pdfplumber
+pdfplumber==0.11.10
+    # via bill-auditor
+pillow==12.3.0
+    # via pdfplumber
 pluggy==1.6.0
     # via pytest
 propcache==0.5.2
@@ -314,11 +331,12 @@ protobuf==7.36.0
 pybase64==1.5.0
     # via chromadb
 pybuilder==0.13.21
-pycparser==3.0 ; implementation_name != 'PyPy' and implementation_name != 'pypy' and os_name == 'nt'
+pycparser==3.0 ; (implementation_name != 'PyPy' and implementation_name != 'pypy' and os_name == 'nt') or (implementation_name != 'PyPy' and platform_python_implementation != 'PyPy')
     # via cffi
 pydantic==2.13.5
     # via
     #   chromadb
+    #   fastapi
     #   langchain
     #   langchain-classic
     #   langchain-core
@@ -330,12 +348,15 @@ pydantic-core==2.46.5
     # via pydantic
 pydantic-settings==2.15.0
     # via
+    #   bill-auditor
     #   chromadb
     #   langchain-community
 pygments==2.21.0
     # via
     #   pytest
     #   rich
+pypdfium2==5.13.0
+    # via pdfplumber
 pypika==0.51.1
     # via chromadb
 pyproject-hooks==1.2.0
@@ -347,8 +368,11 @@ python-dateutil==2.9.0.post0
     # via kubernetes
 python-dotenv==1.2.3
     # via
+    #   bill-auditor
     #   pydantic-settings
     #   uvicorn
+python-multipart==0.0.32
+    # via bill-auditor
 pyyaml==6.0.3
     # via
     #   chromadb
@@ -417,6 +441,8 @@ sqlalchemy==2.0.52
     # via
     #   langchain-classic
     #   langchain-community
+starlette==1.6.0
+    # via fastapi
 sympy==1.14.0
     # via torch
 tenacity==9.1.4
@@ -456,6 +482,7 @@ typer==0.27.2
 typing-extensions==4.16.0
     # via
     #   chromadb
+    #   fastapi
     #   grpcio
     #   huggingface-hub
     #   langchain-core
@@ -474,6 +501,7 @@ typing-extensions==4.16.0
     #   typing-inspection
 typing-inspection==0.4.4
     # via
+    #   fastapi
     #   pydantic
     #   pydantic-settings
 urllib3==2.7.0
@@ -486,7 +514,9 @@ uuid-utils==0.17.0
     #   langchain-core
     #   langsmith
 uvicorn==0.52.4
-    # via chromadb
+    # via
+    #   bill-auditor
+    #   chromadb
 uvloop==0.22.1 ; platform_python_implementation != 'PyPy' and sys_platform != 'cygwin' and sys_platform != 'win32'
     # via uvicorn
 watchfiles==1.2.0

@@ -1,0 +1,63 @@
+{
+  "bill_id": "B01",
+  "policy": "star_health",
+  "sum_insured": 300000,
+  "policy_start_date": "2022-06-15",
+  "admission_date": "2026-03-12",
+  "discharge_date": "2026-03-17",
+  "category": "room_rent_over",
+  "lines": [
+    {
+      "item": "Room Rent (Single A/C) 8,000 x 5 days",
+      "amount": 40000.0,
+      "qty": 5
+    },
+    {
+      "item": "ICU Charges 12,000 x 2 days",
+      "amount": 24000.0,
+      "qty": 2
+    },
+    {
+      "item": "Surgeon Fee",
+      "amount": 80000.0,
+      "qty": 1
+    },
+    {
+      "item": "Anaesthetist Charges",
+      "amount": 15000.0,
+      "qty": 1
+    },
+    {
+      "item": "Medicines and Drugs",
+      "amount": 38000.0,
+      "qty": 1
+    },
+    {
+      "item": "Operation Theatre Charges",
+      "amount": 22000.0,
+      "qty": 1
+    },
+    {
+      "item": "Investigations - CT and Bloodwork",
+      "amount": 14000.0,
+      "qty": 1
+    },
+    {
+      "item": "Surgical Gloves",
+      "amount": 1200.0,
+      "qty": 20
+    },
+    {
+      "item": "Disposable Syringes",
+      "amount": 800.0,
+      "qty": 40
+    },
+    {
+      "item": "Ambulance Charges",
+      "amount": 1000.0,
+      "qty": 1
+    }
+  ],
+  "total_charged": 236000.0,
+  "bill_text": "CITY CARE MULTISPECIALITY HOSPITAL\nChennai - 600 034\n\nPatient Name: Ramesh Kumar\nUHID: B01500\nPhone: 9876543210\nAdmission: 2026-03-12    Discharge: 2026-03-17\n\n--------------------------------------------------------------\nDESCRIPTION                                   QTY       AMOUNT\n--------------------------------------------------------------\nRoom Rent (Single A/C) 8,000 x 5 days           5    40,000.00\nICU Charges 12,000 x 2 days                     2    24,000.00\nSurgeon Fee                                     1    80,000.00\nAnaesthetist Charges                            1    15,000.00\nMedicines and Drugs                             1    38,000.00\nOperation Theatre Charges                       1    22,000.00\nInvestigations - CT and Bloodwork               1    14,000.00\nSurgical Gloves                                20     1,200.00\nDisposable Syringes                            40       800.00\nAmbulance Charges                               1     1,000.00\n--------------------------------------------------------------\nGRAND TOTAL                                         236,000.00\n--------------------------------------------------------------"
+}

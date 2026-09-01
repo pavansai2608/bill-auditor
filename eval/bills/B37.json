@@ -1,0 +1,57 @@
+{
+  "bill_id": "B37",
+  "policy": "niva_bupa",
+  "sum_insured": 500000,
+  "policy_start_date": "2021-05-16",
+  "admission_date": "2026-01-25",
+  "discharge_date": "2026-01-30",
+  "category": "room_rent_over",
+  "lines": [
+    {
+      "item": "Room Rent (Single Private) 10,500 x 5 days",
+      "amount": 52500.0,
+      "qty": 5
+    },
+    {
+      "item": "Nursing Charges",
+      "amount": 11000.0,
+      "qty": 5
+    },
+    {
+      "item": "Surgeon Fee",
+      "amount": 92000.0,
+      "qty": 1
+    },
+    {
+      "item": "Anaesthetist Charges",
+      "amount": 20000.0,
+      "qty": 1
+    },
+    {
+      "item": "Medicines and Drugs",
+      "amount": 37000.0,
+      "qty": 1
+    },
+    {
+      "item": "Operation Theatre Charges",
+      "amount": 28000.0,
+      "qty": 1
+    },
+    {
+      "item": "Investigations - CT and Labs",
+      "amount": 16500.0,
+      "qty": 1
+    },
+    {
+      "item": "Gloves",
+      "amount": 1400.0,
+      "qty": 24
+    }
+  ],
+  "total_charged": 258400.0,
+  "bill_text": "NEW LIFE MEDICAL CENTRE\nBengaluru - 560 078\n\nPatient Name: Joseph Mathew\nUHID: B37500\nPhone: 9847001234\nAdmission: 2026-01-25    Discharge: 2026-01-30\n\n--------------------------------------------------------------\nDESCRIPTION                                   QTY       AMOUNT\n--------------------------------------------------------------\nRoom Rent (Single Private) 10,500 x 5 days      5    52,500.00\nNursing Charges                                 5    11,000.00\nSurgeon Fee                                     1    92,000.00\nAnaesthetist Charges                            1    20,000.00\nMedicines and Drugs                             1    37,000.00\nOperation Theatre Charges                       1    28,000.00\nInvestigations - CT and Labs                    1    16,500.00\nGloves                                         24     1,400.00\n--------------------------------------------------------------\nGRAND TOTAL                                         258,400.00\n--------------------------------------------------------------",
+  "policy_schedule": {
+    "room_limit_per_day": 6000.0,
+    "room_category": null
+  }
+}

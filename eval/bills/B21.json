@@ -1,0 +1,63 @@
+{
+  "bill_id": "B21",
+  "policy": "hdfc_ergo",
+  "sum_insured": 300000,
+  "policy_start_date": "2023-02-09",
+  "admission_date": "2026-02-27",
+  "discharge_date": "2026-03-02",
+  "category": "non_payable",
+  "lines": [
+    {
+      "item": "Room Rent (Shared) 2,800 x 3 days",
+      "amount": 8400.0,
+      "qty": 3
+    },
+    {
+      "item": "Surgeon Fee",
+      "amount": 44000.0,
+      "qty": 1
+    },
+    {
+      "item": "Medicines and Drugs",
+      "amount": 16000.0,
+      "qty": 1
+    },
+    {
+      "item": "Gloves",
+      "amount": 1000.0,
+      "qty": 18
+    },
+    {
+      "item": "Kidney Tray",
+      "amount": 250.0,
+      "qty": 2
+    },
+    {
+      "item": "Urometer, Urine Jug",
+      "amount": 600.0,
+      "qty": 1
+    },
+    {
+      "item": "Vasofix Safety",
+      "amount": 400.0,
+      "qty": 4
+    },
+    {
+      "item": "Ambulance",
+      "amount": 1800.0,
+      "qty": 1
+    },
+    {
+      "item": "Food Charges (other than patient's diet provided by hospital)",
+      "amount": 900.0,
+      "qty": 1
+    },
+    {
+      "item": "Investigations - Labs",
+      "amount": 4600.0,
+      "qty": 1
+    }
+  ],
+  "total_charged": 77950.0,
+  "bill_text": "NEW LIFE MEDICAL CENTRE\nBengaluru - 560 078\n\nPatient Name: Ramesh Kumar\nUHID: B21300\nPhone: 9876543210\nAdmission: 2026-02-27    Discharge: 2026-03-02\n\n--------------------------------------------------------------\nDESCRIPTION                                   QTY       AMOUNT\n--------------------------------------------------------------\nRoom Rent (Shared) 2,800 x 3 days               3     8,400.00\nSurgeon Fee                                     1    44,000.00\nMedicines and Drugs                             1    16,000.00\nGloves                                         18     1,000.00\nKidney Tray                                     2       250.00\nUrometer, Urine Jug                             1       600.00\nVasofix Safety                                  4       400.00\nAmbulance                                       1     1,800.00\nFood Charges (other than patient's diet prov    1       900.00\nInvestigations - Labs                           1     4,600.00\n--------------------------------------------------------------\nGRAND TOTAL                                          77,950.00\n--------------------------------------------------------------"
+}

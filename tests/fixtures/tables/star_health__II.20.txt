@@ -1,0 +1,18 @@
+Shared accommodation: If the Insured
+Person occupies, a shared accommodation during in-patient hospitalization, then amount as per table given below will be payable for each continuous and completed
+[table] Sum Insured (Rs.) - Limit per day (Rs.)
+[table] 1,00,000/- - Not Available
+[table] 2,00,000/- - Not Available
+[table] 3,00,000/- - 800/- per day
+[table] 4,00,000/- - 800/- per day
+[table] 5,00,000/- - 800/- per day
+[table] 10,00,000/- - 800/- per day
+[table] 15,00,000/- - 800/- per day
+[table] 20,00,000/- - 1000/- per day
+[table] 25,00,000/- - 1000/- per day
+Note
+i. This benefit is applicable for Sum Insured of Rs. 3,00,000/- and above only.
+ii. This benefit is payable only if there is an admissible claim for hospitalization under the policy
+iii. This benefit will not be applicable where the sanction is on package rates
+iv. Insured’s stay in Intensive Care Unit or High Dependency Units / wards will not be counted for this purpose
+v. Payment under this benefit does not form part of the Sum Insured

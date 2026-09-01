@@ -1,0 +1,53 @@
+{
+  "bill_id": "B33",
+  "policy": "star_health",
+  "sum_insured": 400000,
+  "policy_start_date": "2020-04-23",
+  "admission_date": "2026-03-02",
+  "discharge_date": "2026-03-08",
+  "category": "room_rent_over",
+  "lines": [
+    {
+      "item": "Room Rent (Suite) 18,000 x 6 days",
+      "amount": 108000.0,
+      "qty": 6
+    },
+    {
+      "item": "ICU Charges 24,000 x 2 days",
+      "amount": 48000.0,
+      "qty": 2
+    },
+    {
+      "item": "Surgeon Fee",
+      "amount": 195000.0,
+      "qty": 1
+    },
+    {
+      "item": "Anaesthetist Charges",
+      "amount": 40000.0,
+      "qty": 1
+    },
+    {
+      "item": "Medicines and Drugs",
+      "amount": 86000.0,
+      "qty": 1
+    },
+    {
+      "item": "Operation Theatre Charges",
+      "amount": 58000.0,
+      "qty": 1
+    },
+    {
+      "item": "Investigations - CT, MRI, Labs",
+      "amount": 38000.0,
+      "qty": 1
+    },
+    {
+      "item": "Physiotherapy Sessions",
+      "amount": 9000.0,
+      "qty": 5
+    }
+  ],
+  "total_charged": 582000.0,
+  "bill_text": "CITY CARE MULTISPECIALITY HOSPITAL\nChennai - 600 034\n\nPatient Name: Arun Prakash\nUHID: B332500\nPhone: 9900112233\nAdmission: 2026-03-02    Discharge: 2026-03-08\n\n--------------------------------------------------------------\nDESCRIPTION                                   QTY       AMOUNT\n--------------------------------------------------------------\nRoom Rent (Suite) 18,000 x 6 days               6   108,000.00\nICU Charges 24,000 x 2 days                     2    48,000.00\nSurgeon Fee                                     1   195,000.00\nAnaesthetist Charges                            1    40,000.00\nMedicines and Drugs                             1    86,000.00\nOperation Theatre Charges                       1    58,000.00\nInvestigations - CT, MRI, Labs                  1    38,000.00\nPhysiotherapy Sessions                          5     9,000.00\n--------------------------------------------------------------\nGRAND TOTAL                                         582,000.00\n--------------------------------------------------------------"
+}

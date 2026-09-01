@@ -1,0 +1,48 @@
+{
+  "bill_id": "B22",
+  "policy": "star_health",
+  "sum_insured": 2500000,
+  "policy_start_date": "2017-12-01",
+  "admission_date": "2026-03-18",
+  "discharge_date": "2026-03-21",
+  "category": "clean",
+  "lines": [
+    {
+      "item": "Room Rent (Single A/C) 9,500 x 3 days",
+      "amount": 28500.0,
+      "qty": 3
+    },
+    {
+      "item": "Surgeon Fee",
+      "amount": 155000.0,
+      "qty": 1
+    },
+    {
+      "item": "Anaesthetist Charges",
+      "amount": 32000.0,
+      "qty": 1
+    },
+    {
+      "item": "Operation Theatre Charges",
+      "amount": 48000.0,
+      "qty": 1
+    },
+    {
+      "item": "Medicines and Drugs",
+      "amount": 44000.0,
+      "qty": 1
+    },
+    {
+      "item": "Investigations - Angiography",
+      "amount": 28000.0,
+      "qty": 1
+    },
+    {
+      "item": "Consultant Visit Charges",
+      "amount": 7500.0,
+      "qty": 3
+    }
+  ],
+  "total_charged": 343000.0,
+  "bill_text": "MATRUCHHAYA HOSPITAL\nIndore - 452 010\n\nPatient Name: Sunita Devi\nUHID: B222500\nPhone: 9812345678\nAdmission: 2026-03-18    Discharge: 2026-03-21\n\n--------------------------------------------------------------\nDESCRIPTION                                   QTY       AMOUNT\n--------------------------------------------------------------\nRoom Rent (Single A/C) 9,500 x 3 days           3    28,500.00\nSurgeon Fee                                     1   155,000.00\nAnaesthetist Charges                            1    32,000.00\nOperation Theatre Charges                       1    48,000.00\nMedicines and Drugs                             1    44,000.00\nInvestigations - Angiography                    1    28,000.00\nConsultant Visit Charges                        3     7,500.00\n--------------------------------------------------------------\nGRAND TOTAL                                         343,000.00\n--------------------------------------------------------------"
+}

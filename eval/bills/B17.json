@@ -1,0 +1,58 @@
+{
+  "bill_id": "B17",
+  "policy": "star_health",
+  "sum_insured": 300000,
+  "policy_start_date": "2022-05-27",
+  "admission_date": "2026-02-11",
+  "discharge_date": "2026-02-13",
+  "category": "non_payable",
+  "lines": [
+    {
+      "item": "Room Rent (Shared) 2,500 x 2 days",
+      "amount": 5000.0,
+      "qty": 2
+    },
+    {
+      "item": "Surgeon Fee",
+      "amount": 38000.0,
+      "qty": 1
+    },
+    {
+      "item": "Medicines and Drugs",
+      "amount": 12000.0,
+      "qty": 1
+    },
+    {
+      "item": "Gloves",
+      "amount": 750.0,
+      "qty": 12
+    },
+    {
+      "item": "Mask",
+      "amount": 300.0,
+      "qty": 20
+    },
+    {
+      "item": "Thermometer",
+      "amount": 250.0,
+      "qty": 1
+    },
+    {
+      "item": "Spirometre",
+      "amount": 1800.0,
+      "qty": 1
+    },
+    {
+      "item": "Steam Inhaler",
+      "amount": 900.0,
+      "qty": 1
+    },
+    {
+      "item": "Investigations - Labs",
+      "amount": 4100.0,
+      "qty": 1
+    }
+  ],
+  "total_charged": 63100.0,
+  "bill_text": "CITY CARE MULTISPECIALITY HOSPITAL\nChennai - 600 034\n\nPatient Name: Joseph Mathew\nUHID: B17300\nPhone: 9847001234\nAdmission: 2026-02-11    Discharge: 2026-02-13\n\n--------------------------------------------------------------\nDESCRIPTION                                   QTY       AMOUNT\n--------------------------------------------------------------\nRoom Rent (Shared) 2,500 x 2 days               2     5,000.00\nSurgeon Fee                                     1    38,000.00\nMedicines and Drugs                             1    12,000.00\nGloves                                         12       750.00\nMask                                           20       300.00\nThermometer                                     1       250.00\nSpirometre                                      1     1,800.00\nSteam Inhaler                                   1       900.00\nInvestigations - Labs                           1     4,100.00\n--------------------------------------------------------------\nGRAND TOTAL                                          63,100.00\n--------------------------------------------------------------"
+}

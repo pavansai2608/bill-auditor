@@ -1,0 +1,58 @@
+{
+  "bill_id": "B02",
+  "policy": "hdfc_ergo",
+  "sum_insured": 1000000,
+  "policy_start_date": "2021-04-01",
+  "admission_date": "2026-02-08",
+  "discharge_date": "2026-02-11",
+  "category": "non_payable",
+  "lines": [
+    {
+      "item": "Room Rent (Shared) 3,000 x 3 days",
+      "amount": 9000.0,
+      "qty": 3
+    },
+    {
+      "item": "Consultant Visit Charges",
+      "amount": 6000.0,
+      "qty": 3
+    },
+    {
+      "item": "Medicines and Drugs",
+      "amount": 18500.0,
+      "qty": 1
+    },
+    {
+      "item": "Gloves",
+      "amount": 900.0,
+      "qty": 15
+    },
+    {
+      "item": "Mask",
+      "amount": 450.0,
+      "qty": 30
+    },
+    {
+      "item": "Attendant Charges",
+      "amount": 1800.0,
+      "qty": 3
+    },
+    {
+      "item": "Television Charges",
+      "amount": 600.0,
+      "qty": 3
+    },
+    {
+      "item": "Laundry Charges",
+      "amount": 350.0,
+      "qty": 1
+    },
+    {
+      "item": "Investigations - Blood Panel",
+      "amount": 5200.0,
+      "qty": 1
+    }
+  ],
+  "total_charged": 42800.0,
+  "bill_text": "SUNRISE INSTITUTE OF MEDICAL SCIENCES\nPune - 411 001\n\nPatient Name: Sunita Devi\nUHID: B021000\nPhone: 9812345678\nAdmission: 2026-02-08    Discharge: 2026-02-11\n\n--------------------------------------------------------------\nDESCRIPTION                                   QTY       AMOUNT\n--------------------------------------------------------------\nRoom Rent (Shared) 3,000 x 3 days               3     9,000.00\nConsultant Visit Charges                        3     6,000.00\nMedicines and Drugs                             1    18,500.00\nGloves                                         15       900.00\nMask                                           30       450.00\nAttendant Charges                               3     1,800.00\nTelevision Charges                              3       600.00\nLaundry Charges                                 1       350.00\nInvestigations - Blood Panel                    1     5,200.00\n--------------------------------------------------------------\nGRAND TOTAL                                          42,800.00\n--------------------------------------------------------------"
+}

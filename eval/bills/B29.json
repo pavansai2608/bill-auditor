@@ -1,0 +1,43 @@
+{
+  "bill_id": "B29",
+  "policy": "hdfc_ergo",
+  "sum_insured": 500000,
+  "policy_start_date": "2020-02-11",
+  "admission_date": "2026-03-23",
+  "discharge_date": "2026-03-25",
+  "category": "clean",
+  "lines": [
+    {
+      "item": "Room Rent (Shared) 3,000 x 2 days",
+      "amount": 6000.0,
+      "qty": 2
+    },
+    {
+      "item": "Surgeon Fee",
+      "amount": 46000.0,
+      "qty": 1
+    },
+    {
+      "item": "Anaesthetist Charges",
+      "amount": 10000.0,
+      "qty": 1
+    },
+    {
+      "item": "Operation Theatre Charges",
+      "amount": 15000.0,
+      "qty": 1
+    },
+    {
+      "item": "Medicines and Drugs",
+      "amount": 14000.0,
+      "qty": 1
+    },
+    {
+      "item": "Investigations - Labs",
+      "amount": 4800.0,
+      "qty": 1
+    }
+  ],
+  "total_charged": 95800.0,
+  "bill_text": "NEW LIFE MEDICAL CENTRE\nBengaluru - 560 078\n\nPatient Name: Rakesh Patel\nUHID: B29500\nPhone: 9925001122\nAdmission: 2026-03-23    Discharge: 2026-03-25\n\n--------------------------------------------------------------\nDESCRIPTION                                   QTY       AMOUNT\n--------------------------------------------------------------\nRoom Rent (Shared) 3,000 x 2 days               2     6,000.00\nSurgeon Fee                                     1    46,000.00\nAnaesthetist Charges                            1    10,000.00\nOperation Theatre Charges                       1    15,000.00\nMedicines and Drugs                             1    14,000.00\nInvestigations - Labs                           1     4,800.00\n--------------------------------------------------------------\nGRAND TOTAL                                          95,800.00\n--------------------------------------------------------------"
+}

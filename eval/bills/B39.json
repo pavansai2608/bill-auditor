@@ -1,0 +1,58 @@
+{
+  "bill_id": "B39",
+  "policy": "niva_bupa",
+  "sum_insured": 1000000,
+  "policy_start_date": "2022-10-31",
+  "admission_date": "2026-03-26",
+  "discharge_date": "2026-03-31",
+  "category": "non_payable",
+  "lines": [
+    {
+      "item": "Room Rent (Single Private) 6,500 x 5 days",
+      "amount": 32500.0,
+      "qty": 5
+    },
+    {
+      "item": "Surgeon Fee",
+      "amount": 86000.0,
+      "qty": 1
+    },
+    {
+      "item": "Medicines and Drugs",
+      "amount": 33000.0,
+      "qty": 1
+    },
+    {
+      "item": "Gloves",
+      "amount": 1700.0,
+      "qty": 28
+    },
+    {
+      "item": "Attendant Charges",
+      "amount": 3500.0,
+      "qty": 5
+    },
+    {
+      "item": "Diaper of Any Type",
+      "amount": 1400.0,
+      "qty": 1
+    },
+    {
+      "item": "Creams Powders Lotions (toiletries are not payable, only prescribed medical pharmaceuticals payable)",
+      "amount": 800.0,
+      "qty": 1
+    },
+    {
+      "item": "Birth Certificate",
+      "amount": 200.0,
+      "qty": 1
+    },
+    {
+      "item": "Investigations - Labs and CT",
+      "amount": 14000.0,
+      "qty": 1
+    }
+  ],
+  "total_charged": 173100.0,
+  "bill_text": "SANJEEVANI HEALTHCARE\nKochi - 682 016\n\nPatient Name: Rakesh Patel\nUHID: B391000\nPhone: 9925001122\nAdmission: 2026-03-26    Discharge: 2026-03-31\n\n--------------------------------------------------------------\nDESCRIPTION                                   QTY       AMOUNT\n--------------------------------------------------------------\nRoom Rent (Single Private) 6,500 x 5 days       5    32,500.00\nSurgeon Fee                                     1    86,000.00\nMedicines and Drugs                             1    33,000.00\nGloves                                         28     1,700.00\nAttendant Charges                               5     3,500.00\nDiaper of Any Type                              1     1,400.00\nCreams Powders Lotions (toiletries are not p    1       800.00\nBirth Certificate                               1       200.00\nInvestigations - Labs and CT                    1    14,000.00\n--------------------------------------------------------------\nGRAND TOTAL                                         173,100.00\n--------------------------------------------------------------"
+}

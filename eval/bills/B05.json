@@ -1,0 +1,48 @@
+{
+  "bill_id": "B05",
+  "policy": "star_health",
+  "sum_insured": 1000000,
+  "policy_start_date": "2019-08-05",
+  "admission_date": "2026-02-20",
+  "discharge_date": "2026-02-23",
+  "category": "clean",
+  "lines": [
+    {
+      "item": "Room Rent (Shared) 4,000 x 3 days",
+      "amount": 12000.0,
+      "qty": 3
+    },
+    {
+      "item": "Surgeon Fee",
+      "amount": 55000.0,
+      "qty": 1
+    },
+    {
+      "item": "Anaesthetist Charges",
+      "amount": 12000.0,
+      "qty": 1
+    },
+    {
+      "item": "Operation Theatre Charges",
+      "amount": 18000.0,
+      "qty": 1
+    },
+    {
+      "item": "Medicines and Drugs",
+      "amount": 21000.0,
+      "qty": 1
+    },
+    {
+      "item": "Investigations - Ultrasound and Labs",
+      "amount": 7500.0,
+      "qty": 1
+    },
+    {
+      "item": "Consultant Visit Charges",
+      "amount": 4500.0,
+      "qty": 3
+    }
+  ],
+  "total_charged": 130000.0,
+  "bill_text": "NEW LIFE MEDICAL CENTRE\nBengaluru - 560 078\n\nPatient Name: Vikram Singh\nUHID: B051000\nPhone: 9823001122\nAdmission: 2026-02-20    Discharge: 2026-02-23\n\n--------------------------------------------------------------\nDESCRIPTION                                   QTY       AMOUNT\n--------------------------------------------------------------\nRoom Rent (Shared) 4,000 x 3 days               3    12,000.00\nSurgeon Fee                                     1    55,000.00\nAnaesthetist Charges                            1    12,000.00\nOperation Theatre Charges                       1    18,000.00\nMedicines and Drugs                             1    21,000.00\nInvestigations - Ultrasound and Labs            1     7,500.00\nConsultant Visit Charges                        3     4,500.00\n--------------------------------------------------------------\nGRAND TOTAL                                         130,000.00\n--------------------------------------------------------------"
+}

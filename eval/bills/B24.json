@@ -1,0 +1,38 @@
+{
+  "bill_id": "B24",
+  "policy": "hdfc_ergo",
+  "sum_insured": 500000,
+  "policy_start_date": "2019-04-08",
+  "admission_date": "2026-02-06",
+  "discharge_date": "2026-02-07",
+  "category": "sub_limit",
+  "lines": [
+    {
+      "item": "Room Rent (Shared) 3,000 x 1 day",
+      "amount": 3000.0,
+      "qty": 1
+    },
+    {
+      "item": "AYUSH Inpatient Treatment Package",
+      "amount": 92000.0,
+      "qty": 1
+    },
+    {
+      "item": "Consultant Visit Charges",
+      "amount": 4000.0,
+      "qty": 2
+    },
+    {
+      "item": "Medicines - Ayurvedic Preparations",
+      "amount": 11000.0,
+      "qty": 1
+    },
+    {
+      "item": "Investigations - Basic Panel",
+      "amount": 2600.0,
+      "qty": 1
+    }
+  ],
+  "total_charged": 112600.0,
+  "bill_text": "RELIANCE PARK HOSPITAL\nNashik - 422 005\n\nPatient Name: Meena Iyer\nUHID: B24500\nPhone: 9445566778\nAdmission: 2026-02-06    Discharge: 2026-02-07\n\n--------------------------------------------------------------\nDESCRIPTION                                   QTY       AMOUNT\n--------------------------------------------------------------\nRoom Rent (Shared) 3,000 x 1 day                1     3,000.00\nAYUSH Inpatient Treatment Package               1    92,000.00\nConsultant Visit Charges                        2     4,000.00\nMedicines - Ayurvedic Preparations              1    11,000.00\nInvestigations - Basic Panel                    1     2,600.00\n--------------------------------------------------------------\nGRAND TOTAL                                         112,600.00\n--------------------------------------------------------------"
+}

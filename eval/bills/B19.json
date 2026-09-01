@@ -1,0 +1,58 @@
+{
+  "bill_id": "B19",
+  "policy": "star_health",
+  "sum_insured": 400000,
+  "policy_start_date": "2021-06-03",
+  "admission_date": "2026-04-05",
+  "discharge_date": "2026-04-12",
+  "category": "room_rent_over",
+  "lines": [
+    {
+      "item": "Room Rent (Suite) 15,000 x 7 days",
+      "amount": 105000.0,
+      "qty": 7
+    },
+    {
+      "item": "ICU Charges 20,000 x 2 days",
+      "amount": 40000.0,
+      "qty": 2
+    },
+    {
+      "item": "Surgeon Fee",
+      "amount": 165000.0,
+      "qty": 1
+    },
+    {
+      "item": "Anaesthetist Charges",
+      "amount": 35000.0,
+      "qty": 1
+    },
+    {
+      "item": "Medicines and Drugs",
+      "amount": 78000.0,
+      "qty": 1
+    },
+    {
+      "item": "Operation Theatre Charges",
+      "amount": 52000.0,
+      "qty": 1
+    },
+    {
+      "item": "Investigations - PET CT",
+      "amount": 34000.0,
+      "qty": 1
+    },
+    {
+      "item": "Physiotherapy Sessions",
+      "amount": 8000.0,
+      "qty": 4
+    },
+    {
+      "item": "Ambulance Charges",
+      "amount": 3000.0,
+      "qty": 1
+    }
+  ],
+  "total_charged": 520000.0,
+  "bill_text": "GREENFIELD HOSPITAL & RESEARCH CENTRE\nHyderabad - 500 081\n\nPatient Name: Rakesh Patel\nUHID: B191000\nPhone: 9925001122\nAdmission: 2026-04-05    Discharge: 2026-04-12\n\n--------------------------------------------------------------\nDESCRIPTION                                   QTY       AMOUNT\n--------------------------------------------------------------\nRoom Rent (Suite) 15,000 x 7 days               7   105,000.00\nICU Charges 20,000 x 2 days                     2    40,000.00\nSurgeon Fee                                     1   165,000.00\nAnaesthetist Charges                            1    35,000.00\nMedicines and Drugs                             1    78,000.00\nOperation Theatre Charges                       1    52,000.00\nInvestigations - PET CT                         1    34,000.00\nPhysiotherapy Sessions                          4     8,000.00\nAmbulance Charges                               1     3,000.00\n--------------------------------------------------------------\nGRAND TOTAL                                         520,000.00\n--------------------------------------------------------------"
+}

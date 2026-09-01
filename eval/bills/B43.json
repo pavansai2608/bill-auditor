@@ -1,0 +1,44 @@
+{
+  "bill_id": "B43",
+  "policy": "hdfc_ergo",
+  "sum_insured": 500000,
+  "policy_start_date": "2021-10-09",
+  "admission_date": "2026-05-18",
+  "discharge_date": "2026-05-23",
+  "category": "schedule_missing",
+  "policy_schedule": null,
+  "lines": [
+    {
+      "item": "Room Rent (Shared) 3,200 x 5 days",
+      "amount": 16000.0,
+      "qty": 5
+    },
+    {
+      "item": "AYUSH Inpatient Treatment Package",
+      "amount": 88000.0,
+      "qty": 1
+    },
+    {
+      "item": "Consultant Visit Charges",
+      "amount": 6000.0,
+      "qty": 3
+    },
+    {
+      "item": "Medicines - Ayurvedic Preparations",
+      "amount": 14500.0,
+      "qty": 1
+    },
+    {
+      "item": "Investigations - Basic Panel",
+      "amount": 3800.0,
+      "qty": 1
+    },
+    {
+      "item": "Gloves",
+      "amount": 900.0,
+      "qty": 15
+    }
+  ],
+  "total_charged": 129200.0,
+  "bill_text": "SUNRISE INSTITUTE OF MEDICAL SCIENCES\nPune - 411 001\n\nPatient Name: Imran Qureshi\nUHID: B43500\nPhone: 9822001144\nAdmission: 2026-05-18    Discharge: 2026-05-23\n\n--------------------------------------------------------------\nDESCRIPTION                                   QTY       AMOUNT\n--------------------------------------------------------------\nRoom Rent (Shared) 3,200 x 5 days               5    16,000.00\nAYUSH Inpatient Treatment Package               1    88,000.00\nConsultant Visit Charges                        3     6,000.00\nMedicines - Ayurvedic Preparations              1    14,500.00\nInvestigations - Basic Panel                    1     3,800.00\nGloves                                         15       900.00\n--------------------------------------------------------------\nGRAND TOTAL                                         129,200.00\n--------------------------------------------------------------"
+}

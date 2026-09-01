@@ -1,0 +1,43 @@
+{
+  "bill_id": "B14",
+  "policy": "star_health",
+  "sum_insured": 1000000,
+  "policy_start_date": "2019-01-25",
+  "admission_date": "2026-02-02",
+  "discharge_date": "2026-02-05",
+  "category": "clean",
+  "lines": [
+    {
+      "item": "Room Rent (Single A/C) 5,000 x 3 days",
+      "amount": 15000.0,
+      "qty": 3
+    },
+    {
+      "item": "Surgeon Fee",
+      "amount": 72000.0,
+      "qty": 1
+    },
+    {
+      "item": "Anaesthetist Charges",
+      "amount": 16000.0,
+      "qty": 1
+    },
+    {
+      "item": "Operation Theatre Charges",
+      "amount": 24000.0,
+      "qty": 1
+    },
+    {
+      "item": "Medicines and Drugs",
+      "amount": 28000.0,
+      "qty": 1
+    },
+    {
+      "item": "Investigations - Labs and Imaging",
+      "amount": 11000.0,
+      "qty": 1
+    }
+  ],
+  "total_charged": 166000.0,
+  "bill_text": "MATRUCHHAYA HOSPITAL\nIndore - 452 010\n\nPatient Name: Meena Iyer\nUHID: B141000\nPhone: 9445566778\nAdmission: 2026-02-02    Discharge: 2026-02-05\n\n--------------------------------------------------------------\nDESCRIPTION                                   QTY       AMOUNT\n--------------------------------------------------------------\nRoom Rent (Single A/C) 5,000 x 3 days           3    15,000.00\nSurgeon Fee                                     1    72,000.00\nAnaesthetist Charges                            1    16,000.00\nOperation Theatre Charges                       1    24,000.00\nMedicines and Drugs                             1    28,000.00\nInvestigations - Labs and Imaging               1    11,000.00\n--------------------------------------------------------------\nGRAND TOTAL                                         166,000.00\n--------------------------------------------------------------"
+}

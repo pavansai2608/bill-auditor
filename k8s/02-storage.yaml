@@ -1,0 +1,37 @@
+# The model is the big one: 5 GB, and it must not live in an image.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ollama-models
+  namespace: bill-auditor
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 12Gi
+---
+# The Chroma collection and the BM25 index, written by ingestion and read by
+# retrieval.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: clause-data
+  namespace: bill-auditor
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 2Gi
+---
+# Every model call is cached by prompt hash. Losing this only costs time, but
+# it costs a lot of it.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: llm-cache
+  namespace: bill-auditor
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 2Gi
