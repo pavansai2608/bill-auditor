@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Current state (update this at the end of every phase)
 
-**Last updated: 2026-09-01, end of Phase 7 (second pass). v3 recorded at 54.9%.**
+**Last updated: 2026-09-01, end of Phase 8 (deterministic room limit). v4 recorded at 59.8%.**
 
 Built and passing:
 
@@ -12,13 +12,16 @@ Built and passing:
   bill, money, assumptions, splitter, ingest, retrieve, `audit.py` (the naive
   **v0** path), `agent.py` (the **v2** LangGraph retry loop), `second_pass.py`
   (the **v3** proportionate deduction, wired in as `audit_lines(..., second_pass=True)`
-  and `evaluate.py --second-pass`).
+  and `evaluate.py --second-pass`), `room_limit.py` (the **v4** deterministic
+  room rent lookup - policy + sum insured reads the table row directly, with no
+  judge call; the agent's `room_limit` node is path B beside the non-payable
+  fast path).
 - The clause index: 402 clauses in `data/clauses.json` (star_health 153,
   hdfc_ergo 144, niva_bupa 105) plus `non_payable.json`.
 - The eval harness: **44 bills** in `eval/bills/`, an answer key derived
   straight from the PDFs by `eval/derive_key.py`, and `eval/evaluate.py`
   (`--agent` scores the loop, without it scores naive v0).
-- 151 PyUnit tests, all passing.
+- 170 PyUnit tests, all passing.
 
 Not built yet — do not assume these exist:
 
@@ -33,39 +36,26 @@ Not built yet — do not assume these exist:
 - `CLAUDE_CODE_PROMPT_v2.md` is **not in the repo** — it is referenced below as
   the authoritative spec but is not present and is not gitignored.
 
-Last recorded eval: **v3, line accuracy 54.9%** — v0 24.4% → v2 51.2% → v3
-54.9%. Citation accuracy 44.4%, fabricated clauses 0, abstention recall 100%,
-false answers 0, dodges 22 (`eval/results.md`, 10 bills, 82 lines).
+Last recorded eval: **v4, line accuracy 59.8%** — v0 24.4% → v2 51.2% → v3
+54.9% → v4 59.8%. Citation accuracy 48.1%, fabricated clauses 0, abstention
+recall 100%, false answers 0, dodges 22 (`eval/results.md`, 10 bills, 82 lines).
 
-**Two things to know before touching the next phase:**
+**Where the remaining errors are:**
 
-- **`clean` fell 66.7% → 46.7% at v3, and it is not the second pass's fault.**
-  On B05 the judge read the Star Health room limit as 800/day against a
-  4,000/day charge that is inside the 5,000/day entitlement, so it reported a
-  breach that never happened; the pass then propagated that one wrong premise
-  to three more lines. A wrong per-day figure now costs four lines instead of
-  one, which is the case for the Phase 8 room-rent guardrail.
-- **Two eval rows were withdrawn and re-run, with the reasons recorded in
+- `waiting_period` is **0.0%** and `sub_limit` is **0.0%**. Neither has had any
+  work: waiting periods need the admission date against the policy start date
+  (`policy_start_date` is accepted by `audit_bill` and still unused), and
+  sub-limits dodge 5 of 6 lines. These two categories are where the next gain
+  is, not room rent.
+- `clean` recovered 46.7% → 73.3% and payout error 47.7% → 38.1% at v4, both
+  from the room limit becoming a table read instead of a judge call.
+- **Three eval rows were withdrawn and re-run, with the reasons recorded in
   `eval/results.md` rather than deleted.** The first v2 counted 18 correct
   `IRDAI-List-I` citations as fabrications (scorer bug); the first v3 took its
   proportionate ratio from any breached per-day cap, including an ICU line and
   a surgeon's fee (second-pass bug). Both now have tests:
-  `tests/test_eval_scoring.py` and `OnlyRoomRentDrivesTheDeductionTest`.
-
-**BLOCKER before v3 is run — the v2 row shows 18 fabricated clauses, and that
-number is wrong.** All 18 are the non-payable fast path citing `IRDAI-List-I`,
-which is what the answer key itself cites for those lines. `evaluate.py` builds
-`valid_ids` from `data/clauses.json` only, so the IRDAI list — a real, checkable
-source in `data/non_payable.json` — is counted as a fabrication. The v0 row
-scored 0 only because v0 has no fast path. Fix the counter in `evaluate.py`
-before recording v3, and re-run v2 so the row is truthful. Nothing in
-`core/agent.py` fabricates: `grade()` rejects an unknown id and `abstain()`
-sets `clause_id=None`.
-
-A second, smaller eval bug: `_calls()` in `evaluate.py` patches
-`core.audit.search`/`complete_structured`, but the agent path calls
-`core.agent.search`/`complete_structured`, so "Avg tool calls per bill" reads
-**0.0** on any `--agent` run. The metric is blind, not the loop.
+  `tests/test_eval_scoring.py` and `OnlyRoomRentDrivesTheDeductionTest`. The
+  first v3 row was also re-run after the ratio fix.
 
 ### END OF EVERY PHASE — do these three, without being asked
 
