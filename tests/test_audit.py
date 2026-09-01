@@ -11,7 +11,7 @@ from unittest import mock
 from core.audit import audit_line, audit_lines, format_report
 from core.bill import normalize_item
 from core.masking import contains_pii, mask_pii
-from core.models import BillLine, Clause, JudgeOutput
+from core.models import BillLine, Clause, JudgeOutput, Limit
 from core.retrieve import RetrievedClause
 
 
@@ -79,7 +79,12 @@ class AuditLineTest(unittest.TestCase):
 
     def test_confident_verdict_is_computed_in_python(self):
         verdict = self._run(
-            JudgeOutput(clause_id="II.1", limit_per_day=5000, confident=True, reasoning="capped")
+            JudgeOutput(
+                clause_id="II.1",
+                limits=[Limit(amount=5000, basis="per_day")],
+                confident=True,
+                reasoning="capped",
+            )
         )
         self.assertEqual(verdict.allowed, 25000)
         self.assertEqual(verdict.clause_id, "II.1")
@@ -89,7 +94,12 @@ class AuditLineTest(unittest.TestCase):
     def test_fabricated_clause_id_is_rejected(self):
         """The worst failure this system can produce - it must never pass."""
         verdict = self._run(
-            JudgeOutput(clause_id="99.9", limit_per_day=5000, confident=True, reasoning="made up")
+            JudgeOutput(
+                clause_id="99.9",
+                limits=[Limit(amount=5000, basis="per_day")],
+                confident=True,
+                reasoning="made up",
+            )
         )
         self.assertTrue(verdict.needs_human)
         self.assertIsNone(verdict.allowed)
@@ -98,14 +108,14 @@ class AuditLineTest(unittest.TestCase):
 
     def test_unconfident_judge_abstains(self):
         verdict = self._run(
-            JudgeOutput(clause_id="II.1", confident=False, reasoning="nothing applies")
+            JudgeOutput(clause_id="II.1", limits=[], confident=False, reasoning="nothing applies")
         )
         self.assertTrue(verdict.needs_human)
         self.assertIsNone(verdict.allowed)
 
     def test_nothing_retrieved_abstains(self):
         verdict = self._run(
-            JudgeOutput(clause_id=None, confident=True, reasoning=""), candidates=[]
+            JudgeOutput(clause_id=None, limits=[], confident=True, reasoning=""), candidates=[]
         )
         self.assertTrue(verdict.needs_human)
         self.assertIn("no policy clause", verdict.reason)
@@ -124,6 +134,66 @@ class AuditLineTest(unittest.TestCase):
         self.assertIsNone(verdict.allowed)
 
 
+class ScheduleTest(unittest.TestCase):
+    """A limit the wording defers to the schedule must never be guessed."""
+
+    def _run(self, schedule, clause_text):
+        from core.models import Clause, PolicySchedule
+        from core.retrieve import RetrievedClause
+
+        clause = Clause(
+            clause_id="B.1.1",
+            title="Hospitalization Expenses",
+            text=clause_text,
+            page=11,
+            policy="hdfc_ergo",
+            rule_type="room_rent",
+        )
+        candidate = RetrievedClause(clause=clause, score=0.95, matched_text=clause_text)
+        output = JudgeOutput(clause_id="B.1.1", limits=[], confident=True, reasoning="deferred")
+        with (
+            mock.patch("core.audit.search", return_value=[candidate]),
+            mock.patch("core.audit.complete_structured", return_value=output),
+        ):
+            return audit_line(
+                BillLine(item="room rent", amount=50000, qty=5),
+                "hdfc_ergo",
+                500000,
+                {"B.1.1"},
+                PolicySchedule(**schedule) if schedule is not None else None,
+            )
+
+    DEFERRING = (
+        "Room Rent, boarding, nursing expenses as provided by the Hospital. Room rent "
+        "limit shall be 'At Actuals' unless otherwise specified in the Policy Schedule."
+    )
+
+    def test_missing_schedule_abstains_with_the_reason_the_user_sees(self):
+        verdict = self._run(None, self.DEFERRING)
+        self.assertTrue(verdict.needs_human)
+        self.assertIsNone(verdict.allowed)
+        self.assertEqual(
+            verdict.reason,
+            "room limit is set by the policy schedule, which was not provided",
+        )
+
+    def test_blank_schedule_is_treated_as_missing(self):
+        verdict = self._run({}, self.DEFERRING)
+        self.assertTrue(verdict.needs_human)
+        self.assertIn("policy schedule", verdict.reason)
+
+    def test_supplied_schedule_supplies_the_limit(self):
+        verdict = self._run({"room_limit_per_day": 6000}, self.DEFERRING)
+        self.assertFalse(verdict.needs_human)
+        self.assertEqual(verdict.allowed, 30000, "6,000 x 5 days")
+        self.assertTrue(verdict.over_limit)
+        self.assertEqual(verdict.limit_per_day, 6000)
+
+    def test_a_clause_that_states_its_own_limit_needs_no_schedule(self):
+        verdict = self._run(None, "Room rent is limited to Rs 5,000 per day.")
+        self.assertFalse(verdict.needs_human, "no deferral, so no abstention")
+
+
 class AuditReportTest(unittest.TestCase):
     def test_totals_and_flag_count(self):
         lines = [
@@ -131,7 +201,12 @@ class AuditReportTest(unittest.TestCase):
             BillLine(item="gloves", amount=1200, qty=1),
         ]
         outputs = [
-            JudgeOutput(clause_id="II.1", limit_per_day=5000, confident=True, reasoning="a"),
+            JudgeOutput(
+                clause_id="II.1",
+                limits=[Limit(amount=5000, basis="per_day")],
+                confident=True,
+                reasoning="a",
+            ),
             JudgeOutput(clause_id="II.1", confident=False, reasoning="b"),
         ]
         with (
