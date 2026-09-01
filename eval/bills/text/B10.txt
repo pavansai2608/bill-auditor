@@ -1,0 +1,22 @@
+SUNRISE INSTITUTE OF MEDICAL SCIENCES
+Pune - 411 001
+
+Patient Name: Anjali Verma
+UHID: B102500
+Phone: 9718002233
+Admission: 2026-01-09    Discharge: 2026-01-12
+
+--------------------------------------------------------------
+DESCRIPTION                                   QTY       AMOUNT
+--------------------------------------------------------------
+Room Rent (Single Private) 9,000 x 3 days       3    27,000.00
+Surgeon Fee                                     1   140,000.00
+Anaesthetist Charges                            1    28,000.00
+Operation Theatre Charges                       1    45,000.00
+Medicines and Drugs                             1    52,000.00
+Investigations - CT Angiogram                   1    22,000.00
+Consultant Visit Charges                        3     9,000.00
+Ambulance Charges                               1     2,500.00
+--------------------------------------------------------------
+GRAND TOTAL                                         325,500.00
+--------------------------------------------------------------

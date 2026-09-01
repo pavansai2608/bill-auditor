@@ -1,0 +1,24 @@
+NEW LIFE MEDICAL CENTRE
+Bengaluru - 560 078
+
+Patient Name: Ramesh Kumar
+UHID: B21300
+Phone: 9876543210
+Admission: 2026-02-27    Discharge: 2026-03-02
+
+--------------------------------------------------------------
+DESCRIPTION                                   QTY       AMOUNT
+--------------------------------------------------------------
+Room Rent (Shared) 2,800 x 3 days               3     8,400.00
+Surgeon Fee                                     1    44,000.00
+Medicines and Drugs                             1    16,000.00
+Gloves                                         18     1,000.00
+Kidney Tray                                     2       250.00
+Urometer, Urine Jug                             1       600.00
+Vasofix Safety                                  4       400.00
+Ambulance                                       1     1,800.00
+Food Charges (other than patient's diet prov    1       900.00
+Investigations - Labs                           1     4,600.00
+--------------------------------------------------------------
+GRAND TOTAL                                          77,950.00
+--------------------------------------------------------------

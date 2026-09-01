@@ -1,0 +1,23 @@
+NEW LIFE MEDICAL CENTRE
+Bengaluru - 560 078
+
+Patient Name: Arun Prakash
+UHID: B13500
+Phone: 9900112233
+Admission: 2026-03-05    Discharge: 2026-03-09
+
+--------------------------------------------------------------
+DESCRIPTION                                   QTY       AMOUNT
+--------------------------------------------------------------
+Room Rent (Shared) 3,200 x 4 days               4    12,800.00
+Surgeon Fee                                     1    58,000.00
+Medicines and Drugs                             1    21,500.00
+Attendant Charges                               4     2,400.00
+Private Nurses Charges - Special Nursing Cha    2     6,000.00
+Surcharges                                      1     1,500.00
+Photocopies Charges                             1       200.00
+Certificate Charges                             1       300.00
+Investigations - Labs                           1     5,800.00
+--------------------------------------------------------------
+GRAND TOTAL                                         108,500.00
+--------------------------------------------------------------

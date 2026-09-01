@@ -1,0 +1,20 @@
+SUNRISE INSTITUTE OF MEDICAL SCIENCES
+Pune - 411 001
+
+Patient Name: Meena Iyer
+UHID: B341000
+Phone: 9445566778
+Admission: 2026-04-08    Discharge: 2026-04-10
+
+--------------------------------------------------------------
+DESCRIPTION                                   QTY       AMOUNT
+--------------------------------------------------------------
+Room Rent (Single A/C) 5,500 x 2 days           2    11,000.00
+Hysterectomy - Surgeon Fee                      1   118,000.00
+Anaesthetist Charges                            1    24,000.00
+Operation Theatre Charges                       1    32,000.00
+Medicines and Drugs                             1    18,000.00
+Investigations - USG and Labs                   1     7,600.00
+--------------------------------------------------------------
+GRAND TOTAL                                         210,600.00
+--------------------------------------------------------------

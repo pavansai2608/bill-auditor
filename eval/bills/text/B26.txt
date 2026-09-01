@@ -1,0 +1,24 @@
+SUNRISE INSTITUTE OF MEDICAL SCIENCES
+Pune - 411 001
+
+Patient Name: Fatima Sheikh
+UHID: B261000
+Phone: 9701234567
+Admission: 2026-03-09    Discharge: 2026-03-15
+
+--------------------------------------------------------------
+DESCRIPTION                                   QTY       AMOUNT
+--------------------------------------------------------------
+Room Rent (Single A/C) 7,000 x 6 days           6    42,000.00
+Surgeon Fee                                     1    98,000.00
+Medicines and Drugs                             1    41,000.00
+Gloves                                         35     2,100.00
+Nimbus Bed Or Water Or Air Bed Charges          6     4,500.00
+Lumbo Sacral Belt                               1     1,900.00
+Abdominal Binder                                1     1,600.00
+Carry Bags                                      1       150.00
+Guest Services                                  1       800.00
+Investigations - MRI                            1    13,500.00
+--------------------------------------------------------------
+GRAND TOTAL                                         205,550.00
+--------------------------------------------------------------

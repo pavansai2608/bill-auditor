@@ -1,0 +1,22 @@
+ASHIRVAD SUPER SPECIALITY HOSPITAL
+Ahmedabad - 380 015
+
+Patient Name: Meena Iyer
+UHID: B04300
+Phone: 9445566778
+Admission: 2026-04-02    Discharge: 2026-04-09
+
+--------------------------------------------------------------
+DESCRIPTION                                   QTY       AMOUNT
+--------------------------------------------------------------
+Room Rent (Single A/C) 9,500 x 7 days           7    66,500.00
+Nursing Charges                                 7    14,000.00
+Surgeon Fee                                     1    95,000.00
+Assistant Surgeon Fee                           1    25,000.00
+Medicines and Drugs                             1    42,000.00
+Operation Theatre Charges                       1    30,000.00
+Physiotherapy Sessions                          4     6,000.00
+Investigations - MRI                            1    12,000.00
+--------------------------------------------------------------
+GRAND TOTAL                                         290,500.00
+--------------------------------------------------------------

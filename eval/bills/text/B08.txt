@@ -1,0 +1,21 @@
+RELIANCE PARK HOSPITAL
+Nashik - 422 005
+
+Patient Name: Lakshmi Narayanan
+UHID: B08500
+Phone: 9840112233
+Admission: 2026-02-14    Discharge: 2026-02-16
+
+--------------------------------------------------------------
+DESCRIPTION                                   QTY       AMOUNT
+--------------------------------------------------------------
+Room Rent (Shared) 3,500 x 2 days               2     7,000.00
+Hernia Repair - Surgeon Fee                     1    52,000.00
+Anaesthetist Charges                            1    11,000.00
+Mesh Implant                                    1    14,000.00
+Operation Theatre Charges                       1    16,000.00
+Medicines and Drugs                             1     8,400.00
+Pre-operative Investigations                    1     4,200.00
+--------------------------------------------------------------
+GRAND TOTAL                                         112,600.00
+--------------------------------------------------------------

@@ -1,0 +1,23 @@
+ASHIRVAD SUPER SPECIALITY HOSPITAL
+Ahmedabad - 380 015
+
+Patient Name: Lakshmi Narayanan
+UHID: B282500
+Phone: 9840112233
+Admission: 2026-01-05    Discharge: 2026-01-13
+
+--------------------------------------------------------------
+DESCRIPTION                                   QTY       AMOUNT
+--------------------------------------------------------------
+Room Rent (Suite) 22,000 x 8 days               8   176,000.00
+ICU Charges 28,000 x 3 days                     3    84,000.00
+Surgeon Fee                                     1   240,000.00
+Anaesthetist Charges                            1    48,000.00
+Medicines and Drugs                             1   112,000.00
+Operation Theatre Charges                       1    72,000.00
+Investigations - PET CT and Labs                1    46,000.00
+Ventilator Charges                              3    36,000.00
+Ambulance Charges                               1     4,000.00
+--------------------------------------------------------------
+GRAND TOTAL                                         818,000.00
+--------------------------------------------------------------

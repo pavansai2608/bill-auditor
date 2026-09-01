@@ -1,0 +1,20 @@
+MATRUCHHAYA HOSPITAL
+Indore - 452 010
+
+Patient Name: Meena Iyer
+UHID: B141000
+Phone: 9445566778
+Admission: 2026-02-02    Discharge: 2026-02-05
+
+--------------------------------------------------------------
+DESCRIPTION                                   QTY       AMOUNT
+--------------------------------------------------------------
+Room Rent (Single A/C) 5,000 x 3 days           3    15,000.00
+Surgeon Fee                                     1    72,000.00
+Anaesthetist Charges                            1    16,000.00
+Operation Theatre Charges                       1    24,000.00
+Medicines and Drugs                             1    28,000.00
+Investigations - Labs and Imaging               1    11,000.00
+--------------------------------------------------------------
+GRAND TOTAL                                         166,000.00
+--------------------------------------------------------------

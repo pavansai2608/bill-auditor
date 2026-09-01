@@ -1,0 +1,23 @@
+GREENFIELD HOSPITAL & RESEARCH CENTRE
+Hyderabad - 500 081
+
+Patient Name: Rakesh Patel
+UHID: B191000
+Phone: 9925001122
+Admission: 2026-04-05    Discharge: 2026-04-12
+
+--------------------------------------------------------------
+DESCRIPTION                                   QTY       AMOUNT
+--------------------------------------------------------------
+Room Rent (Suite) 15,000 x 7 days               7   105,000.00
+ICU Charges 20,000 x 2 days                     2    40,000.00
+Surgeon Fee                                     1   165,000.00
+Anaesthetist Charges                            1    35,000.00
+Medicines and Drugs                             1    78,000.00
+Operation Theatre Charges                       1    52,000.00
+Investigations - PET CT                         1    34,000.00
+Physiotherapy Sessions                          4     8,000.00
+Ambulance Charges                               1     3,000.00
+--------------------------------------------------------------
+GRAND TOTAL                                         520,000.00
+--------------------------------------------------------------

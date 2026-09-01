@@ -1,0 +1,20 @@
+GREENFIELD HOSPITAL & RESEARCH CENTRE
+Hyderabad - 500 081
+
+Patient Name: Arun Prakash
+UHID: B03500
+Phone: 9900112233
+Admission: 2026-01-14    Discharge: 2026-01-15
+
+--------------------------------------------------------------
+DESCRIPTION                                   QTY       AMOUNT
+--------------------------------------------------------------
+Room Rent (Shared) 2,500 x 1 day                1     2,500.00
+Cataract Surgery - Right Eye Package            1    68,000.00
+Intraocular Lens                                1    22,000.00
+Surgeon Fee                                     1    18,000.00
+Medicines and Drugs                             1     3,200.00
+Pre-operative Investigations                    1     2,800.00
+--------------------------------------------------------------
+GRAND TOTAL                                         116,500.00
+--------------------------------------------------------------

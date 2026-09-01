@@ -1,0 +1,19 @@
+RELIANCE PARK HOSPITAL
+Nashik - 422 005
+
+Patient Name: Meena Iyer
+UHID: B24500
+Phone: 9445566778
+Admission: 2026-02-06    Discharge: 2026-02-07
+
+--------------------------------------------------------------
+DESCRIPTION                                   QTY       AMOUNT
+--------------------------------------------------------------
+Room Rent (Shared) 3,000 x 1 day                1     3,000.00
+AYUSH Inpatient Treatment Package               1    92,000.00
+Consultant Visit Charges                        2     4,000.00
+Medicines - Ayurvedic Preparations              1    11,000.00
+Investigations - Basic Panel                    1     2,600.00
+--------------------------------------------------------------
+GRAND TOTAL                                         112,600.00
+--------------------------------------------------------------

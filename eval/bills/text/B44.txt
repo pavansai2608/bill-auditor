@@ -1,0 +1,21 @@
+SANJEEVANI HEALTHCARE
+Kochi - 682 016
+
+Patient Name: Thomas Varghese
+UHID: B44500
+Phone: 9847556677
+Admission: 2026-05-25    Discharge: 2026-05-29
+
+--------------------------------------------------------------
+DESCRIPTION                                   QTY       AMOUNT
+--------------------------------------------------------------
+Room Rent (Single Private) 8,500 x 4 days       4    34,000.00
+Surgeon Fee                                     1    74,000.00
+Anaesthetist Charges                            1    16,000.00
+Operation Theatre Charges                       1    22,000.00
+Medicines and Drugs                             1    27,500.00
+Investigations - Ultrasound and Labs            1     9,200.00
+Gloves                                         20     1,200.00
+--------------------------------------------------------------
+GRAND TOTAL                                         183,900.00
+--------------------------------------------------------------

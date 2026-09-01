@@ -1,0 +1,23 @@
+SANJEEVANI HEALTHCARE
+Kochi - 682 016
+
+Patient Name: Rakesh Patel
+UHID: B391000
+Phone: 9925001122
+Admission: 2026-03-26    Discharge: 2026-03-31
+
+--------------------------------------------------------------
+DESCRIPTION                                   QTY       AMOUNT
+--------------------------------------------------------------
+Room Rent (Single Private) 6,500 x 5 days       5    32,500.00
+Surgeon Fee                                     1    86,000.00
+Medicines and Drugs                             1    33,000.00
+Gloves                                         28     1,700.00
+Attendant Charges                               5     3,500.00
+Diaper of Any Type                              1     1,400.00
+Creams Powders Lotions (toiletries are not p    1       800.00
+Birth Certificate                               1       200.00
+Investigations - Labs and CT                    1    14,000.00
+--------------------------------------------------------------
+GRAND TOTAL                                         173,100.00
+--------------------------------------------------------------

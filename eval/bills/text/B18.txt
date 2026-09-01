@@ -1,0 +1,19 @@
+SUNRISE INSTITUTE OF MEDICAL SCIENCES
+Pune - 411 001
+
+Patient Name: Lakshmi Narayanan
+UHID: B18500
+Phone: 9840112233
+Admission: 2026-03-28    Discharge: 2026-03-30
+
+--------------------------------------------------------------
+DESCRIPTION                                   QTY       AMOUNT
+--------------------------------------------------------------
+Room Rent (Shared) 3,000 x 2 days               2     6,000.00
+Cataract Surgery - Left Eye                     1    56,000.00
+Intraocular Lens                                1    18,000.00
+Medicines and Drugs                             1     2,800.00
+Pre-operative Investigations                    1     2,400.00
+--------------------------------------------------------------
+GRAND TOTAL                                          85,200.00
+--------------------------------------------------------------

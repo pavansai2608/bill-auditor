@@ -1,0 +1,22 @@
+SANJEEVANI HEALTHCARE
+Kochi - 682 016
+
+Patient Name: Arun Prakash
+UHID: B231000
+Phone: 9900112233
+Admission: 2026-01-22    Discharge: 2026-01-27
+
+--------------------------------------------------------------
+DESCRIPTION                                   QTY       AMOUNT
+--------------------------------------------------------------
+Room Rent (Single Private) 13,500 x 5 days      5    67,500.00
+Nursing Charges                                 5    15,000.00
+Surgeon Fee                                     1   125,000.00
+Anaesthetist Charges                            1    26,000.00
+Medicines and Drugs                             1    48,000.00
+Operation Theatre Charges                       1    35,000.00
+Investigations - CT and Labs                    1    19,500.00
+Attendant Charges                               5     3,000.00
+--------------------------------------------------------------
+GRAND TOTAL                                         339,000.00
+--------------------------------------------------------------

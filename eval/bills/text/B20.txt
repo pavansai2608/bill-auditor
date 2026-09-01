@@ -1,0 +1,21 @@
+ASHIRVAD SUPER SPECIALITY HOSPITAL
+Ahmedabad - 380 015
+
+Patient Name: Anjali Verma
+UHID: B201000
+Phone: 9718002233
+Admission: 2026-01-31    Discharge: 2026-02-03
+
+--------------------------------------------------------------
+DESCRIPTION                                   QTY       AMOUNT
+--------------------------------------------------------------
+Room Rent (Single A/C) 6,000 x 3 days           3    18,000.00
+Surgeon Fee                                     1    84,000.00
+Anaesthetist Charges                            1    18,000.00
+Operation Theatre Charges                       1    26,000.00
+Medicines and Drugs                             1    31,000.00
+Investigations - Labs and CT                    1    15,000.00
+Consultant Visit Charges                        3     5,400.00
+--------------------------------------------------------------
+GRAND TOTAL                                         197,400.00
+--------------------------------------------------------------
