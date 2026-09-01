@@ -1,11 +1,18 @@
 #!/bin/sh
-# Rejects commit messages that do not follow Conventional Commits.
+# Rejects commit messages that do not follow Conventional Commits, exceed 72
+# characters, or carry no [BA-XX] ticket.
+#
 # Install with: git config core.hooksPath .githooks
+# Check it is installed with: git config --get core.hooksPath
+#
+# The ticket check exists because it was missing once and every commit in a
+# whole build went out without one.
 
 MSG_FILE="$1"
 SUBJECT=$(head -n 1 "$MSG_FILE")
 
-# Let merge, revert and fixup commits through untouched.
+# Let merge, revert and fixup commits through untouched. A fixup is squashed
+# into its target, whose message already carries the ticket.
 case "$SUBJECT" in
     "Merge "*|"Revert "*|"fixup!"*|"squash!"*|"#"*) exit 0 ;;
 esac
@@ -14,14 +21,25 @@ TYPES='feat|fix|refactor|test|docs|chore|perf|ci|build'
 
 if ! printf '%s' "$SUBJECT" | grep -Eq "^($TYPES)(\([a-z0-9._-]+\))?!?: .+"; then
     echo "commit-msg: BLOCKED - subject is not a Conventional Commit." >&2
-    echo "  expected: <type>(<scope>): <description>" >&2
+    echo "  expected: <type>(<scope>): <description> [BA-XX]" >&2
     echo "  types:    $TYPES" >&2
     echo "  got:      $SUBJECT" >&2
     exit 1
 fi
 
+if ! printf '%s' "$SUBJECT" | grep -Eq '\[BA-[0-9]+\]$'; then
+    echo "commit-msg: BLOCKED - no [BA-XX] ticket at the end of the subject." >&2
+    echo "  expected: <type>(<scope>): <description> [BA-XX]" >&2
+    echo "  got:      $SUBJECT" >&2
+    echo "" >&2
+    echo "  Next free number:" >&2
+    echo "    git log --all --format=%s | grep -o '\[BA-[0-9]*\]' | grep -o '[0-9]*' | sort -n | tail -1" >&2
+    exit 1
+fi
+
 if [ "${#SUBJECT}" -gt 72 ]; then
     echo "commit-msg: BLOCKED - subject is ${#SUBJECT} chars, limit is 72." >&2
+    echo "  the [BA-XX] ticket counts towards the limit." >&2
     exit 1
 fi
 

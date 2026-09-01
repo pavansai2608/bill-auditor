@@ -1,3 +1,6 @@
 node_modules/
 dist/
 .env
+
+# tsc -b writes this; it is build state, not source.
+*.tsbuildinfo

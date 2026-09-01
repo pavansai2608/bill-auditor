@@ -5,19 +5,25 @@ would have to be true for the other option to win. Do not relitigate these.
 
 ---
 
-## D-01 — no ticket ids in commit messages
+## D-01 — every commit carries a [BA-XX] ticket
 
-**Choice.** Commit messages are Conventional Commits with no `[BA-XX]` suffix.
+**Choice.** Conventional Commits with a `[BA-XX]` ticket at the end of the
+subject, enforced by `.githooks/commit-msg`.
 
-**Why.** `PHASES.md` Part 4 asks for a ticket in every message, but this is a
-solo project with no issue tracker, and the repo owner had already dropped the
-ids before that spec was written. A ticket id that points at nothing is noise in
-`git log` forever. The owner's instruction supersedes Part 4 on this point.
+**History of this decision.** The tickets were dropped once, on the grounds that
+there is no issue tracker, and then reinstated: `PHASES.md` Part 4 and the
+Definition of Done both require them, and the numbering is a usable sequence
+even without a tracker behind it. `GIT_FIX.md` is the rewrite that put them
+back across the whole history.
 
-**When the other option wins.** If an issue tracker is ever added, start the
-numbering fresh from the tracker's own ids rather than resuming the old `BA-`
-series — commits before `262e6eb` carry those, and that history is not
-rewritten.
+**Why the enforcement matters more than the choice.** They went missing from an
+entire build without anything failing, for two reasons at once: `core.hooksPath`
+was never set, so no hook ran; and the hook had no ticket check in it. Both are
+fixed, and `tests/test_hooks.py` runs the real hook against a message with no
+ticket and asserts it is rejected.
+
+**When the other option wins.** If a tracker is ever adopted, switch to its ids
+and change the pattern in the hook and its test together.
 
 ---
 
