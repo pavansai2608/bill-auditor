@@ -156,7 +156,7 @@ class NeverRetryAConfidentAnswerTest(unittest.TestCase):
 
     def test_a_confident_answer_is_accepted_on_the_first_attempt(self):
         verdict, trace = run_line(
-            "Room Rent (Single A/C) 8,000 x 5 days",
+            "Surgeon Fee",
             40000,
             5,
             judged(limits=[Limit(amount=5000, basis="per_day")]),
@@ -218,7 +218,7 @@ class NeverRetryAConfidentAnswerTest(unittest.TestCase):
             mock.patch("core.agent.complete_structured", side_effect=outputs),
         ):
             verdict, trace = audit_line(
-                BillLine(item="Room Rent 8,000 x 5 days", amount=40000, qty=5),
+                BillLine(item="Surgeon Fee", amount=40000, qty=5),
                 POLICY,
                 300000,
                 VALID,
@@ -226,6 +226,35 @@ class NeverRetryAConfidentAnswerTest(unittest.TestCase):
         self.assertEqual(verdict.allowed, 25000)
         self.assertEqual(trace[-1]["resolved_on_attempt"], 2)
         self.assertTrue(trace[-1]["retry_changed_answer"], "the retry is what produced the answer")
+
+
+class RoomRentSkipsTheJudgeTest(unittest.TestCase):
+    """Path B: the room line is a table read, so the model is never asked.
+
+    This is what the two fixtures above had to be changed for. It is also the
+    change that took `clean` from 46.7% to 73.3%: the judge had been reporting
+    800/day where the table grants a room category, and the second pass then
+    spread that invented breach across three more lines.
+    """
+
+    def test_a_room_line_is_settled_without_a_model_call(self):
+        with (
+            mock.patch("core.agent.search", side_effect=AssertionError("must not retrieve")),
+            mock.patch(
+                "core.agent.complete_structured", side_effect=AssertionError("must not judge")
+            ),
+        ):
+            verdict, trace = audit_line(
+                BillLine(item="Room Rent (Single A/C) 8,000 x 5 days", amount=40000, qty=5),
+                POLICY,
+                300000,
+                VALID,
+            )
+        self.assertEqual(verdict.allowed, 25000)
+        self.assertEqual(verdict.limit_per_day, 5000)
+        self.assertTrue(verdict.over_limit)
+        self.assertEqual(trace[-1]["judge_calls"], 0)
+        self.assertTrue(trace[-1]["fast_path"])
 
 
 class ThresholdTest(unittest.TestCase):
