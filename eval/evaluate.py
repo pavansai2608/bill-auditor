@@ -136,7 +136,12 @@ def is_filled(entry: dict) -> bool:
 
 
 def score_bill(
-    bill_id: str, expected: dict, valid_ids: set[str], run: Run, use_agent: bool = False
+    bill_id: str,
+    expected: dict,
+    valid_ids: set[str],
+    run: Run,
+    use_agent: bool = False,
+    second_pass: bool = False,
 ) -> dict | None:
     from core.audit import audit_lines
 
@@ -166,6 +171,7 @@ def score_bill(
             schedule,
             Assumptions(),
             use_agent=use_agent,
+            second_pass=second_pass,
         )
     finally:
         restore()
@@ -333,6 +339,11 @@ def main() -> int:
     parser.add_argument(
         "--agent", action="store_true", help="score the retry loop (v2), not the naive path (v0)"
     )
+    parser.add_argument(
+        "--second-pass",
+        action="store_true",
+        help="apply the proportionate-deduction second pass (v3)",
+    )
     args = parser.parse_args()
 
     setup_logging("WARNING")
@@ -357,7 +368,14 @@ def main() -> int:
     for position, bill_id in enumerate(wanted, start=1):
         expected = key[bill_id]
         print(f"[{position}/{len(wanted)}] {bill_id} ({expected['policy']})", flush=True)
-        score_bill(bill_id, expected, valid_by_policy[expected["policy"]], run, args.agent)
+        score_bill(
+            bill_id,
+            expected,
+            valid_by_policy[expected["policy"]],
+            run,
+            args.agent,
+            args.second_pass,
+        )
 
     report = render(run, args.version)
     print()

@@ -2,6 +2,71 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Current state (update this at the end of every phase)
+
+**Last updated: 2026-09-01, Phase 7 code complete, v3 eval NOT yet run — see the blocker below.**
+
+Built and passing:
+
+- `core/` — config, llm (Ollama + disk cache), logging_conf, models, masking,
+  bill, money, assumptions, splitter, ingest, retrieve, `audit.py` (the naive
+  **v0** path), `agent.py` (the **v2** LangGraph retry loop), `second_pass.py`
+  (the **v3** proportionate deduction, wired in as `audit_lines(..., second_pass=True)`
+  and `evaluate.py --second-pass`).
+- The clause index: 402 clauses in `data/clauses.json` (star_health 153,
+  hdfc_ergo 144, niva_bupa 105) plus `non_payable.json`.
+- The eval harness: **44 bills** in `eval/bills/`, an answer key derived
+  straight from the PDFs by `eval/derive_key.py`, and `eval/evaluate.py`
+  (`--agent` scores the loop, without it scores naive v0).
+- 138 PyUnit tests, all passing.
+
+Not built yet — do not assume these exist:
+
+- `core/guardrails.py` — **NOT BUILT.** The guardrails that do exist
+  live inline: **2** (fabricated citation) in `agent.grade()`, **5** (rerank
+  score below threshold) in `agent.retrieve()`/`agent.judge()` and in
+  `audit.py`, **7** (PII) in `core/masking.py`. There is no central module and
+  not all 8 are implemented.
+- `api/`, `frontend/`, `k8s/` — **empty scaffolding.** `api/` holds a single
+  empty `__init__.py`; the FastAPI job-polling service described under Layout
+  is a design, not code. `tests/e2e/` does not exist either.
+- `CLAUDE_CODE_PROMPT_v2.md` is **not in the repo** — it is referenced below as
+  the authoritative spec but is not present and is not gitignored.
+
+Last recorded eval: **v2, line accuracy 51.2%** (v0 was 24.4%), citation
+accuracy 33.3%, abstention recall 100%, dodges down 42 → 22, false answers 0,
+p95 267.1s (`eval/results.md`, 10 bills, 82 lines).
+
+**BLOCKER before v3 is run — the v2 row shows 18 fabricated clauses, and that
+number is wrong.** All 18 are the non-payable fast path citing `IRDAI-List-I`,
+which is what the answer key itself cites for those lines. `evaluate.py` builds
+`valid_ids` from `data/clauses.json` only, so the IRDAI list — a real, checkable
+source in `data/non_payable.json` — is counted as a fabrication. The v0 row
+scored 0 only because v0 has no fast path. Fix the counter in `evaluate.py`
+before recording v3, and re-run v2 so the row is truthful. Nothing in
+`core/agent.py` fabricates: `grade()` rejects an unknown id and `abstain()`
+sets `clause_id=None`.
+
+A second, smaller eval bug: `_calls()` in `evaluate.py` patches
+`core.audit.search`/`complete_structured`, but the agent path calls
+`core.agent.search`/`complete_structured`, so "Avg tool calls per bill" reads
+**0.0** on any `--agent` run. The metric is blind, not the loop.
+
+### END OF EVERY PHASE — do these three, without being asked
+
+1. Run the eval and record it:
+   `uv run python eval/evaluate.py --quick --agent --version vN --write`
+   (bump `N`; add `--second-pass` from Phase 7 onward).
+2. Update this **Current state** block: what is built, what is not, and the
+   latest version and score.
+3. Output the four blocks — WHAT I DID / FILES CHANGED / GIT COMMANDS /
+   VERIFY IT WORKED — and stop, so the repo owner runs the git commands.
+
+**If the score DROPS from the previous version, stop and explain why before
+starting the next phase.** Do not carry on past a regression;
+`git bisect run python eval/evaluate.py --quick --threshold 0.80` finds the
+commit that caused it.
+
 ## Working rules (non-negotiable)
 
 1. **Never run a git command.** Not `add`, `commit`, `push`, `merge`, `tag`, `config`, `checkout` — none. The repo owner runs all of them. Output the exact commands as text under a `## GIT COMMANDS — run these yourself` heading instead.
@@ -9,7 +74,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 3. **After every piece of work, output exactly four blocks:** `## WHAT I DID` (3–6 plain sentences), `## FILES CHANGED`, `## GIT COMMANDS — run these yourself`, `## VERIFY IT WORKED` (a command, the expected output, and what a wrong output means). Never skip the verify block.
 4. **Stop at the end of each numbered phase** and wait to be told to continue.
 
-The authoritative spec is `CLAUDE_CODE_PROMPT_v2.md` (the build prompt). Re-read it before starting a phase.
+The authoritative spec is `CLAUDE_CODE_PROMPT_v2.md` (the build prompt). Re-read it before starting a phase — but see Current state: that file is not in this repo, so ask for it rather than working from memory of it.
 
 ## Domain
 
@@ -33,7 +98,8 @@ uv run ruff check . && uv run ruff format .
 uv run python -m unittest discover -s tests    # PyUnit, as Jenkins runs it
 uv run python -m unittest tests.test_math      # a single test module
 uv run python -m unittest tests.test_math.MathTest.test_room_rent   # a single test
-uv run python eval/evaluate.py                 # full 40-bill eval
+uv run python eval/evaluate.py                 # full 44-bill eval, naive v0 path
+uv run python eval/evaluate.py --agent --version v2 --write   # score the agent loop, append to results.md
 uv run python eval/evaluate.py --quick --threshold 0.80   # CI gate; exit 1 below threshold
 uv add <pkg>                              # then: uv export --format requirements-txt --no-hashes > requirements.txt
 ```
@@ -167,14 +233,17 @@ the motivation for the Phase 6 agent loop, not something to bolt onto retrieval.
 
 Per request, each bill line runs through a LangGraph loop: non-payable fast path (zero LLM calls) → classify rule type → build query → hybrid retrieve (Chroma 20 + BM25 20 via EnsembleRetriever, 0.6/0.4) → cross-encoder rerank to top 3 → LLM judge → guardrails → **Python computes the amount**. On low confidence the query is rewritten from a different angle and retried, capped at 3 attempts and 8 tool calls, then abstains.
 
-**The second pass is the point of the project.** After all lines are judged, if any line breached its room-rent limit, a proportionate-deduction clause is retrieved and its ratio applied to every other eligible line. Judging lines independently can never find this — nothing in the surgeon's-fee line mentions room rent, yet one breached limit silently rewrites every other line.
+**The second pass is the point of the project — and it is NOT BUILT YET (Phase 7).** What follows is the design, not a description of code that exists.
+
+ After all lines are judged, if any line breached its room-rent limit, a proportionate-deduction clause is retrieved and its ratio applied to every other eligible line. Judging lines independently can never find this — nothing in the surgeon's-fee line mentions room rent, yet one breached limit silently rewrites every other line.
 
 ### Layout
 
-- `core/` — `config.py` (all settings, `BA_` env prefix) · `llm.py` (Ollama + sha256 disk cache) · `logging_conf.py` (logging + JSONL `TraceWriter`) · `models.py` (Pydantic contracts) · then `splitter.py`, `ingest.py`, `retrieve.py`, `agent.py`, `second_pass.py`, `guardrails.py`, `audit.py`
-- `api/` — FastAPI. Audits take 30–60s, so `POST /audit` returns a `job_id` immediately and the client polls `GET /audit/{job_id}`. In-memory job dict, no database.
-- `eval/` — deterministic metrics only, no LLM judge. `results.md` holds the v0→v4 table and is the project's headline result.
-- `tests/` — PyUnit; `tests/e2e/` is Selenium 4.
+- `core/` — `config.py` (all settings, `BA_` env prefix) · `llm.py` (Ollama + sha256 disk cache) · `logging_conf.py` (logging + JSONL `TraceWriter`) · `models.py` (Pydantic contracts) · `masking.py` (PII stripped before any prompt) · `bill.py` (text → validated `BillLine`s) · `money.py` (all arithmetic) · `assumptions.py` (differential billing, stated not hidden) · then `splitter.py`, `ingest.py`, `retrieve.py`, `audit.py` (naive v0), `agent.py` (the loop). `second_pass.py` and `guardrails.py` are **planned for Phase 7 and do not exist**.
+- `api/` — **empty (`__init__.py` only).** Planned: FastAPI, and because audits take 30–60s, `POST /audit` returns a `job_id` immediately and the client polls `GET /audit/{job_id}`, with an in-memory job dict and no database.
+- `frontend/`, `k8s/` — **empty directories.** The UI is a later phase; `k8s/` is Phase 10.
+- `eval/` — deterministic metrics only, no LLM judge. 44 bills; `derive_key.py` builds the answer key from the PDFs alone (it imports no retriever, judge or audit code, so a pipeline bug cannot score itself as a success). `results.md` holds the v0→v4 table and is the project's headline result.
+- `tests/` — PyUnit, 122 tests. `tests/e2e/` (Selenium 4) is planned and **does not exist yet**; `tests/fixtures/tables/` holds the golden table files.
 - `data/` — `clauses.json` and `non_payable.json` are committed checkpoints; `db/`, `llm_cache/`, `policies/*.pdf` are gitignored.
 - `src/bill_auditor/` — packaged console script. Note `core/` and `api/` live outside `src/` and are import-path-only.
 

@@ -40,3 +40,37 @@ Lines scored: 82   Lines skipped (key not filled): 0
 > one per line) and retrieval 39% (4.4s each, almost entirely the cross-encoder
 > rerank; Chroma plus BM25 is 43ms). Take **~11s per line** as the real figure
 > and treat any cached number here as a floor, not a measurement.
+
+### v2 - 2026-09-01
+
+Bills run: 10   
+Bills with no answers filled in yet: 0   
+Lines scored: 82   Lines skipped (key not filled): 0
+
+| metric | value |
+|---|---|
+| Line accuracy (allowed within Rs 1) | 51.2% |
+| Citation accuracy | 33.3% |
+| Payout error | 33.0% |
+| Abstention recall (flagged when it should) | 100.0% |
+| Abstention precision (flagged and was right) | 26.7% |
+| False answers (answered, should have flagged) | 0 |
+| Dodges (flagged, key has an answer) | 22 |
+| **Fabricated clauses** | **18** |
+| p95 latency per bill | 267.1s |
+| Avg tool calls per bill | 0.0 |
+
+| category | lines | line acc | citation acc | dodges | false answers |
+|---|---|---|---|---|---|
+| clean | 15 | 66.7% | 6.7% | 4 | 0 |
+| non_payable | 29 | 75.9% | 65.5% | 6 | 0 |
+| room_rent_over | 25 | 36.0% | 29.2% | 5 | 0 |
+| sub_limit | 6 | 0.0% | 0.0% | 5 | 0 |
+| waiting_period | 7 | 14.3% | 0.0% | 2 | 0 |
+
+**Retry loop**  
+Lines settled on the non-payable fast path (no search, no judge call): 25  
+Average attempts per line: 1.79  
+Lines that went past attempt 1: 43  
+...of which a later attempt actually produced an answer: **15** (35%)
+
