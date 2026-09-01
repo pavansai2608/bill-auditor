@@ -3,7 +3,11 @@
 FROM python:3.14-slim AS builder
 WORKDIR /build
 RUN pip install --no-cache-dir uv
-COPY pyproject.toml uv.lock requirements.txt ./
+# Line 3 of requirements.txt is `-e .`, so the install builds this project
+# too. That needs the package source and the readme pyproject names, not
+# just the metadata files.
+COPY pyproject.toml uv.lock requirements.txt README.md ./
+COPY src/ ./src/
 RUN uv pip install --system --no-cache -r requirements.txt
 
 FROM python:3.14-slim
