@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Current state (update this at the end of every phase)
 
-**Last updated: 2026-09-01, Phase 7 code complete, v3 eval NOT yet run — see the blocker below.**
+**Last updated: 2026-09-01, end of Phase 7 (second pass). v3 recorded at 54.9%.**
 
 Built and passing:
 
@@ -18,7 +18,7 @@ Built and passing:
 - The eval harness: **44 bills** in `eval/bills/`, an answer key derived
   straight from the PDFs by `eval/derive_key.py`, and `eval/evaluate.py`
   (`--agent` scores the loop, without it scores naive v0).
-- 138 PyUnit tests, all passing.
+- 151 PyUnit tests, all passing.
 
 Not built yet — do not assume these exist:
 
@@ -33,9 +33,24 @@ Not built yet — do not assume these exist:
 - `CLAUDE_CODE_PROMPT_v2.md` is **not in the repo** — it is referenced below as
   the authoritative spec but is not present and is not gitignored.
 
-Last recorded eval: **v2, line accuracy 51.2%** (v0 was 24.4%), citation
-accuracy 33.3%, abstention recall 100%, dodges down 42 → 22, false answers 0,
-p95 267.1s (`eval/results.md`, 10 bills, 82 lines).
+Last recorded eval: **v3, line accuracy 54.9%** — v0 24.4% → v2 51.2% → v3
+54.9%. Citation accuracy 44.4%, fabricated clauses 0, abstention recall 100%,
+false answers 0, dodges 22 (`eval/results.md`, 10 bills, 82 lines).
+
+**Two things to know before touching the next phase:**
+
+- **`clean` fell 66.7% → 46.7% at v3, and it is not the second pass's fault.**
+  On B05 the judge read the Star Health room limit as 800/day against a
+  4,000/day charge that is inside the 5,000/day entitlement, so it reported a
+  breach that never happened; the pass then propagated that one wrong premise
+  to three more lines. A wrong per-day figure now costs four lines instead of
+  one, which is the case for the Phase 8 room-rent guardrail.
+- **Two eval rows were withdrawn and re-run, with the reasons recorded in
+  `eval/results.md` rather than deleted.** The first v2 counted 18 correct
+  `IRDAI-List-I` citations as fabrications (scorer bug); the first v3 took its
+  proportionate ratio from any breached per-day cap, including an ICU line and
+  a surgeon's fee (second-pass bug). Both now have tests:
+  `tests/test_eval_scoring.py` and `OnlyRoomRentDrivesTheDeductionTest`.
 
 **BLOCKER before v3 is run — the v2 row shows 18 fabricated clauses, and that
 number is wrong.** All 18 are the non-payable fast path citing `IRDAI-List-I`,
