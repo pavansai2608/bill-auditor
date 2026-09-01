@@ -1,39 +1,69 @@
 """All arithmetic. No LLM ever computes a number.
 
-Every function here is pure and takes a `JudgeOutput` - the limit the model
-found - plus the billed amount. An 8B model asked to multiply 5,000 by 5 will
-sometimes answer 20,000 and sound completely certain, and a wrong total is
-invisible in a way a wrong clause citation is not.
+Every function is pure and takes the limits the model *read from the clause*,
+never a figure it worked out. An 8B model asked to multiply 5,000 by 5 will
+sometimes answer 20,000 and sound certain, and a wrong total is invisible in a
+way a wrong citation is not.
 """
 
-from core.models import BillLine, JudgeOutput
+from core.models import BillLine, JudgeOutput, Limit
+
+
+def resolve_limit(limit: Limit, line: BillLine, sum_insured: float) -> float | None:
+    """Turn one stated limit into the rupee ceiling it puts on this line.
+
+    A percentage is always of the sum insured, because that is the only base
+    these policies use. A per-day figure is multiplied by the days billed;
+    every other basis caps the line as a whole.
+    """
+    if limit.percentage is not None and limit.of == "sum_insured":
+        base = sum_insured * limit.percentage / 100
+    elif limit.amount is not None:
+        base = float(limit.amount)
+    else:
+        return None
+
+    if limit.basis == "per_day":
+        return base * line.qty
+    return base
 
 
 def allowed_for_line(line: BillLine, judge: JudgeOutput, sum_insured: float) -> tuple[float, bool]:
-    """Work out what is payable for one line.
+    """What is payable for one line, and whether a per-day cap was breached.
 
-    Returns (allowed, over_limit). `over_limit` marks a per-day cap that was
-    breached, which is what triggers the proportionate-deduction second pass
-    later - so it is set only for per-day limits, not for every reduction.
+    Where a clause states several limits they all apply, so the lowest wins.
+    That single rule covers both awkward shapes: "Rs 750 per hospitalisation
+    and Rs 1,500 per policy period", and "10% of Sum Insured or Rs 1,00,000,
+    whichever is less".
+
+    `over_limit` marks a breached *per-day* cap specifically, because that is
+    what triggers the proportionate-deduction second pass. An absolute cap
+    reduces one line and nothing else.
     """
     charged = line.amount
 
-    if judge.limit_per_day is not None:
-        cap = judge.limit_per_day * line.qty
-        allowed = min(charged, cap)
-        return round(allowed, 2), charged > cap
+    resolved = [
+        (limit, value)
+        for limit in judge.limits
+        if (value := resolve_limit(limit, line, sum_insured)) is not None
+    ]
+    if not resolved:
+        # No limit stated means the clause allows the charge in full.
+        return round(charged, 2), False
 
-    if judge.limit_absolute is not None:
-        return round(min(charged, judge.limit_absolute), 2), False
+    ceiling = min(value for _, value in resolved)
+    over_limit = any(limit.basis == "per_day" and charged > value for limit, value in resolved)
+    return round(min(charged, ceiling), 2), over_limit
 
-    if judge.percentage is not None:
-        # A percentage in a policy clause is a cap expressed against the sum
-        # insured ("1% of Sum Insured per day"), not a discount on the bill.
-        cap = sum_insured * judge.percentage / 100
-        return round(min(charged, cap), 2), False
 
-    # No limit found means the clause allows the charge in full.
-    return round(charged, 2), False
+def per_day_limit(judge: JudgeOutput) -> float | None:
+    """The per-day rate itself, which the second pass needs for its ratio."""
+    rates = [
+        limit.amount
+        for limit in judge.limits
+        if limit.basis == "per_day" and limit.amount is not None
+    ]
+    return min(rates) if rates else None
 
 
 def apply_copay(allowed: float, percentage: float) -> float:
