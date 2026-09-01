@@ -1,0 +1,54 @@
+{
+  "bill_id": "B43",
+  "policy": "hdfc_ergo",
+  "sum_insured": 500000,
+  "policy_start_date": "2021-10-09",
+  "admission_date": "2026-05-18",
+  "discharge_date": "2026-05-23",
+  "category": "schedule_missing",
+  "policy_schedule": null,
+  "lines": [
+    {
+      "item": "Room Rent (Single Private) 10,000 x 5 days",
+      "amount": 50000.0,
+      "qty": 5
+    },
+    {
+      "item": "ICU Charges 15,000 x 1 day",
+      "amount": 15000.0,
+      "qty": 1
+    },
+    {
+      "item": "Surgeon Fee",
+      "amount": 96000.0,
+      "qty": 1
+    },
+    {
+      "item": "Anaesthetist Charges",
+      "amount": 21000.0,
+      "qty": 1
+    },
+    {
+      "item": "Medicines and Drugs",
+      "amount": 36000.0,
+      "qty": 1
+    },
+    {
+      "item": "Operation Theatre Charges",
+      "amount": 28000.0,
+      "qty": 1
+    },
+    {
+      "item": "Investigations - Labs and CT",
+      "amount": 15500.0,
+      "qty": 1
+    },
+    {
+      "item": "Attendant Charges",
+      "amount": 2500.0,
+      "qty": 5
+    }
+  ],
+  "total_charged": 264000.0,
+  "bill_text": "SUNRISE INSTITUTE OF MEDICAL SCIENCES\nPune - 411 001\n\nPatient Name: Imran Qureshi\nUHID: B43500\nPhone: 9822001144\nAdmission: 2026-05-18    Discharge: 2026-05-23\n\n--------------------------------------------------------------\nDESCRIPTION                                   QTY       AMOUNT\n--------------------------------------------------------------\nRoom Rent (Single Private) 10,000 x 5 days      5    50,000.00\nICU Charges 15,000 x 1 day                      1    15,000.00\nSurgeon Fee                                     1    96,000.00\nAnaesthetist Charges                            1    21,000.00\nMedicines and Drugs                             1    36,000.00\nOperation Theatre Charges                       1    28,000.00\nInvestigations - Labs and CT                    1    15,500.00\nAttendant Charges                               5     2,500.00\n--------------------------------------------------------------\nGRAND TOTAL                                         264,000.00\n--------------------------------------------------------------"
+}

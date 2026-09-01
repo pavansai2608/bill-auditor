@@ -49,6 +49,17 @@ def print_bill(bill: dict) -> None:
         f"        policy start: {bill['policy_start_date']}   "
         f"admitted: {bill['admission_date']}   discharged: {bill['discharge_date']}"
     )
+    schedule = bill.get("policy_schedule")
+    if schedule:
+        parts = []
+        if schedule.get("room_limit_per_day") is not None:
+            parts.append(f"room limit Rs {schedule['room_limit_per_day']:,.0f}/day")
+        if schedule.get("room_category"):
+            parts.append(f"room category {schedule['room_category']}")
+        print(f"        policy schedule: {', '.join(parts)}")
+    else:
+        print("        policy schedule: NOT PROVIDED - a room limit that depends on it")
+        print("                         must come back needs_human, not a guess")
     print(f"        category: {bill['category']}")
     print(RULE)
     print(f"{'#':>3}  {'item':<52}{'qty':>5}{'charged':>14}")

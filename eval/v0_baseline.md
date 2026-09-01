@@ -72,3 +72,24 @@ numbers.
 | Fabricated clauses | |
 | p95 latency | |
 | Avg tool calls | 1 search + 1 judge per line, fixed |
+
+
+---
+
+## Note on the evaluation set (added after v0 was recorded)
+
+The first 40 bills tagged 10 as `room_rent_over`. Nine were impossible:
+
+- **Star Health** caps by rupee only at 3L and 4L sum insured. From 5L up the wording gives a room *category* ("Single Standard A/C Room"), so B01, B19 and B33 could never breach a rupee limit. Their sum insured was corrected to 3L/4L.
+- **HDFC Ergo** states room rent as "At Actuals unless otherwise specified in the Policy Schedule" — no figure exists in the document.
+- **Niva Bupa** caps by room category per the Policy Schedule, again with no figure in the wording.
+
+The six HDFC and Niva bills now carry an optional `policy_schedule`, and four
+bills were added: B41/B42 (Star Health at 10L, room category, no rupee limit
+derivable) and B43/B44 (HDFC and Niva with no schedule at all). Those four must
+return `needs_human`.
+
+The error was mine: categories were assigned from bill content without checking
+that each policy could produce that rule. It is worth recording because the
+flattened room rent table would have produced exactly the same mistake at
+runtime - reading `5,00,000` as capped at Rs 5,000/day.

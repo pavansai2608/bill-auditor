@@ -1,0 +1,54 @@
+{
+  "bill_id": "B41",
+  "policy": "star_health",
+  "sum_insured": 1000000,
+  "policy_start_date": "2021-03-18",
+  "admission_date": "2026-05-04",
+  "discharge_date": "2026-05-09",
+  "category": "room_category_limit",
+  "policy_schedule": null,
+  "lines": [
+    {
+      "item": "Room Rent (Deluxe) 11,000 x 5 days",
+      "amount": 55000.0,
+      "qty": 5
+    },
+    {
+      "item": "ICU Charges 16,000 x 2 days",
+      "amount": 32000.0,
+      "qty": 2
+    },
+    {
+      "item": "Surgeon Fee",
+      "amount": 120000.0,
+      "qty": 1
+    },
+    {
+      "item": "Anaesthetist Charges",
+      "amount": 26000.0,
+      "qty": 1
+    },
+    {
+      "item": "Medicines and Drugs",
+      "amount": 44000.0,
+      "qty": 1
+    },
+    {
+      "item": "Operation Theatre Charges",
+      "amount": 32000.0,
+      "qty": 1
+    },
+    {
+      "item": "Investigations - CT and Labs",
+      "amount": 17000.0,
+      "qty": 1
+    },
+    {
+      "item": "Gloves",
+      "amount": 1500.0,
+      "qty": 25
+    }
+  ],
+  "total_charged": 327500.0,
+  "bill_text": "GREENFIELD HOSPITAL & RESEARCH CENTRE\nHyderabad - 500 081\n\nPatient Name: Nikhil Raghavan\nUHID: B411000\nPhone: 9880011223\nAdmission: 2026-05-04    Discharge: 2026-05-09\n\n--------------------------------------------------------------\nDESCRIPTION                                   QTY       AMOUNT\n--------------------------------------------------------------\nRoom Rent (Deluxe) 11,000 x 5 days              5    55,000.00\nICU Charges 16,000 x 2 days                     2    32,000.00\nSurgeon Fee                                     1   120,000.00\nAnaesthetist Charges                            1    26,000.00\nMedicines and Drugs                             1    44,000.00\nOperation Theatre Charges                       1    32,000.00\nInvestigations - CT and Labs                    1    17,000.00\nGloves                                         25     1,500.00\n--------------------------------------------------------------\nGRAND TOTAL                                         327,500.00\n--------------------------------------------------------------"
+}
