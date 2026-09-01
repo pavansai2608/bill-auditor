@@ -1,0 +1,223 @@
+"""PyUnit tests for the six-container split.
+
+The point of these is that splitting the monolith did not change any rule. The
+audit logic is `core/`, imported by every service; what is tested here is the
+wiring — that retrieval survives a round trip over HTTP unchanged, that the
+gateway masks before anything crosses a network boundary, and that the
+gateway's health tells the truth about its dependencies.
+"""
+
+import unittest
+from unittest import mock
+
+from fastapi.testclient import TestClient
+
+from core.models import Clause
+from core.retrieve import RetrievedClause
+from services.audit import remote_retrieval
+
+CLAUSE = Clause(
+    clause_id="II.1",
+    title="In-patient Treatment",
+    text="Room rent up to 5,000 per day.",
+    page=9,
+    policy="star_health",
+    rule_type="room_rent",
+    refs=[],
+)
+
+
+class RetrievalServiceTest(unittest.TestCase):
+    def setUp(self):
+        from services.retrieval.main import app
+
+        self.client = TestClient(app)
+
+    def test_health_reports_the_clause_index(self):
+        body = self.client.get("/health").json()
+        self.assertEqual(body["status"], "ok")
+        self.assertGreater(body["clauses"], 0)
+
+    def test_search_returns_the_whole_clause_not_just_an_id(self):
+        found = [RetrievedClause(clause=CLAUSE, score=0.93, matched_text="Room rent up to 5,000")]
+        with mock.patch("services.retrieval.main.search", return_value=found) as search:
+            body = self.client.post(
+                "/search", json={"query": "room rent limit", "policy": "star_health"}
+            ).json()
+
+        search.assert_called_once()
+        row = body["results"][0]
+        self.assertEqual(row["clause"]["clause_id"], "II.1")
+        self.assertEqual(row["score"], 0.93)
+        # The judge reads matched_text, so it has to survive the hop.
+        self.assertEqual(row["matched_text"], "Room rent up to 5,000")
+
+    def test_a_bad_top_n_is_rejected(self):
+        response = self.client.post(
+            "/search", json={"query": "x", "policy": "star_health", "top_n": 99}
+        )
+        self.assertEqual(response.status_code, 422)
+
+
+class RemoteRetrievalTest(unittest.TestCase):
+    """A clause must come back from the service identical to a local one."""
+
+    def test_the_round_trip_rebuilds_a_retrieved_clause(self):
+        payload = {
+            "results": [
+                {
+                    "clause": CLAUSE.model_dump(),
+                    "score": 0.87,
+                    "matched_text": "Room rent up to 5,000",
+                    "via_ref_of": "II.28",
+                }
+            ]
+        }
+        response = mock.Mock()
+        response.json.return_value = payload
+        response.raise_for_status.return_value = None
+        http = mock.MagicMock()
+        http.__enter__.return_value.post.return_value = response
+
+        with (
+            mock.patch.object(remote_retrieval.settings, "retrieval_url", "http://retrieval:8000"),
+            mock.patch("services.audit.remote_retrieval.client", return_value=http),
+        ):
+            results = remote_retrieval.remote_search("room rent", "star_health", top_n=3)
+
+        self.assertEqual(len(results), 1)
+        self.assertIsInstance(results[0], RetrievedClause)
+        self.assertEqual(results[0].clause.clause_id, "II.1")
+        self.assertEqual(results[0].via_ref_of, "II.28")
+
+    def test_no_url_means_retrieval_stays_in_process(self):
+        with mock.patch.object(remote_retrieval.settings, "retrieval_url", ""):
+            self.assertFalse(remote_retrieval.install())
+
+    def test_installing_patches_both_call_sites(self):
+        import core.agent as agent
+        import core.audit as audit
+
+        before = (agent.search, audit.search)
+        try:
+            with mock.patch.object(remote_retrieval.settings, "retrieval_url", "http://r:8000"):
+                self.assertTrue(remote_retrieval.install())
+            # core.audit imports search into its own namespace too, so patching
+            # only the agent would leave the naive path talking to a Chroma
+            # collection the container does not have.
+            self.assertIs(agent.search, remote_retrieval.remote_search)
+            self.assertIs(audit.search, remote_retrieval.remote_search)
+        finally:
+            agent.search, audit.search = before
+
+
+class GatewayTest(unittest.TestCase):
+    def setUp(self):
+        from services.gateway.main import app
+
+        self.client = TestClient(app)
+
+    def test_health_is_degraded_when_a_dependency_is_down(self):
+        with mock.patch(
+            "services.gateway.main.probe",
+            side_effect=[
+                {"service": "audit-service", "url": "x", "status": "ok"},
+                {"service": "ingestion-service", "url": "y", "status": "unreachable"},
+            ],
+        ):
+            body = self.client.get("/health").json()
+        self.assertEqual(body["status"], "degraded")
+        self.assertEqual(len(body["dependencies"]), 2)
+
+    def test_health_is_ok_when_everything_answers(self):
+        with mock.patch(
+            "services.gateway.main.probe",
+            return_value={"service": "s", "url": "x", "status": "ok"},
+        ):
+            self.assertEqual(self.client.get("/health").json()["status"], "ok")
+
+    def test_an_audit_is_forwarded_with_the_bill_already_masked(self):
+        with mock.patch("services.gateway.main.forward", return_value={"job_id": "abc"}) as forward:
+            response = self.client.post(
+                "/audit",
+                data={
+                    "policy": "star_health",
+                    "sum_insured": 300000,
+                    "bill_text": "Patient Name: Ramesh Kumar\nRoom Rent 40000",
+                },
+            )
+
+        self.assertEqual(response.status_code, 202)
+        body = forward.call_args.kwargs["json"]
+        self.assertNotIn("Ramesh Kumar", body["bill_text"])
+        self.assertEqual(body["policy"], "star_health")
+
+    def test_a_blank_room_limit_is_forwarded_as_blank(self):
+        with mock.patch("services.gateway.main.forward", return_value={"job_id": "abc"}) as forward:
+            self.client.post(
+                "/audit",
+                data={"policy": "star_health", "sum_insured": 300000, "bill_text": "x 100"},
+            )
+        body = forward.call_args.kwargs["json"]
+        self.assertIsNone(body["room_limit_per_day"], "blank must not become a default")
+
+    def test_an_unknown_policy_never_reaches_the_audit_service(self):
+        with mock.patch("services.gateway.main.forward") as forward:
+            response = self.client.post(
+                "/audit", data={"policy": "acme", "sum_insured": 300000, "bill_text": "x 100"}
+            )
+        self.assertEqual(response.status_code, 404)
+        forward.assert_not_called()
+
+    def test_a_dead_inner_service_is_a_502_not_a_stack_trace(self):
+        with mock.patch("services.gateway.main.client", side_effect=OSError("connection refused")):
+            response = self.client.get("/audit/abc123")
+        self.assertEqual(response.status_code, 502)
+        self.assertIn("did not answer", response.json()["detail"])
+
+
+class AuditServiceTest(unittest.TestCase):
+    def setUp(self):
+        from services.audit.main import app
+
+        self.client = TestClient(app)
+
+    def test_an_unknown_policy_is_rejected(self):
+        response = self.client.post(
+            "/audit", json={"bill_text": "x 100", "policy": "acme", "sum_insured": 300000}
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_a_bad_sum_insured_is_rejected_by_pydantic(self):
+        response = self.client.post(
+            "/audit", json={"bill_text": "x 100", "policy": "star_health", "sum_insured": 0}
+        )
+        self.assertEqual(response.status_code, 422)
+
+    def test_health_names_the_model_and_whether_retrieval_is_remote(self):
+        body = self.client.get("/health").json()
+        self.assertIn("model", body)
+        self.assertIn("remote_retrieval", body)
+
+
+class IngestionServiceTest(unittest.TestCase):
+    def setUp(self):
+        from services.ingestion.main import app
+
+        self.client = TestClient(app)
+
+    def test_a_file_that_only_claims_to_be_a_pdf_is_rejected(self):
+        response = self.client.post(
+            "/policies/upload",
+            files={"file": ("policy.pdf", b"not a pdf at all", "application/pdf")},
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_policies_are_listed_with_their_sums_insured(self):
+        rows = self.client.get("/policies").json()
+        self.assertTrue(any(row["id"] == "star_health" for row in rows))
+        self.assertTrue(all("sum_insured_options" in row for row in rows))
+
+
+if __name__ == "__main__":
+    unittest.main()
