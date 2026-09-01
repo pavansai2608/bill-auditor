@@ -2,6 +2,12 @@
 .venv/
 venv/
 
+# PyBuilder
+.pybuilder/
+target/
+.coverage
+htmlcov/
+
 # Python-generated files
 __pycache__/
 *.py[oc]

@@ -1,0 +1,17 @@
+# PyBuilder's analyze task runs flake8 from the project root, and the root
+# contains .venv and node_modules. Excluding them here rather than only in
+# build.py means the same command works when run by hand.
+#
+# ruff is the linter used while writing code (the pre-commit hook runs it, and
+# pyproject.toml holds its rules). flake8 is the PyBuilder-native gate, set up
+# not to fight the formatter: E203/W503/W504 disagree with every formatter, and
+# E501 is left to ruff, which knows about the 100-column limit.
+[flake8]
+max-line-length = 100
+extend-ignore = E203,W503,W504,E501,E402
+exclude =
+    .venv,venv,.pybuilder,.git,__pycache__,.ruff_cache,target,build,dist,
+    node_modules,frontend,data,htmlcov
+per-file-ignores =
+    tests/*:E402
+    eval/*:E402
