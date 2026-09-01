@@ -157,19 +157,19 @@ def clause_index() -> dict[str, Clause]:
 # --------------------------------------------------------------------------
 
 
-def parse_non_payable() -> list[str]:
-    """S11 - the excluded-consumables table into a flat list of names.
+def parse_non_payable() -> list[dict]:
+    """S11 - the excluded-consumables table into numbered entries.
 
-    The table is laid out in two number/item pairs per row. A wrapped item can
-    leave its serial number stranded on the following row, so items are taken
-    in reading order and the numbers are only used to order them.
+    The table runs two number/item pairs per row. The serial number is kept so
+    a verdict can cite "IRDAI-List-I #44" rather than just the name, and so the
+    lookup helper can show which entry an item matched.
     """
     path = settings.policies_dir / NON_PAYABLE_FILE
     if not path.exists():
         log.warning("missing %s, non-payable list will be empty", path)
         return []
 
-    items: list[str] = []
+    items: list[tuple[int | None, str]] = []
     with pdfplumber.open(path) as pdf:
         for page in pdf.pages:
             for table in page.extract_tables():
@@ -180,15 +180,35 @@ def parse_non_payable() -> list[str]:
                         name = cells[i + 1]
                         if not name or name.upper() == "ITEM":
                             continue
-                        items.append(re.sub(r"\s+", " ", name.replace("\n", " ")).strip())
+                        number = cells[i].strip()
+                        items.append(
+                            (
+                                int(number) if number.isdigit() else None,
+                                re.sub(r"\s+", " ", name.replace("\n", " ")).strip(),
+                            )
+                        )
 
     seen: set[str] = set()
-    unique = []
-    for item in items:
+    unique: list[dict] = []
+    for number, item in items:
         key = item.lower()
         if key not in seen and len(item) > 2:
             seen.add(key)
-            unique.append(item)
+            unique.append({"no": number, "item": item})
+
+    # A wrapped item can leave its serial stranded on the next row. Fill from
+    # the neighbour, but never reuse a number another entry already holds.
+    used = {e["no"] for e in unique if e["no"] is not None}
+    for position, entry in enumerate(unique):
+        if entry["no"] is not None:
+            continue
+        before = unique[position - 1]["no"] if position else 0
+        candidate = (before or 0) + 1
+        while candidate in used:
+            candidate += 1
+        entry["no"] = candidate
+        used.add(candidate)
+    unique.sort(key=lambda e: e["no"])
 
     settings.non_payable_path.write_text(
         json.dumps(unique, indent=2, ensure_ascii=False), encoding="utf-8"
@@ -197,10 +217,15 @@ def parse_non_payable() -> list[str]:
     return unique
 
 
-def load_non_payable() -> list[str]:
+def load_non_payable() -> list[dict]:
+    """Numbered IRDAI List I entries, cited as IRDAI-List-I #<no>."""
     if not settings.non_payable_path.exists():
         return []
-    return json.loads(settings.non_payable_path.read_text(encoding="utf-8"))
+    raw = json.loads(settings.non_payable_path.read_text(encoding="utf-8"))
+    # Tolerate the older flat-list format.
+    if raw and isinstance(raw[0], str):
+        return [{"no": i + 1, "item": name} for i, name in enumerate(raw)]
+    return raw
 
 
 # --------------------------------------------------------------------------
