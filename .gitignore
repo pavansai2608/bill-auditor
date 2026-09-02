@@ -30,7 +30,10 @@ data/traces/
 # Eval run checkpoints - derived from the bills and the key, and machine-local.
 # They exist so a crashed 44-bill run resumes instead of starting over.
 eval/.cache/
-eval_full.log
+
+# Eval run logs. Named eval_full.log, eval_full2.log and so on as runs are
+# repeated, so the pattern rather than the names.
+*.log
 
 # Frontend
 node_modules/
