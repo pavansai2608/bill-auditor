@@ -370,3 +370,98 @@ Lines that went past attempt 1: 142
 > changes above, and saying otherwise would overstate the evidence.
 >
 > The v5-full row above is untouched. Both rows stand.
+
+### v6-cpu - 2026-09-02
+
+Bills run: 44   
+Bills with no answers filled in yet: 0   
+Lines scored: 328   Lines skipped (key not filled): 0
+
+| metric | value |
+|---|---|
+| Backend | ollama (qwen3:8b), retrieval on cpu |
+| Line accuracy (allowed within Rs 1) | 50.0% |
+| Citation accuracy | 45.3% |
+| Payout error | 65.6% |
+| Abstention recall (flagged when it should) | 90.0% |
+| Abstention precision (flagged and was right) | 17.6% |
+| False answers (answered, should have flagged) | 3 |
+| Dodges (flagged, key has an answer) | 126 |
+| **Fabricated clauses** | **0** |
+| p95 latency per bill | 37.0s |
+| Avg tool calls per bill | 15.8 |
+
+| category | lines | line acc | citation acc | dodges | false answers |
+|---|---|---|---|---|---|
+| clean | 65 | 38.5% | 33.8% | 38 | 0 |
+| non_payable | 95 | 71.6% | 70.5% | 25 | 0 |
+| room_category_limit | 15 | 60.0% | 33.3% | 5 | 1 |
+| room_rent_over | 83 | 32.5% | 27.8% | 28 | 0 |
+| schedule_missing | 13 | 61.5% | 41.7% | 4 | 1 |
+| sub_limit | 26 | 34.6% | 28.0% | 16 | 1 |
+| waiting_period | 31 | 58.1% | 58.1% | 10 | 0 |
+
+**Retry loop**  
+Lines settled on the non-payable fast path (no search, no judge call): 125  
+Average attempts per line: 1.76  
+Lines that went past attempt 1: 142  
+...of which a later attempt actually produced an answer: **29** (20%)
+
+> **v6-cpu is a control, not a new attempt. No code that the audit runs was
+> changed between v6 and this row** - only `BA_TORCH_DEVICE=cpu`, so the device
+> matches v5-full and the only remaining differences are the three intended ones.
+> A room-limit golden test was added under `tests/`, which the audit never
+> executes.
+>
+> **Every accuracy metric is identical to v6.** 50.0% line accuracy, 45.3%
+> citation, 65.6% payout error, 126 dodges, 3 false answers, 0 fabricated, and
+> the same figure in all seven categories. Only p95 latency moved, 99.5s to
+> 37.0s. **The cpu/mps difference recorded on the v6 row is therefore not a
+> cause of anything**, and is ruled out as an explanation for the drop.
+>
+> ## Why the number moved from 59.5% to 50.0%
+>
+> **The cause is the re-ingest, and specifically that the corrected tables
+> changed which clauses retrieval returns.** Established, not guessed:
+>
+> 1. **The room-limit lookup was the prime suspect and is innocent.**
+>    `core/room_limit.py` is the one module in the audit path that reads rendered
+>    `[table]` text. Called against the current index it resolves all nine
+>    star_health sums insured correctly - 2,000/day at 1L-2L, 5,000/day at
+>    3L-4L, "Single Standard A/C Room" from 5L up - and the room-rent line of
+>    B01 returns the same Rs 25,000 in both runs. `core/waiting.py` and
+>    `core/second_pass.py` match prose, not table rows, so nothing else is
+>    coupled to the rendering.
+> 2. **The fix removed corrupted text from 11 of 402 clauses**, 5 of them
+>    star_health, taking 2,057 characters out of those five. Every change was a
+>    deletion of a column heading that had been forward-filled into a data cell.
+> 3. **Shorter, cleaner text means a different embedding**, so those clauses rank
+>    differently. On B01's "Medicines and Drugs limit coverage", v5-full
+>    retrieved `I.Def55, II.1, II.16, II.2, II.3` and the judge chose **II.16**,
+>    a Rs 75,000 absolute limit, paying the line in full at 38,000. v6 retrieved
+>    `I.Def55, II.1, II.15, II.16, II.2` - **II.15**, which the fix shrank from
+>    4,078 to 3,365 characters, displaced II.3 - and the judge instead chose
+>    **II.1** and applied its Rs 5,000/day *room* cap to a medicines line.
+> 4. **That is the whole shape of the drop.** 45 lines went from answered to
+>    abstained, 2 the other way, 7 changed amount. **All 45 are star_health**,
+>    which is where 5 of the 11 changed clauses live. Twenty abstain on II.1's
+>    "specified in your Policy Schedule" wording, which becomes the deciding
+>    candidate once the judge stops returning a limit.
+>
+> ## What that means for the 59.5%
+>
+> **Part of v5-full's 59.5% was luck on corrupted data.** The corrupted text in
+> II.15, II.29 and II.6 was noise that happened to keep those clauses out of the
+> top three, and the judge happened to land on better ones. With the corruption
+> removed they surface on merit, and an 8B judge handles the fuller candidate
+> set worse. Nothing about the old index was more correct - it held a column
+> heading where a rupee figure belongs.
+>
+> **50.0% on a correct index is the honest figure.** It is lower than 59.5% and
+> it is better evidence, because the number now rests on clauses that say what
+> the PDF says.
+>
+> Nothing was reverted to recover the number, no threshold was moved, and no fix
+> was guessed at. The judge choosing a room cap for a medicines line is a real
+> weakness this exposed; it is a change to judging behaviour and needs its own
+> eval slice, so it was not attempted here.

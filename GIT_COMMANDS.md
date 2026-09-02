@@ -506,3 +506,87 @@ git checkout develop
 git merge --no-ff feature/backends-and-images -m "Merge feature/backends-and-images into develop [BA-111]"
 git push origin develop
 ```
+
+---
+
+# Phase 12 — the table fix, the citation rule, and the controlled re-run
+
+Everything below is one runnable script. Run it top to bottom from the
+repository root, on `feature/eval-resilience`. **Every path is staged exactly
+once.** A block that reports *"nothing to commit"* was already committed in an
+earlier session — skip it and carry on.
+
+**On merge commits:** the `commit-msg` hook validates them like any other commit,
+so a subject beginning `Merge ` or `merge:` is **rejected**. Earlier blocks in
+this file use that form and will fail. Use a `chore(...)` subject instead, as the
+final block here does.
+
+```bash
+git branch --show-current    # expect feature/eval-resilience
+git status                   # read this before going further
+```
+
+## The eval's resilience work
+
+```bash
+git add .gitignore
+git commit -m "chore(git): ignore eval run logs [BA-156]"
+```
+
+```bash
+git add core/backends.py
+git commit -m "fix(backends): probe health and wait for a backend to return [BA-152]"
+```
+
+```bash
+# One commit because one file carries both changes: the device setting lives in
+# config.py alongside the locks in embeddings.py and retrieve.py that use it.
+git add core/config.py core/embeddings.py core/retrieve.py
+git commit -m "fix(models): pin the torch device and serialise inference [BA-153]"
+```
+
+```bash
+git add eval/checkpoint.py tests/test_eval_checkpoint.py
+git commit -m "feat(eval): checkpoint each bill so a crash resumes the run [BA-154]"
+```
+
+## The answer key decisions
+
+```bash
+# CLAUDE.md carries both the citation rule and the refreshed Current state
+# block, so it is staged here once and not again below.
+git add eval/answer_key.json eval/answer_key_provenance.md CLAUDE.md
+git commit -m "fix(eval): cite the clause that authorises the line [BA-158]"
+```
+
+```bash
+git add data/clauses.json data/non_payable.json
+git commit -m "fix(data): re-ingest with the corrected table extraction [BA-159]"
+```
+
+## Pinning the room-limit lookup
+
+```bash
+git add tests/test_room_limit_golden.py tests/fixtures/room_limits.txt
+git commit -m "test(room): pin the room limit for every sum insured [BA-161]"
+```
+
+## The results
+
+```bash
+# results.md carries both the v6 row and the v6-cpu row; it is append-only and
+# no earlier row was edited.
+git add eval/results.md GIT_COMMANDS.md
+git commit -m "docs(eval): record v6-cpu and why the number moved [BA-162]"
+```
+
+## CHECKPOINT
+
+`git status` should now report a clean tree. Then land the branch:
+
+```bash
+git checkout develop
+git merge --no-ff feature/eval-resilience -m "chore(develop): merge the eval resilience work [BA-163]"
+git checkout feature/eval-resilience
+```
+
