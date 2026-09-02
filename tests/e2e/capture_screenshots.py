@@ -5,11 +5,13 @@ Not a test - a small driver script. Run it with the API and the frontend up:
     uv run python tests/e2e/capture_screenshots.py
 
 It writes six PNGs into frontend/design/screenshots/ - the landing page,
-the form and the report, each at 1440 and 390. The report screenshots
-run a real audit, so the first run takes a minute and later ones are quick
-because the model calls are cached.
+the form and the report, each at 1440 and 390 - and copies the 1440 form shot
+to docs/audit-1440.png, which is the one the README embeds. The report
+screenshots run a real audit, so the first run takes a minute and later ones
+are quick because the model calls are cached.
 """
 
+import shutil
 import sys
 from pathlib import Path
 
@@ -26,6 +28,11 @@ from tests.e2e.test_flow import APP, AUDIT_APP, BILL, why_not_running
 
 OUT = ROOT / "frontend" / "design" / "screenshots"
 WIDTHS = {"1440": (1440, 1000), "390": (390, 844)}
+
+# The README embeds one of these six. It is copied rather than linked into
+# frontend/design/ so that moving the design folder cannot silently blank the
+# image at the top of the README.
+README_SHOT = ("screen-1-audit-a-bill-1440", ROOT / "docs" / "audit-1440.png")
 
 
 def set_date(driver, testid: str, value: str) -> None:
@@ -122,7 +129,6 @@ def run() -> int:
             )
             shoot(driver, f"screen-1-audit-a-bill-{label}", width)
 
-            driver.find_element(By.CSS_SELECTOR, "[data-testid='toggle-input-mode']").click()
             wait.until(
                 EC.visibility_of_element_located((By.CSS_SELECTOR, "[data-testid='bill-text']"))
             ).send_keys(BILL)
@@ -142,6 +148,11 @@ def run() -> int:
             shoot(driver, f"screen-2-audit-report-{label}", width)
         finally:
             driver.quit()
+
+    name, destination = README_SHOT
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(OUT / f"{name}.png", destination)
+    print(f"wrote {destination.relative_to(ROOT)}")
     return 0
 
 
