@@ -107,3 +107,137 @@ Average attempts per line: 1.72
 Lines that went past attempt 1: 36  
 ...of which a later attempt actually produced an answer: **13** (36%)
 
+### v5-full - 2026-09-01
+
+Bills run: 44   
+Bills with no answers filled in yet: 0   
+Lines scored: 328   Lines skipped (key not filled): 0
+
+| metric | value |
+|---|---|
+| Line accuracy (allowed within Rs 1) | 59.5% |
+| Citation accuracy | 51.9% |
+| Payout error | 41.1% |
+| Abstention recall (flagged when it should) | 71.4% |
+| Abstention precision (flagged and was right) | 18.2% |
+| False answers (answered, should have flagged) | 8 |
+| Dodges (flagged, key has an answer) | 90 |
+| **Fabricated clauses** | **0** |
+| p95 latency per bill | 414.0s |
+| Avg tool calls per bill | 15.3 |
+
+| category | lines | line acc | citation acc | dodges | false answers |
+|---|---|---|---|---|---|
+| clean | 65 | 61.5% | 33.8% | 25 | 0 |
+| non_payable | 95 | 77.9% | 74.7% | 20 | 0 |
+| room_category_limit | 15 | 40.0% | 26.7% | 3 | 6 |
+| room_rent_over | 83 | 48.2% | 51.9% | 17 | 0 |
+| schedule_missing | 13 | 61.5% | 41.7% | 4 | 1 |
+| sub_limit | 26 | 34.6% | 24.0% | 16 | 1 |
+| waiting_period | 31 | 58.1% | 58.1% | 5 | 0 |
+
+**Retry loop**  
+Lines settled on the non-payable fast path (no search, no judge call): 124  
+Average attempts per line: 1.76  
+Lines that went past attempt 1: 163  
+...of which a later attempt actually produced an answer: **73** (45%)
+
+### v5-full - 2026-09-01
+
+Bills run: 44   
+Bills with no answers filled in yet: 0   
+Lines scored: 328   Lines skipped (key not filled): 0
+
+| metric | value |
+|---|---|
+| Line accuracy (allowed within Rs 1) | 59.5% |
+| Citation accuracy | 51.9% |
+| Payout error | 41.1% |
+| Abstention recall (flagged when it should) | 71.4% |
+| Abstention precision (flagged and was right) | 18.2% |
+| False answers (answered, should have flagged) | 8 |
+| Dodges (flagged, key has an answer) | 90 |
+| **Fabricated clauses** | **0** |
+| p95 latency per bill | 34.4s |
+| Avg tool calls per bill | 15.3 |
+
+| category | lines | line acc | citation acc | dodges | false answers |
+|---|---|---|---|---|---|
+| clean | 65 | 61.5% | 33.8% | 25 | 0 |
+| non_payable | 95 | 77.9% | 74.7% | 20 | 0 |
+| room_category_limit | 15 | 40.0% | 26.7% | 3 | 6 |
+| room_rent_over | 83 | 48.2% | 51.9% | 17 | 0 |
+| schedule_missing | 13 | 61.5% | 41.7% | 4 | 1 |
+| sub_limit | 26 | 34.6% | 24.0% | 16 | 1 |
+| waiting_period | 31 | 58.1% | 58.1% | 5 | 0 |
+
+**Retry loop**  
+Lines settled on the non-payable fast path (no search, no judge call): 124  
+Average attempts per line: 1.76  
+Lines that went past attempt 1: 163  
+...of which a later attempt actually produced an answer: **73** (45%)
+
+### v5-full - 2026-09-02
+
+Bills run: 44   
+Bills with no answers filled in yet: 0   
+Lines scored: 328   Lines skipped (key not filled): 0
+
+| metric | value |
+|---|---|
+| Line accuracy (allowed within Rs 1) | 59.5% |
+| Citation accuracy | 51.9% |
+| Payout error | 41.1% |
+| Abstention recall (flagged when it should) | 71.4% |
+| Abstention precision (flagged and was right) | 18.2% |
+| False answers (answered, should have flagged) | 8 |
+| Dodges (flagged, key has an answer) | 90 |
+| **Fabricated clauses** | **0** |
+| p95 latency per bill | 20.0s |
+| Avg tool calls per bill | 15.3 |
+
+| category | lines | line acc | citation acc | dodges | false answers |
+|---|---|---|---|---|---|
+| clean | 65 | 61.5% | 33.8% | 25 | 0 |
+| non_payable | 95 | 77.9% | 74.7% | 20 | 0 |
+| room_category_limit | 15 | 40.0% | 26.7% | 3 | 6 |
+| room_rent_over | 83 | 48.2% | 51.9% | 17 | 0 |
+| schedule_missing | 13 | 61.5% | 41.7% | 4 | 1 |
+| sub_limit | 26 | 34.6% | 24.0% | 16 | 1 |
+| waiting_period | 31 | 58.1% | 58.1% | 5 | 0 |
+
+**Retry loop**  
+Lines settled on the non-payable fast path (no search, no judge call): 124  
+Average attempts per line: 1.76  
+Lines that went past attempt 1: 163  
+...of which a later attempt actually produced an answer: **73** (45%)
+
+### 10+10 rerank candidates - tried and reverted, 2026-09-02
+
+Not a version. An experiment, recorded because it was run and rejected.
+
+`chroma_top_k` and `bm25_top_k` were halved from 20 to 10. Retrieval is ~92%
+of an audit's wall clock and the cross-encoder is nearly all of that, so
+scoring half the candidates is the single biggest lever on latency available.
+
+Same 10 bills, same 82 lines, same agent and second pass as v5:
+
+| metric | v5 (20+20) | 10+10 | |
+|---|---|---|---|
+| Line accuracy | **68.3%** | **67.1%** | -1.2pp |
+| Citation accuracy | 56.8% | 58.0% | +1.2pp |
+| Payout error | 44.0% | 44.5% | worse |
+| Abstention recall | 100.0% | 100.0% | - |
+| False answers | 0 | 0 | - |
+| Dodges | 21 | 21 | - |
+| **Fabricated clauses** | **0** | **0** | - |
+
+**Reverted.** The drop is one line in 82 and citation accuracy moved the other
+way, so it is quite possibly noise - a 44-bill run would say. But the rule is
+that a latency win does not justify a worse accuracy number, and deciding a
+regression is noise *because* the change was wanted is how a threshold gets
+loosened. If this is revisited, run the full 44 first and let that decide.
+
+The v5 row above was re-run on 2026-09-02 before this experiment and
+reproduced exactly: 68.3%, 56.8%, 44.0%, 0 fabricated, 21 dodges.
+

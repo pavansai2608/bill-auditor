@@ -491,7 +491,7 @@ These have all bitten this project once. Do not reintroduce them.
 | 5 | `extract_text()` on a table | Rows collapse; the model reads the wrong row and is confident | `extract_tables()`, forward-fill merged cells |
 | 6 | Scoring a real source as fabricated | A correct citation counted as an invention | `citable_ids()` loads every checkable source; it has its own test |
 | 7 | Blocking HTTP for 60s | Frontend appears frozen | Background job + polling |
-| 8 | Baking the model into a Docker image | 6 GB image, slow rebuilds | Mount as a volume |
+| 8 | Baking the **LLM** into a Docker image | 6 GB image, slow rebuilds | Mount as a volume. This does **not** apply to the 1.6 GB embedding weights — see PART 14 |
 | 9 | Committing `data/db/` | Repo bloats to gigabytes | Gitignore it |
 | 10 | Secrets in the repo | Fails any review | `.env` gitignored, `.env.example` committed |
 | 11 | Building the frontend before the API is verified | Debugging two layers at once | Phase 8 must pass first |
@@ -550,3 +550,105 @@ them), `BLOCKED.md` (what needs me), `eval/results.md` (the scores),
 
 Then say what you found, what phase you believe is next, and carry on. Do not
 start over. Do not re-run phases already recorded in `PROGRESS.md`.
+
+---
+
+# PART 14 — DECISIONS TAKEN AFTER PHASE 11
+
+Every phase in this file is built. What follows was decided afterwards, from
+measurements rather than from the plan, and is recorded here so it is not
+relitigated. Full write-ups in `DECISIONS.md` as D-12 and D-13.
+
+## The per-line worker pool (D-12)
+
+Lines were judged one at a time. On Groq a line is 6.1s and almost all of it
+is a socket wait, so a ten-line bill spent a minute doing nothing four times
+over. `core.audit._judge_every_line` now runs them through a
+`ThreadPoolExecutor`, `BA_AUDIT_WORKERS` deciding how many.
+
+**The default is 2, and it is measured.** B01 through the gateway on Groq,
+cache off, idle machine:
+
+| workers | wall clock | per line | speed-up | model | limiter asleep |
+|---|---|---|---|---|---|
+| 1 | 222.6s | 22.3s | 1.00x | 14.1s | 0.0s |
+| 2 | **175.1s** | 17.5s | **1.27x** | 16.7s | 0.0s |
+| 4 | 170.6s | 17.1s | 1.30x | 14.6s | 37.3s |
+
+The plan assumed 4 on Groq, on the theory that its 30-requests-a-minute free
+tier was the binding constraint. It is not. The second worker is worth 1.27x
+and the third and fourth are worth 2.6% — noise — while putting the token
+bucket to sleep for 37 seconds.
+
+**The pool is a small win because the model was never the cost.** It is 6-8%
+of the wall clock at every width. The rest is retrieval, and a single search
+already pegs all ten cores, so more workers queue for something that was never
+idle. Concurrency cannot speed up a saturated resource. Making this materially
+faster means making the reranker cheaper, not running more of it at once.
+
+**It also found a bug that sequential execution could never reach.**
+`lru_cache` is not atomic: on the first audit all four workers missed the same
+cold cache and each opened its own Chroma client on one directory, which is a
+500 from `/search`, not a slow path. `core/retrieve.py` locks the lazy builders
+and warm-up now builds the vector store and the per-policy retrievers too.
+
+Two properties are pinned by `tests/test_workers.py` because losing either is
+silent:
+
+- Results are placed by index, never appended as they land. Rows that reshuffle
+  between runs make the eval flaky and a diff of two audits unreadable.
+- Progress counts completions, not dispatches. Counting dispatches shows
+  "checked 10 of 10" a second in and then stalls.
+
+**The second pass is not parallel and must not become so.** It reads every
+line's verdict; that is the entire point of it. Only the first pass is
+independent.
+
+## The embedding weights are baked into the image (D-13)
+
+PART 10 gotcha 8 says not to bake a model into an image. That is about the
+5 GB LLM, and it still holds — Ollama's weights are a mounted volume.
+
+It does not hold for bge-base and bge-reranker. A container without them
+downloads 1.6 GB on first boot, which was measured at **606s** and forced a
+15-minute readiness window. That is not a slow start, it is a dependency: the
+pod cannot serve traffic without HuggingFace being up, and on a box with no
+internet — which is what the Oracle deployment is — it never starts at all.
+
+So they are fetched in the builder stage and `HF_HUB_OFFLINE=1` is set in the
+final image, which turns a missing file into a failed build here instead of a
+failed pod there.
+
+Measured after the change: **`docker compose up -d` to `/ready` returning 200
+is 13.8s**, of which 10.5s is the load. It was 606s. The readiness window drops
+from 15 minutes to 3, and the cost is 1.5 GB in retrieval-service and 419 MB in
+ingestion-service.
+
+## Retrieval caching, and the rerank candidates that stayed at 20 (D-14, D-15)
+
+Retrieval is ~92% of an audit. Two things were tried against it.
+
+**Kept: a (query, policy) cache** in front of the retrieve-subchunk-rerank
+stack, bounded at 512 and dropped whenever `clauses.json` changes. B01 through
+the gateway, with every LLM call already cached so the model made **zero**
+calls in both runs:
+
+| retrieval cache | model calls | wall clock |
+|---|---|---|
+| cold | 0 | 207.0s |
+| warm | 0 | **0.3s** |
+
+The 207 seconds were retrieval and nothing else. But an identical bill re-run
+is the best case; across different bills the overlap is partial, and the six
+retried lines rewrite their queries into fresh keys. This is a demo-replay
+figure, not a typical one.
+
+**Reverted: halving the rerank candidates** from 20+20 to 10+10. Line accuracy
+68.3% -> 67.1% - one line in 82, with citation accuracy moving the other way.
+Possibly noise; reverted anyway, because a latency win is not a reason to
+accept a worse accuracy number. `eval/results.md` records the run.
+
+**Found while doing it:** parallel judging aborts the process on a Mac, where
+the models sit on MPS and share one Metal command queue. SIGSEGV, then SIGABRT
+once the load race was fixed and the crash moved to inference. Serialised
+behind one lock, which the 1.27x measurement says costs nearly nothing.

@@ -304,6 +304,47 @@ Step-by-step setup, including what to do when that stage goes red, is in
   `active_backend() == OLLAMA` after a failure, which was pinning the defect in
   place as if it were the contract.
 
+- **Caching the search was worth more than making it cheaper.** Retrieval is
+  ~92% of an audit, so the obvious move was to halve the rerank candidates,
+  20+20 to 10+10. Line accuracy went 68.3% to 67.1% — one line in 82, with
+  citation accuracy moving the other way, so quite possibly noise. Reverted
+  anyway: deciding a regression is noise *because* you wanted the change is how
+  a threshold gets loosened.
+
+  What worked instead was caching the retrieve-sub-chunk-rerank stack on
+  `(query, policy)`. B01 through the gateway, with the LLM cache already warm
+  so **both** runs made zero model calls:
+
+  | retrieval cache | model calls | wall clock |
+  |---|---|---|
+  | cold | 0 | 207.0s |
+  | warm | 0 | **0.3s** |
+
+  Both runs called no model at all, so those 207 seconds were retrieval and
+  nothing else. The honest caveat: re-running an identical bill is the best
+  possible case. Across different bills the overlap is partial — gloves,
+  syringes and room rent recur, but the six retried lines rewrite their queries
+  into keys nothing has seen. It is a demo-replay ceiling, not a typical audit,
+  and the first run costs exactly what it always did.
+
+- **Parallelism turned a latent GPU race into a crash, on the one machine the
+  containers do not resemble.** Judging lines concurrently killed the eval on
+  bill one, every run — SIGSEGV, then SIGABRT once the model-load race was
+  fixed and the failure moved from loading to inference:
+
+  ```
+  failed assertion _status < MTLCommandBufferStatusCommitted
+  at -[IOGPUMetalCommandBuffer setCurrentCommandEncoder:]
+  ```
+
+  On a Mac the embedder and reranker sit on the MPS device and share one Metal
+  command queue; two threads touching it aborts the process. The containers
+  ship CPU-only torch and never see it, which is exactly why it had to be fixed
+  rather than left for whoever next runs the eval on a laptop. Serialising the
+  forward passes costs almost nothing — and that is measured, not hoped: two
+  workers only beat one by 1.27x because a single search already saturates
+  every core, so those passes were never really overlapping.
+
 - **The obvious optimisation was applied to the part that was not the problem.**
   The audit judged bill lines in a `for` loop for the whole project. Lines are
   independent in the first pass, so bounded concurrency needed no change to any
