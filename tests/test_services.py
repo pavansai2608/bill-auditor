@@ -221,3 +221,40 @@ class IngestionServiceTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class CompareProgressTest(unittest.TestCase):
+    """What a compare job's `total` counts, pinned.
+
+    A compare audits every line against every policy, so its total is line
+    checks, not line items: a ten-line bill across three policies is 30. The UI
+    once rendered that as "checked 0 of 30 lines" against a bill with ten
+    items, which reads as a parser fault and is not one. The number is right;
+    anything showing it has to say what it counts.
+    """
+
+    def test_the_total_is_lines_times_policies(self):
+        from core.models import AuditReport, BillLine
+        from services.audit import main as audit_main
+
+        lines = [BillLine(item=f"item {n}", amount=1000.0) for n in range(10)]
+        report = AuditReport(
+            lines=[], total_charged=0.0, total_allowed=0.0, flagged_count=0, policy="star_health"
+        )
+        recorded: list[tuple[int, int | None]] = []
+
+        with (
+            mock.patch.object(audit_main, "known_policies", return_value=["a", "b", "c"]),
+            mock.patch("core.bill.parse_bill", return_value=lines),
+            mock.patch.object(audit_main, "audit_lines", return_value=report),
+            mock.patch.object(audit_main.jobs, "start"),
+            mock.patch.object(audit_main.jobs, "finish"),
+            mock.patch.object(
+                audit_main.jobs,
+                "progress",
+                side_effect=lambda _job, done, total=None: recorded.append((done, total)),
+            ),
+        ):
+            audit_main.run_compare("job", audit_main.AuditRequest(bill_text="x", sum_insured=3e5))
+
+        self.assertEqual(recorded[0], (0, 30))
