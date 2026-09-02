@@ -33,9 +33,11 @@ spec:
             httpGet: { path: /ready, port: 8000 }
             initialDelaySeconds: 10
             periodSeconds: 5
-            # 5s x 180 = 15 minutes. A fresh pod downloads the model weights
-            # before loading them; measured at 606s in a container.
-            failureThreshold: 180
+            # 5s x 36 = 3 minutes, which covers a load from local disk.
+            # It was 15 minutes while a fresh pod downloaded the weights
+            # first; they are baked into the image now, and HF_HUB_OFFLINE
+            # means a pod cannot go back to downloading them by accident.
+            failureThreshold: 36
           livenessProbe:
             httpGet: { path: /health, port: 8000 }
             initialDelaySeconds: 90

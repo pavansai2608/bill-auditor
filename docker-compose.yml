@@ -73,6 +73,13 @@ services:
       BA_OLLAMA_BASE_URL: http://ollama:11434
       BA_RETRIEVAL_URL: http://retrieval-service:8000
       BA_NUM_CTX: "8192"
+      # 0 asks the backend: 4 workers on Groq, 2 on Ollama. Overridable from
+      # the shell so one bill can be timed at 1, 2 and 4 without an edit:
+      #   BA_AUDIT_WORKERS=1 docker compose up -d --force-recreate audit-service
+      BA_AUDIT_WORKERS: "${BA_AUDIT_WORKERS:-0}"
+      # Timing a bill twice is meaningless with the cache on - the second run
+      # is disk reads. Off for measurement only; the default stays on.
+      BA_LLM_CACHE_ENABLED: "${BA_LLM_CACHE_ENABLED:-true}"
       BA_LOG_LEVEL: INFO
     volumes:
       # The model cache survives restarts, which is what makes a re-run fast.

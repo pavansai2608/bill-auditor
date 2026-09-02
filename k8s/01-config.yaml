@@ -15,6 +15,8 @@ data:
   BA_RETRIEVAL_URL: "http://retrieval-service:8000"
   BA_AUDIT_URL: "http://audit-service:8000"
   BA_INGESTION_URL: "http://ingestion-service:8000"
+  # Lines judged at once. Blank or 0 asks the backend: 4 on Groq, 2 on Ollama.
+  BA_AUDIT_WORKERS: "0"
   BA_LOG_LEVEL: "INFO"
   BA_CORS_ORIGINS: '["http://localhost:5173","http://localhost:3000"]'
 ---

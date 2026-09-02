@@ -1,6 +1,8 @@
 import { Suspense, lazy } from "react";
 import { Link } from "react-router-dom";
 
+import "./audit.css";
+
 import { BillForm } from "../components/BillForm";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { RunningPanel } from "../components/RunningPanel";
@@ -19,18 +21,38 @@ export default function AuditPage() {
   const status = job.status;
   const finished = status?.status === "done";
 
+  // The form wants the full width of a laptop: two columns, the bill wider.
+  // Everything after submission - the running panel, the report, the compare
+  // table - is a single reading column and keeps the narrower measure.
+  const filling = !job.jobId;
+
   return (
-    <div className={finished ? "page audit-page" : "page page--narrow audit-page"}>
-      <header className="masthead">
-        <Link to="/" className="masthead-home">
+    <div className={filling ? "audit-shell" : "page audit-page"}>
+      <header className={filling ? "audit-masthead" : "masthead"}>
+        <Link to="/" className={filling ? "audit-home" : "masthead-home"}>
           <span className="mark" aria-hidden="true" />
-          <h1>Bill Auditor</h1>
+          {filling ? (
+            <span className="audit-wordmark">Bill Auditor</span>
+          ) : (
+            <h1>Bill Auditor</h1>
+          )}
         </Link>
       </header>
-      <p className="explainer">
-        Check a hospital bill against the policy that pays it, line by line, with the clause behind
-        every deduction.
-      </p>
+
+      {filling ? (
+        <div className="audit-head">
+          <h1>Audit a bill</h1>
+          <p>
+            Check a hospital bill against the policy that pays it, line by line, with the clause
+            behind every deduction.
+          </p>
+        </div>
+      ) : (
+        <p className="explainer">
+          Check a hospital bill against the policy that pays it, line by line, with the clause
+          behind every deduction.
+        </p>
+      )}
 
       {job.error && (
         <div className="panel error" role="alert" data-testid="error-panel">

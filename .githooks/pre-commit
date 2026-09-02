@@ -4,6 +4,36 @@
 
 set -e
 
+# --- secrets ------------------------------------------------------------
+# Before anything else, because a leaked key cannot be un-leaked by a later
+# commit. .env is gitignored, but `git add -f` and a stray copy called
+# `.env.local` both get past that, and an API key pasted into a source file
+# gets past it entirely.
+STAGED_ALL=$(git diff --cached --name-only --diff-filter=ACM)
+
+for FILE in $STAGED_ALL; do
+    case "$FILE" in
+        .env|.env.*|*/.env|*/.env.*)
+            if [ "$FILE" != ".env.example" ]; then
+                echo "pre-commit: BLOCKED - refusing to commit $FILE." >&2
+                echo "  It is meant to hold secrets and is gitignored." >&2
+                echo "  Unstage it: git restore --staged $FILE" >&2
+                exit 1
+            fi
+            ;;
+    esac
+done
+
+# A Groq key is gsk_ followed by ~52 characters. Checked in the staged content
+# rather than the file list, so it is caught wherever it was pasted.
+if git diff --cached -- . ':(exclude).githooks/pre-commit' | grep -qE '^\+.*gsk_[A-Za-z0-9]{20,}'; then
+    echo "pre-commit: BLOCKED - that looks like a Groq API key." >&2
+    echo "  Keys belong in .env, which is gitignored. See .env.example." >&2
+    echo "  If it has already been pushed, revoke it at" >&2
+    echo "  https://console.groq.com/keys rather than just removing the line." >&2
+    exit 1
+fi
+
 STAGED=$(git diff --cached --name-only --diff-filter=ACM -- '*.py')
 
 if [ -z "$STAGED" ]; then

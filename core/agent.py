@@ -26,6 +26,7 @@ from typing import Any, TypedDict
 
 from langgraph.graph import END, START, StateGraph
 
+from core import llm
 from core.config import settings
 from core.ingest import load_non_payable
 from core.llm import LLMError, complete_structured
@@ -592,6 +593,12 @@ def audit_line(
         "tool_calls": final.get("tool_calls", 0),
         "resolved_on_attempt": resolved_on,
         "retry_changed_answer": bool(resolved_on and resolved_on > 1),
+        # Which backend judged this line, recorded per line rather than per
+        # run. A Groq quota that runs out mid-audit moves the process to
+        # Ollama permanently, so lines before and after cost 6.1s and 29.5s
+        # respectively - and without this the report cannot say which was
+        # which, only that a fallback happened somewhere.
+        "backend": llm.active_backend() if judge_calls else "none",
         "fast_path": judge_calls == 0 and final.get("verdict") is not None,
         "abstained": bool(final.get("verdict") and final["verdict"].needs_human),
     }

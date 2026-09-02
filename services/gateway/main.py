@@ -15,12 +15,17 @@ from fastapi import BackgroundTasks, FastAPI, File, Form, HTTPException, UploadF
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.shared import build_schedule, check_policy, masked_bill, policy_rows
+from core import llm
 from core.config import settings
 from core.logging_conf import get_logger, setup_logging
 from services.common import client, probe
 
 log = get_logger(__name__)
 setup_logging()
+# Somebody is waiting on the other end of this, so the hosted model is
+# the default here. BA_LLM_BACKEND overrides it, which is how docker
+# and k8s choose without a code change.
+llm.use_backend(settings.backend_for("api"))
 
 app = FastAPI(
     title="Bill Auditor gateway",

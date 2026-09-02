@@ -8,9 +8,11 @@ are skipped unless the index exists and are marked slow.
 
 import unittest
 from itertools import pairwise
+from unittest import mock
 
 from langchain_core.documents import Document
 
+from core import retrieve
 from core.config import settings
 from core.retrieve import (
     SUB_CHUNK_THRESHOLD,
@@ -245,3 +247,76 @@ class EndToEndSearchTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class SearchCacheTest(unittest.TestCase):
+    """The (query, policy) cache in front of the expensive half of a search.
+
+    Retrieval is ~92% of an audit's wall clock, and the same searches recur:
+    6 of 10 lines retry and each retry searches again, and gloves, syringes
+    and room rent appear in nearly every bill.
+    """
+
+    def setUp(self):
+        retrieve.clear_search_cache()
+        self.addCleanup(retrieve.clear_search_cache)
+        self.addCleanup(setattr, settings, "retrieval_cache_size", settings.retrieval_cache_size)
+
+    def _retriever(self, calls):
+        class FakeRetriever:
+            def invoke(self, query):
+                calls.append(query)
+                return []
+
+        return FakeRetriever()
+
+    def test_the_same_query_retrieves_once(self):
+        calls = []
+        with mock.patch.object(retrieve, "get_retriever", return_value=self._retriever(calls)):
+            for _ in range(4):
+                retrieve._retrieve_documents("room rent limit", "star_health")
+        self.assertEqual(calls, ["room rent limit"])
+        self.assertEqual(retrieve.SEARCH_CACHE_STATS, {"hits": 3, "misses": 1})
+
+    def test_the_policy_is_part_of_the_key(self):
+        """A cached hit that crossed policies would be a fabricated citation."""
+        calls = []
+        with mock.patch.object(retrieve, "get_retriever", return_value=self._retriever(calls)):
+            retrieve._retrieve_documents("room rent limit", "star_health")
+            retrieve._retrieve_documents("room rent limit", "niva_bupa")
+        self.assertEqual(len(calls), 2)
+
+    def test_a_rewritten_index_drops_everything_remembered(self):
+        """Ingestion can rebuild the index while retrieval keeps running.
+
+        A hit computed against the old index could cite a clause that no
+        longer exists, which is the one failure this project cannot ship.
+        """
+        calls = []
+        with mock.patch.object(retrieve, "get_retriever", return_value=self._retriever(calls)):
+            with mock.patch.object(retrieve, "_index_stamp", return_value=1.0):
+                retrieve._retrieve_documents("room rent limit", "star_health")
+                retrieve._retrieve_documents("room rent limit", "star_health")
+            self.assertEqual(len(calls), 1)
+            with mock.patch.object(retrieve, "_index_stamp", return_value=2.0):
+                retrieve._retrieve_documents("room rent limit", "star_health")
+        self.assertEqual(len(calls), 2, "the reindex invalidated the cached search")
+
+    def test_it_is_bounded(self):
+        calls = []
+        settings.retrieval_cache_size = 3
+        with mock.patch.object(retrieve, "get_retriever", return_value=self._retriever(calls)):
+            for n in range(5):
+                retrieve._retrieve_documents(f"query {n}", "star_health")
+            self.assertEqual(len(retrieve._search_cache), 3)
+            # "query 0" was evicted, so asking again is a miss.
+            retrieve._retrieve_documents("query 0", "star_health")
+        self.assertEqual(len(calls), 6)
+
+    def test_zero_disables_it(self):
+        calls = []
+        settings.retrieval_cache_size = 0
+        with mock.patch.object(retrieve, "get_retriever", return_value=self._retriever(calls)):
+            retrieve._retrieve_documents("room rent limit", "star_health")
+            retrieve._retrieve_documents("room rent limit", "star_health")
+        self.assertEqual(len(calls), 2)

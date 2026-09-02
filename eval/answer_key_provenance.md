@@ -28,6 +28,13 @@ pages by a different route removes the shared *plumbing*, but not the shared
 That is why the ten bills listed at the end need checking by a person. Until
 they are checked, treat the accuracy numbers as provisional.
 
+**The evidence for that check is laid out in
+[`answer_key_review.md`](answer_key_review.md)** - every line of those bills
+beside the clause it cites, quoted verbatim, with the page it was located on and
+the arithmetic written out, and a CONFIRMED column to sign. Regenerate it with
+`uv run python eval/build_answer_key_review.py`. It prepares the check; it does
+not perform it, and it changes nothing in `answer_key.json`.
+
 ## Rules read from the documents
 
 ### Star Health — Family Health Optima

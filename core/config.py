@@ -64,6 +64,17 @@ class Settings(BaseSettings):
     ollama_model: str = "qwen3:8b"
     # CRITICAL: Ollama defaults to 2048 and truncates retrieved clauses with
     # no warning. Anything smaller than 8192 silently corrupts the verdicts.
+    # How many bill lines are judged at once. 0 means the measured default, 2.
+    #
+    # Two was expected to be a floor and turned out to be the ceiling. B01 on
+    # Groq: 222.6s at one worker, 175.1s at two, 170.6s at four - so the second
+    # worker is worth 1.27x and the third and fourth are worth nothing, while
+    # putting the token bucket to sleep for 37s. The model is 6-8% of a line;
+    # the rest is retrieval, and one search already uses all ten cores.
+    #
+    # Raise it only if retrieval gets cheaper, or if it moves to a machine
+    # where a single search does not saturate the box.
+    audit_workers: int = 0
     num_ctx: int = 8192
     temperature: float = 0.0
     keep_alive: str = "30m"
@@ -80,11 +91,26 @@ class Settings(BaseSettings):
     llm_num_predict: int = 2048
 
     # --- LLM disk cache -------------------------------------------------
+    # How long to stop trying Groq after it refuses a call, before trying it
+    # again. The fallback itself is per call; this only stops every line paying
+    # for a failed round trip while a quota window is still closed. It expires,
+    # so the process recovers on its own - which the old permanent switch to
+    # Ollama could not do without a restart.
+    groq_cooldown_s: float = 120.0
+
     llm_cache_enabled: bool = True
 
     # --- Retrieval ------------------------------------------------------
     embedding_model: str = "BAAI/bge-base-en-v1.5"
     reranker_model: str = "BAAI/bge-reranker-base"
+    # 20 each. Halving these to 10 was tried as the biggest available lever on
+    # latency - retrieval is ~92% of an audit and the cross-encoder is nearly
+    # all of it, so scoring half the candidates is close to halving the cost.
+    #
+    # It was reverted: line accuracy went 68.3% -> 67.1% on the quick eval.
+    # That is one line in 82, and citation accuracy went the other way
+    # (56.8% -> 58.0%), so it may well be noise - but a latency win is not a
+    # reason to accept a worse number. See eval/results.md.
     chroma_top_k: int = 20
     bm25_top_k: int = 20
     dense_weight: float = 0.6
@@ -93,6 +119,14 @@ class Settings(BaseSettings):
     # Below this rerank score nothing retrieved is relevant enough to judge on;
     # guardrail 5 skips the LLM entirely and flags for human review.
     rerank_score_threshold: float = 0.30
+    # How many (query, policy) searches to remember. 0 disables the cache.
+    #
+    # Retrieval is 92% of an audit's wall clock, and the same searches recur
+    # constantly: 6 of 10 lines retry and each retry runs a fresh search, and
+    # items like gloves, syringes and room rent appear in nearly every bill.
+    # The result for a given query and policy is deterministic, so this changes
+    # latency and nothing else.
+    retrieval_cache_size: int = 512
 
     # --- Agent loop -----------------------------------------------------
     max_attempts: int = 3

@@ -1,0 +1,169 @@
+=== page 1 table 0 ===
+[table] Sr. No. - Table of Contents Particulars - Page No.
+[table] Sr. No. - Table of Contents Particulars - Page No.
+[table] Table of Contents Preamble - Preamble - Preamble - Table of Contents Preamble - Table of Contents Preamble - Preamble - 2 - 2 - 2
+[table] Table of Contents Operative Clause - Operative Clause - Operative Clause - Table of Contents Operative Clause - Table of Contents Operative Clause - Operative Clause - 2 - 2 - 2
+[table] Table of Contents A.1.1 - A.1.1 - A.1.1 - Table of Contents Standard Definitions - Table of Contents Standard Definitions - Standard Definitions - 2 - 2 - 2
+[table] Table of Contents A.1.2 - A.1.2 - A.1.2 - Table of Contents Specific Definitions - Table of Contents Specific Definitions - Specific Definitions - 2 - 2 - 2
+[table] Table of Contents B.1 - B.1 - B.1 - Table of Contents Base Coverages - Table of Contents Base Coverages - Base Coverages - 11 - 11 - 11
+[table] Table of Contents B.2 - B.2 - B.2 - Table of Contents Optional Coverages - Table of Contents Optional Coverages - Optional Coverages - 14 - 14 - 14
+[table] Table of Contents B.3 - B.3 - B.3 - Table of Contents Renewal Benefit - Table of Contents Renewal Benefit - Renewal Benefit - 27 - 27 - 27
+[table] Table of Contents C.1 - C.1 - C.1 - Table of Contents Waiting Periods - Table of Contents Waiting Periods - Waiting Periods - 28 - 28 - 28
+[table] Table of Contents C.2 - C.2 - C.2 - Table of Contents Standard Exclusions - Table of Contents Standard Exclusions - Standard Exclusions - 30 - 30 - 30
+[table] Table of Contents C.3 - C.3 - C.3 - Table of Contents Specific Exclusions - Table of Contents Specific Exclusions - Specific Exclusions - 32 - 32 - 32
+[table] Table of Contents D.1 - D.1 - D.1 - Table of Contents Standard General Terms & Clauses - Table of Contents Standard General Terms & Clauses - Standard General Terms & Clauses - 33 - 33 - 33
+[table] Table of Contents E - E - E - Table of Contents Other Terms & Clauses - Table of Contents Other Terms & Clauses - Other Terms & Clauses - 41 - 41 - 41
+[table] Table of Contents Annexure A - Annexure A - Annexure A - Table of Contents Annexure A - Table of Contents Annexure A - Annexure A - 46 - 46 - 46
+[table] Table of Contents Annexure B - Annexure B - Annexure B - Table of Contents Annexure B - Table of Contents Annexure B - Annexure B - 49 - 49 - 49
+[table] Table of Contents Annexure C - Annexure C - Annexure C - Table of Contents Annexure C - Table of Contents Annexure C - Annexure C - 50 - 50 - 50
+=== page 20 table 0 ===
+[table] Major Medical Illness
+[table] Netwo 1 - Cancer of specified severity - 27 - Aplastic Anaemia
+[table] Netwo 2 - Open Chest CABG - 28 - Bacterial Meningitis
+[table] Netwo 3 - Kidney failure requiring regular dialysis - 29 - Cardiomyopathy
+[table] Netwo 4 - Myocardial Infarction (First Heart Attack of specified severity) - 30 - Other serious coronary artery disease
+[table] Netwo 5 - Open Heart Replacement or Repair of Heart Valves - 31 - Creutzfeldt-Jakob Disease (CJD)
+[table] Netwo 6 - Major Organ/Bone Marrow Transplantation - 32 - Encephalitis
+[table] Netwo 7 - Multiple Sclerosis with persisting symptoms - 33 - End Stage Lung Failure
+[table] Netwo 8 - Permanent Paralysis of Limbs - 34 - Fulminant Hepatitis
+[table] Netwo 9 - Stroke resulting in permanent symptoms - 35 - Eisenmenger's Syndrome
+[table] Netwo 10 - Benign Brain Tumour - 36 - Major Head Trauma
+[table] Netwo 11 - Coma of specified severity - 37 - Chronic Adrenal Insufficiency (Addison's Disease)
+[table] Netwo 12 - Parkinson’s Disease - 38 - Progressive Scleroderma
+[table] Netwo 13 - Alzheimer's Disease - 39 - Progressive Supranuclear Palsy
+[table] Netwo 14 - Surgery of Aorta - 40 - Blindness
+[table] Netwo 15 - End Stage Liver Failure - 41 - Chronic Relapsing Pancreatitis
+[table] Netwo 16 - Deafness - 42 - Elephantiasis
+[table] Netwo 17 - Loss of Speech - 43 - Brain Surgery
+[table] Netwo 18 - Third Degree Burns - 44 - HIV due to blood transfusion and occupationally acquired HIV
+[table] Netwo 19 - Medullary Cystic Disease - 45 - Terminal Illness
+[table] Netwo 20 - Motor Neurone Disease with permanent symptoms - 46 - Myelofibrosis
+[table] Netwo 21 - Muscular Dystrophy - 47 - Pheochromocytoma
+[table] Netwo 22 - Infective Endocarditis - 48 - Crohn's Disease
+[table] Netwo 23 - Primary (Idiopathic) Pulmonary Hypertension - 49 - Severe Rheumatoid Arthritis
+[table] Netwo 24 - Dissecting Aortic Aneurysm - 50 - Severe Ulcerative Colitis
+[table] Netwo 25 - Systemic Lupus Erythematous with Lupus Nephritis - 51 - Angioplasty
+[table] Netwo 26 - Apallic Syndrome - 51 - Angioplasty
+=== page 21 table 0 ===
+[table] Global He On availin Expenses B-1.1 - Hospitalization Expenses
+[table] Global He On availin Expenses B-1.4 - AYUSH Treatment
+[table] Global He On availin Expenses B-1.7 - Organ Donor Expenses
+[table] Global He On availin Expenses B-2.1 - Emergency Air Ambulance
+[table] Global He On availin Expenses B-2.3 - Protect Benefit
+[table] Global He On availin Expenses B-2.4 - Plus Benefit
+[table] Global He On availin Expenses B-2.8 - E Opinion for Critical Illness
+=== page 22 table 0 ===
+[table] Global He On availin Emergency B-1.1 - Hospitalization Expenses
+[table] Global He On availin Emergency B-1.4 - AYUSH Treatment
+[table] Global He On availin Emergency B-1.5 - Pre-Hospitalization cover
+[table] Global He On availin Emergency B-1.6 - Post-Hospitalization cover
+[table] Global He On availin Emergency B-1.7 - Organ Donor Expenses
+[table] Global He On availin Emergency B-2.1 - Emergency Air Ambulance
+[table] Global He On availin Emergency B-2.3 - Protect Benefit
+[table] Global He On availin Emergency B-2.4 - Plus Benefit
+[table] Global He On availin Emergency B-2.8 - E Opinion for Critical Illness
+=== page 29 table 0 ===
+[table] Illnesses Non infective Arthritis - Pilonidal sinus
+[table] Diseases of gall bladder including cholecystitis - Illnesses calculus diseases of Urogenital system e.g.Kidney stone,Urinary Bladder Stone - Benign tumors, cysts, nodules, polyps including breast lumps
+[table] Pancreatitis - Illnesses Ulcer and erosion of stomach and duodenum - Polycystic ovarian diseases
+[table] All forms of Cirrhosis - Illnesses Gastro Esophageal Reflux Disorder (GERD) - Sinusitis, Rhinitis
+[table] Perineal Abscesses - Illnesses Perianal Abscesses - Skin tumors
+[table] Cataract and other disorders of lens and Retina - Illnesses Fissure/fistula in anus, Haemorrhoids including Gout and rheumatism - Tonsillitis
+[table] Osteoarthritis and osteoporosis - Illnesses Fibroids ( fibromyoma) - Benign Hyperplasia of Prostate
+=== page 29 table 1 ===
+[table] Adenoidectomy, tonsillectomy - Surgical Procedures Tympanoplasty, Mastoidectomy - Hernia
+[table] Dilatation and curettage (D&C) - Surgical Procedures Nasal concha resection - Surgery for prolapsed inter vertebral disc
+[table] Myomectomy for fibroids - Surgical Procedures Surgery of Genito urinary system unless necessitated by Malignancy - Surgery for varicose veins and varicose ulcers
+[table] Surgery on prostate - Surgical Procedures Cholecystectomy - Surgery for Perianal Abscesses
+[table] Hydrocele/Rectocele - Surgical Procedures Joint replacement surgeries - Surgery for Nasal septum deviation
+[table] Ligament, Tendon and Meniscal tear - Surgical Procedures Hysterectomy - Fissurectomy, Haemorrhoidectomy, Fistulectomy, ENT surgeries
+[table] Endometriosis - Surgical Procedures Prolapsed Uterus - Rectal Prolapse
+[table] Varicocele - Surgical Procedures Retinal detachment - Glaucoma
+[table] Nasal polypectomy - Surgical Procedures Retinal detachment - Glaucoma
+=== page 37 table 0 ===
+[table] Options - Instalment Premium Option - Grace Period applicable
+[table] Option 1 - Multi-Year / Yearly - 30 days
+[table] Option 2 - Half Yearly - 30 days
+[table] Option 3 - Quarterly - 30 days
+[table] Option 4 - Monthly - 15 Days
+[table] Option 4
+=== page 38 table 2 ===
+[table] Dedicated Helpline For - Email ID - Contact Number
+[table] Senior Citizen - seniorcitizen@hdfcergo.com - 022 6158 2026
+[table] Women - - - 022 6158 2055
+=== page 43 table 0 ===
+[table] Type of Claim - Prescribed Time limit
+[table] Reimbursement of Hospitalization, Day Care Treatment or Pre-Hospitalization Expenses - Within 30 days of date of discharge from Hospital.
+[table] Reimbursement of Post-Hospitalization Expenses - Within 15 days from completion of post Hospitalization treatment.
+=== page 49 table 1 ===
+[table] Annex S. NO. - ITEM - S. NO. - ITEM
+[table] Annex 1 - BABY FOOD - 35 - OXYGEN CYLINDER (FOR USAGE OUTSIDE HOSPITAL)
+[table] Annex 2 - BABY UTILITIES CHARGES - 36 - SPACER
+[table] Annex 3 - BEAUTY SERVICES - 37 - SPIROMETRE
+[table] Annex 4 - BELTS/ BRACES - 38 - NEBULIZER KIT
+[table] Annex 5 - BUDS - 39 - STEAM INHALER
+[table] Annex 6 - COLD PACK/HOT PACK - 40 - ARMSLING
+[table] Annex 7 - CARRY BAGS - 41 - THERMOMETER
+[table] Annex 8 - EMAIL / INTERNET CHARGES - 42 - CERVICAL COLLAR
+[table] Annex 9 - FOOD CHARGES (OTHER THAN PATIENT'S DIET PROVIDED BY HOSPITAL) - 43 - SPLINT
+[table] Annex 10 - LEGGINGS - 44 - DIABETIC FOOT WEAR
+[table] Annex 11 - LAUNDRY CHARGES - 45 - KNEE BRACES (LONG/ SHORT/ HINGED)
+[table] Annex 12 - MINERAL WATER - 46 - KNEE IMMOBILIZER/SHOULDER IMMOBILIZER
+[table] Annex 13 - SANITARY PAD - 47 - LUMBO SACRAL BELT
+[table] Annex 14 - TELEPHONE CHARGES - 48 - NIMBUS BED OR WATER OR AIR BED CHARGES
+[table] Annex 15 - GUEST SERVICES - 49 - AMBULANCE COLLAR
+[table] Annex 16 - CREPE BANDAGE - 50 - AMBULANCE EQUIPMENT
+[table] Annex 17 - DIAPER OF ANY TYPE - 51 - ABDOMINAL BINDER
+[table] Annex 18 - EYELET COLLAR - 52 - PRIVATE NURSES CHARGES- SPECIAL NURSING CHARGES
+[table] Annex 19 - SLINGS - 53 - SUGAR FREE TABLETS
+[table] Annex 20 - BLOOD GROUPING AND CROSS MATCHING OF DONORS SAMPLES - 54 - CREAMS POWDERS LOTIONS (TOILETRIES ARE NOT PAYABLE, ONLY PRESCRIBED MEDICAL PHARMACEUTICALS PAYABLE)
+[table] Annex 21 - SERVICE CHARGES WHERE NURSING CHARGE ALSO CHARGED - 55 - ECG ELECTRODES
+[table] Annex 22 - TELEVISION CHARGES - 56 - GLOVES
+[table] Annex 23 - SURCHARGES - 57 - NEBULISATION KIT
+[table] Annex 24 - ATTENDANT CHARGES - 58 - ANY KIT WITH NO DETAILS MENTIONED [DELIVERY KIT, ORTHO KIT, RECOVERY
+=== page 50 table 0 ===
+[table] KIT, ETC.]
+[table] Policy W 25 - Wording EXTRA DIET OF PATIENT (OTHER THAN THAT WHICH FORMS PART OF BED CHARGE) - 59 - KIDNEY TRAY
+[table] Policy W 26 - Wording BIRTH CERTIFICATE - 60 - MASK
+[table] Policy W 27 - Wording CERTIFICATE CHARGES - 61 - OUNCE GLASS
+[table] Policy W 28 - Wording COURIER CHARGES - 62 - OXYGEN MASK
+[table] Policy W 29 - Wording CONVEYANCE CHARGES - 63 - PELVIC TRACTION BELT
+[table] Policy W 30 - Wording MEDICAL CERTIFICATE - 64 - PAN CAN
+[table] Policy W 31 - Wording MEDICAL RECORDS - 65 - TROLLY COVER
+[table] Policy W 32 - Wording PHOTOCOPIES CHARGES - 66 - UROMETER, URINE JUG
+[table] Policy W 33 - Wording MORTUARY CHARGES - 67 - AMBULANCE
+[table] Policy W 34 - Wording WALKING AIDS CHARGES - 68 - VASOFIX SAFETY
+=== page 50 table 1 ===
+[table] Section - Plans - Optima Suraksha - Annexu Sched Optima Secure - Optima Super Secure - Optima Secure Global - Optima Secure Global Plus - Optima Select - Optima Lite
+[table] All figures in ₹ - Base Sum Insured per Insured Person per Policy Year (in Lakh) - 5/10/15/20/25/50 Lakhs - Annexu Sched 5/10/15/20/25/50/ 100/200 Lakhs - 10/15/20/25/50 /100/200 Lakhs - 100/200Lakhs - 25/50/75/100/ 200 Lakhs - 5/7.5/10/15/20/ 25 Lakhs - 5/7.5 Lakhs
+[table] All figures in ₹ - ^Geography - India only - Annexu Sched India only - India only - Worldwide including India - Worldwide including India - India only - India only
+[table] 1.1 - Hospitalization Expenses - Covered - Annexu Sched Covered - Covered - Covered - Covered - Covered - Covered
+[table] 1.1.a - Room Rent - At Actuals - Annexu Sched At Actuals - At Actuals - At Actuals - At Actuals - Upto Single Private room - Upto 1% of base sum insured per day
+[table] 1.1.b - ICU - At Actuals - Annexu Sched At Actuals - At Actuals - At Actuals - At Actuals - At Actuals - Upto 2% of base sum insured per day
+[table] 1.1.1. i. - Road Ambulance - Covered upto sum insured - Annexu Sched Covered upto sum insured - Covered upto sum insured - Covered upto sum insured - Covered upto sum insured - Covered upto sum insured - Covered upto sum insured
+[table] 1.1.1. ii. - Dental Treatment - Covered upto sum insured - Annexu Sched Covered upto sum insured - Covered upto sum insured - Covered upto sum insured - Covered upto sum insured - Covered upto sum insured - Covered upto sum insured
+[table] 1.1.1. iii. - Plastic surgery - Covered upto sum insured - Annexu Sched Covered upto sum insured - Covered upto sum insured - Covered upto sum insured - Covered upto sum insured - Covered upto sum insured - Covered upto sum insured
+[table] 1.1.1. iv. - Day Care Treatment - Covered upto sum insured - Annexu Sched Covered upto sum insured - Covered upto sum insured - Covered upto sum insured - Covered upto sum insured - Covered upto sum insured - Covered upto sum insured
+[table] 1.2 - Home Healthcare - Covered upto sum insured - Annexu Sched Covered upto sum insured - Covered upto sum insured - Covered upto sum insured (India only) - Covered upto sum insured (India only) - Covered upto sum insured - Covered upto sum insured
+[table] 1.3 - Domiciliary Hospitalization - Covered upto sum insured - Annexu Sched Covered upto sum insured - Covered upto sum insured - Covered upto sum insured (India only) - Covered upto sum insured (India only) - Covered upto sum insured - Covered upto sum insured
+[table] 1.4 - AYUSH Treatment - Covered upto sum insured - Annexu Sched Covered upto sum insured - Covered upto sum insured - Covered upto sum insured - Covered upto sum insured - Covered upto sum insured - Covered upto sum insured
+[table] 1.5 - Pre-Hospitalization - 60 days - Annexu Sched 60 days - 60 days - 60 days (India only) - 60 days - 60 days - 30 days
+[table] 1.6 - Post-Hospitalization - 180 days - Annexu Sched 180 days - 180 days - 180 days (India only) - 180 days - 180 days - 60 days
+[table] 1.7 - Organ Donor Expenses - Covered upto sum insured - Annexu Sched Covered upto sum insured - Covered upto sum insured - Covered upto sum insured - Covered upto sum insured - Covered upto sum insured - Covered upto sum insured
+=== page 51 table 0 ===
+[table] Polic Section - Optima Secur Plans - Optima Suraksha - Optima Secure - Optima Super Secure - Optima Secure Global - Optima Secure Global Plus - Optima Select - Optima Lite
+[table] Polic 1.8 - Optima Secur Cumulative Bonus - 10% of the Base Sum Insured maximum upto 100% post completion of each policy year irrespective of claims. - Not Covered - Not Covered - Not Covered - Not Covered - 25% of the Base Sum Insured maximum upto 100% post completion of each policy year irrespective of claims - 10% of the Base Sum Insured maximum upto 100% post completion of each policy year irrespective of claims
+[table] Polic 2.1 - Optima Secur Emergency Air Ambulance - Covered Up to 500,000 - Covered Up to 500,000 - Covered Up to 500,000 - Covered Up to 500,000 - Covered Up to 500,000 - Not Covered - Covered Up to 500,000
+[table] Polic 2.2 - Optima Secur Daily Cash for choosing Shared Accommodation - 800 per day max up to 4800 - 800 per day max upto 4800 - 1000 per day max up to 6000 - 800 per day max upto 4800 (India only) - 800 per day max upto 4800 (India only) - Not Covered - 800 per day max upto 4800
+[table] Polic 2.3 - Optima Secur Protect Benefit - Not Covered - Covered upto sum insured - Covered upto sum insured - Covered upto sum insured - Covered upto sum insured - Optional - Optional
+[table] Polic 2.4 - Optima Secur Plus Benefit - Not Covered - Bonus of 50% of the Base Sum Insured, maximum upto 100%. - Bonus of 50% of the Base Sum Insured, maximum upto 100%. - Bonus of 50% of the Base Sum Insured, maximum upto 100%. - Bonus of 50% of the Base Sum Insured, maximum upto 100%. - Optional (Bonus of 50% of the Base Sum Insured, maximum upto 100%) - Optional (Bonus of 50% of the Base Sum Insured, maximum upto 100%)
+[table] Polic 2.5 - Optima Secur Secure Benefit - Not Covered - Equal to 100% of Base sum insured - Equal to 200% of Base sum insured - Equal to 100% of Base sum insured (India only) - Equal to 100% of Base sum insured (India only) - Not Covered - Not Covered
+[table] Polic 2.6 - Optima Secur Automatic Restore Benefit - Equal to 100% of Base sum insured - Equal to 100% of Base sum insured - Equal to 100% of Base sum insured - Equal to 100% of Base sum insured (India only) - Equal to 100% of Base sum insured (India only) - Unlimited times - Unlimited times
+[table] Polic 2.7 - Optima Secur Aggregate Deductible# (Optional) - 10K/25K/ 50K /1L /2L /3L /5L /10L /20L /25L - 10K/25K/ 50K /1L /2L /3L /5L /10L /20L /25L - 10K/25K/ 50K /1L /2L /3L /5L /10L /20L /25L - 10K/25K/ 50K /1L /2L /3L /5L /10L /20L /25L (India only) - 10K/25K/ 50K /1L /2L /3L /5L /10L /20L /25L (India only) - 10K/25K/ 50K /1L /2L /3L /5L /10L - 10K/ 25K/ 50K
+[table] Polic 2.8 - Optima Secur E-Opinion for Critical Illness - In India - In India - Global - Global - Global - Not Covered - In India
+[table] Polic 2.9 - Optima Secur Global Health Cover (Emergency Treatments Only) - Not Covered - Not Covered - Not Covered - Covered (Outside India only) - Not Covered - Not Covered - Not Covered
+[table] Polic 2.10 - Optima Secur Global Health Cover (Emergency & Planned Treatments) - Not Covered - Not Covered - Not Covered - Not Covered - Covered (Outside India only) - Not Covered - Not Covered
+[table] Polic 2.11 - Optima Secur Overseas Travel Secure (Optional) - Not Covered - Not Covered - Not Covered - Covered upto sum insured (Outside India only) - Covered upto sum insured (Outside India only) - Not Covered - Not Covered
+[table] Polic 2.12 - Optima Secur PED wait period modification (Optional) - 1 year / 2 year - 1 year / 2 year - 1 year / 2 year - 1 year / 2 year - 1 year / 2 year - 1 year / 2 year - 1 year / 2 year
+[table] Polic 2.13 - Optima Secur Modification of Room Rent (Optional) - Not Covered - Not Covered - Not Covered - Not Covered - Not Covered - At Actuals OR Shared room - Not Covered
+[table] Polic 3 - Optima Secur Sum Insured - 5 Lakhs - 7.5 Lakhs - 10 Lakhs - 15 Lakhs - 20 & 25 Lakhs - 50 & 75 Lakhs - 100 & 200 Lakhs

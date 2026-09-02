@@ -92,12 +92,31 @@ reviewer who has the medical history.
 
 ---
 
-## 4. The published accuracy numbers come from 10 bills, not all 44
+## 4. The version-to-version numbers come from 10 bills, not all 44
 
-Every result recorded in `eval/results.md` uses the `--quick` setting, which
-runs the first 10 bills (82 individual lines). All 44 bills exist and their
-correct answers are written down, but a full run takes around 45 minutes.
+The whole set has now been run: **59.5% line accuracy over 44 bills and 328
+lines**, recorded in `eval/results.md` as `v5-full - 2026-09-02`. That is the
+number to quote.
 
-**Why this matters when reading the numbers.** Some categories have only 6 or 7
-lines in them, so one line being right or wrong moves that category's score by
-14 percentage points. Treat small category swings as noise, not as progress.
+The v0 to v5 comparison rows are still the `--quick` setting, which runs the
+first 10 bills (82 lines), because a full run takes around 45 minutes and that
+is too slow to sit between one version and the next. The subset is held constant
+so a change between two versions is attributable to the change rather than to a
+different sample.
+
+**Why this matters when reading the numbers.** The two are different
+denominators and must not be put on one ladder: v5 scores 68.3% on the ten and
+59.5% on the forty-four, because the other 34 bills are harder. And on the
+subset some categories hold only 6 or 7 lines, so one line moves that category
+by 14 percentage points. Treat small category swings there as noise.
+
+## 5. Ten bills still need a person to check the answer key
+
+`eval/answer_key_provenance.md` lists ten bills whose derivations need checking
+against the source PDFs by a human, and **that check has not been done.** The
+key was written by a language model reading policy documents and the judge is
+also a language model reading policy documents; reading whole pages by a
+separate route removes the shared plumbing but not the shared reader. The same
+file records an unresolved conflict on B43 - whether HDFC's "At Actuals" is a
+stated default or a deferral to the schedule - which needs a decision before
+that bill's row means anything.

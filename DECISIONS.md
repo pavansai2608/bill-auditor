@@ -182,3 +182,136 @@ does not turn the build red while a real drop still does.
 **When the other option wins.** Raise it when coverage genuinely rises —
 `core/llm.py` at 23% and `core/ingest.py` at 30% are the two worth testing next,
 and both would move the total several points.
+
+## D-12 — bill lines are judged in parallel, with a per-backend width
+
+**Decision.** `audit_lines` runs the first pass through a `ThreadPoolExecutor`.
+`BA_AUDIT_WORKERS` sets the width; 0 means ask the backend, giving 4 on Groq
+and 2 on Ollama.
+
+**Why.** A Groq line is 6.1s, of which the model call is 1.7s and the rest is
+retrieval and waiting. Sequentially that is a minute of mostly-idle time on a
+ten-line bill. The lines are genuinely independent — nothing in the
+anaesthetist's line reads the room rent verdict — so there is no ordering
+constraint to violate.
+
+**What it actually bought, measured on B01 with the cache off.** 222.6s at one
+worker, 175.1s at two, 170.6s at four. So: 1.27x for the second worker, and
+2.6% - noise - for the third and fourth, which also put the token bucket to
+sleep for 37s. The default is 2 on both backends.
+
+**Why it is only 1.27x.** Because the premise was wrong. The model is 6-8% of
+a line's wall clock; retrieval is the rest, and one search already saturates
+all ten cores. Adding workers contends for a resource that was never idle.
+This is worth stating plainly: the obvious optimisation was applied to the
+part of the system that was not the problem, and the measurement is what said
+so. Making an audit materially faster now means a cheaper reranker - fewer
+sentence windows, a smaller cross-encoder, or a rerank that runs once per line
+instead of once per attempt, given 6 of 10 lines retry.
+
+**What it does not change.** The second pass still runs after every line is
+judged, because it reads all of them. Parallelising that would be a
+correctness bug, not an optimisation.
+
+**What it exposed.** On its first run, all four workers missed the same cold
+`lru_cache` in `core/retrieve.py` and each opened its own Chroma client on the
+same directory: `'RustBindingsAPI' object has no attribute 'bindings'`, then
+`Could not connect to tenant default_tenant`, as a 500 from `/search`. The bug
+predates the pool and was simply unreachable one line at a time. Fixed with a
+lock over the lazy builders, and by warming the vector store and the
+per-policy retrievers at startup rather than on the first request.
+
+**Risk accepted.** Two properties are now only true because a test says so:
+stable row order, and a progress counter that counts completions. Both fail
+silently — the first as a flaky eval, the second as a progress bar that reads
+"10 of 10" for a minute. `tests/test_workers.py` covers both.
+
+## D-13 — the embedding weights ship in the image; the LLM does not
+
+**Decision.** bge-base and bge-reranker are downloaded in the builder stage and
+copied into the final image, with `HF_HOME=/opt/hf` and `HF_HUB_OFFLINE=1`.
+Ollama's `qwen3:8b` stays a mounted volume, as PART 10 gotcha 8 requires.
+
+**Why they are different.** The LLM is 5 GB and shared between services;
+mounting it once is obviously right. The embedding weights are 1.6 GB and
+belong to two services, and not baking them made a fresh container spend 606s
+downloading before it could answer anything. That is a runtime dependency on
+HuggingFace being reachable, on every restart, forever — and the target box has
+no internet.
+
+**Why offline mode, not just a warm cache.** Without `HF_HUB_OFFLINE=1` a
+missing file silently degrades to a download. A developer machine has the cache
+and would never see it; production would. With it set, an incomplete bake fails
+the build, in the layer that ships, before the image exists.
+
+**Cost and result.** 1.5 GB in retrieval-service (bge-base plus the reranker)
+and 419 MB in ingestion-service (the embedder only). `docker compose up -d` to
+`/ready` returning 200 went from 606s to **13.8s**, of which 10.5s is the load
+itself. The trade is a bigger artefact against a pod that starts in fourteen
+seconds and works with the network unplugged.
+
+**Why the model names are duplicated in the Dockerfiles.** Copying `core/` into
+the builder stage would put the download after it, so editing any core module
+would re-fetch 1.6 GB on every build. `tests/test_services.py` asserts the
+Dockerfile `ARG`s equal `settings.embedding_model` and `settings.reranker_model`
+instead, which turns the drift into a test failure.
+
+## D-14 — retrieval is cached by (query, policy); the rerank candidates are not halved
+
+**Decision.** `core.retrieve._retrieve_documents` memoises the expensive half of
+a search - hybrid retrieve, sub-chunk, rerank - on `(policy, query)`, bounded by
+`BA_RETRIEVAL_CACHE_SIZE` (512) and invalidated whenever `clauses.json` changes.
+`chroma_top_k` and `bm25_top_k` stay at 20.
+
+**Why cache.** Retrieval is ~92% of an audit's wall clock. B01 through the
+gateway with every LLM call already cached made **zero** model calls and still
+took 207.0s; the same bill again, with the retrieval cache warm, took **0.3s**.
+Both runs made zero model calls, so the 207 seconds were retrieval and nothing
+else.
+
+**What that number is not.** Re-running an identical bill is the best possible
+case: every query matches. Across different bills the overlap is partial -
+gloves, syringes and room rent recur, but the six retried lines rewrite their
+queries and those rewrites mostly do not. 0.3s is the demo-replay ceiling, not
+a typical audit. The first run costs what it always did.
+
+**Why the index stamp.** Ingestion can rewrite `clauses.json` while
+retrieval-service keeps serving. A hit computed against the old index could
+cite a clause that no longer exists, which is the one failure this project
+cannot ship. One `stat` per search is cheaper than reasoning about it.
+
+**Why 10+10 was rejected.** Halving the rerank candidates is the single biggest
+lever on that 92%, and it was tried: line accuracy went 68.3% -> 67.1% on the
+quick eval. That is one line in 82, and citation accuracy moved the other way
+(56.8% -> 58.0%), so it may be noise. It was still reverted. Deciding a
+regression is noise *because* the change was wanted is exactly how a threshold
+gets loosened, and this project's rules forbid it. If it is revisited, the full
+44 bills decide, not the quick 10. Recorded in `eval/results.md`.
+
+## D-15 — model inference is serialised behind one lock
+
+**Decision.** `core.embeddings.INFERENCE_LOCK` is held across every forward
+pass - `embed_query`, `embed_documents`, and the cross-encoder's `score`.
+
+**Why.** On a Mac the models land on the MPS device and share one Metal command
+queue. Two threads touching it is not slow, it aborts the process:
+
+    failed assertion _status < MTLCommandBufferStatusCommitted
+    at -[IOGPUMetalCommandBuffer setCurrentCommandEncoder:]
+
+The eval died on bill one, every run, from the moment lines were judged in
+parallel - first as SIGSEGV (139), then SIGABRT (134) once the load race was
+fixed and the crash moved from loading to inference. The containers ship
+CPU-only torch and never see it, which is precisely why it had to be fixed
+rather than left for whoever next runs the eval on a laptop.
+
+**Why serialising is affordable.** Measured, not assumed: two workers beat one
+by 1.27x because a single search already saturates every core. The forward
+passes were never meaningfully overlapping, so the lock costs close to nothing.
+
+**Also fixed on the way.** `core.embeddings._load` had the same non-atomic
+`lru_cache` as the retrievers, and `audit_lines` now warms retrieval explicitly
+before starting the pool. Judging line one synchronously was tried first and
+does not work: B01's first line is a non-payable item that settles on the fast
+path without searching at all.
+

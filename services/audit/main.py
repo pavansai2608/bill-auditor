@@ -16,6 +16,7 @@ from pydantic import BaseModel, Field
 
 from api.jobs import Job, jobs
 from api.shared import known_policies, report_payload
+from core import llm
 from core.assumptions import Assumptions
 from core.audit import audit_lines
 from core.config import settings
@@ -26,6 +27,10 @@ from services.common import clause_index_health, probe
 
 log = get_logger(__name__)
 setup_logging()
+# Somebody is waiting on the other end of this, so the hosted model is
+# the default here. BA_LLM_BACKEND overrides it, which is how docker
+# and k8s choose without a code change.
+llm.use_backend(settings.backend_for("api"))
 
 app = FastAPI(title="audit-service", version="0.1.0")
 REMOTE_RETRIEVAL = remote_retrieval.install()
@@ -129,8 +134,39 @@ def health() -> dict[str, Any]:
     body["remote_retrieval"] = REMOTE_RETRIEVAL
     if REMOTE_RETRIEVAL:
         body["retrieval"] = probe("retrieval-service", settings.retrieval_url)["status"]
-    body["model"] = settings.ollama_model
+    # The backend in force, not the Ollama one unconditionally. This field
+    # read `settings.ollama_model` whatever was actually running, which is
+    # exactly the kind of reporting that makes a 7-minute audit hard to
+    # explain: health said Qwen while the process was on Groq, or the reverse.
+    backend = llm.active_backend()
+    body["backend"] = backend
+    body["model"] = settings.groq_model if backend == "groq" else settings.ollama_model
     return body
+
+
+@app.get("/stats")
+def stats() -> dict[str, Any]:
+    """What actually ran, rather than what the configuration says.
+
+    Added because "6.1s a line" and "seven minutes an audit" could not both be
+    true, and every field that could reconcile them lived inside the process:
+    which backend is in force after a possible silent fallback, how many lines
+    run at once, and where the seconds went.
+    """
+    from core import backends
+    from core.audit import worker_count
+
+    backend = llm.active_backend()
+    return {
+        "backend": backend,
+        "configured": settings.backend_for("api"),
+        "model": settings.groq_model if backend == "groq" else settings.ollama_model,
+        # True means a Groq call failed mid-run and the process moved to Ollama
+        # permanently. Every line after that one costs 29.5s instead of 6.1s.
+        "fell_back": dict(llm.FELL_BACK),
+        "workers": worker_count(),
+        "seconds": backends.STATS,
+    }
 
 
 @app.post("/audit", status_code=202)

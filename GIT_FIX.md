@@ -138,15 +138,24 @@ interactive.
 
 ## 6. Check it worked
 
+**Use `--branches --tags`, not `--all`.** `--all` means every ref under
+`refs/`, which includes `refs/remotes/origin/*` - the un-rewritten copies still
+sitting on GitHub. `filter-branch` cannot rewrite those and `gc` cannot drop
+them; only the force-push in step 9 replaces them. Checking with `--all` before
+that push reports the old history as a failure when nothing is wrong.
+
 ```bash
-# Commits with no ticket. Must print 0.
-git --no-pager log --all --format=%s | grep -cv '\[BA-[0-9]'
+# Commits with no ticket, in the local history. Must print 0.
+git --no-pager log --branches --tags --format=%s | grep -cv '\[BA-[0-9]'
 ```
 
 ```bash
 # fixup commits left. Must print 0.
-git --no-pager log --all --oneline | grep -c 'fixup!'
+git --no-pager log --branches --tags --oneline | grep -c 'fixup!'
 ```
+
+`grep -c` exits 1 when it counts 0, so a bare `0` with no other output is the
+pass.
 
 ```bash
 # The shape of the history: merges still there, tickets on everything.
@@ -189,14 +198,35 @@ If it stops on a conflict: `git status` shows the file, fix it, then
 Your history is rewritten, so the remote has to be overwritten. You are the
 only user of this repo, which is what makes that safe.
 
+`--force-with-lease` refuses here: it compares against the remote-tracking ref,
+which still holds the pre-rewrite commit, and the rewrite means the new history
+is not a descendant of it. That is exactly the case this rewrite intends, so
+these use `--force`. You are the only user of the repo, which is what makes
+that safe.
+
 ```bash
-git push --force-with-lease origin develop
-git push --force-with-lease origin main
+git push --force origin develop
+git push --force origin main
 git push --force origin --tags
 ```
 
-Annotated tags become new objects when their commit changes, so tags need
-`--force` rather than `--force-with-lease`.
+Four feature branches were also pushed before the rewrite and still carry the
+old, ticketless history on the remote:
+
+```bash
+git push --force origin feature/answer-key feature/eval-set \
+  feature/limits-and-table-lock feature/naive-audit
+```
+
+Now every ref matches, so the `--all` form finally agrees too:
+
+```bash
+git --no-pager log --all --format=%s | grep -cv '\[BA-[0-9]'
+git --no-pager log --all --oneline | grep -c 'fixup!'
+```
+
+Both must print `0`. If they still do not, a stale remote-tracking ref is
+left over - `git remote prune origin` clears branches deleted on GitHub.
 
 ## 10. Install the hook, so this cannot happen again
 

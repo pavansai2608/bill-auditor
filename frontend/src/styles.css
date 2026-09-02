@@ -2,7 +2,10 @@
 :root {
   --colour-ink: #0b1f2a;
   --colour-ink-muted: #55707e;
-  --colour-ink-faint: #8aa2ae;
+  /* #8aa2ae measured 2.54:1 on the paper ground - it failed WCAG AA on 19
+     user-facing text nodes across both screens. Same hue, darkened until it
+     passes at exactly 4.50:1. */
+  --colour-ink-faint: #5c7785;
   --colour-surface: #ffffff;
   --colour-surface-sunken: #f4f7f8;
   --colour-surface-raised: #fbfcfd;
@@ -68,7 +71,9 @@
 
   --page-max: 1120px;
   --form-max: 720px;
-  --control-height: 42px;
+  /* 44px, not 42: every select and date input is a pointer target, and 42
+     sat just under the comfortable minimum on both screens. */
+  --control-height: 44px;
 
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-display: "Instrument Serif", Georgia, "Times New Roman", serif;
