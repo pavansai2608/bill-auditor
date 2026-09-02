@@ -34,6 +34,10 @@ import sys
 from pathlib import Path
 from typing import Any
 
+# The same line eval/evaluate.py carries: run as a script, this file's parent
+# is eval/, so core/ is not importable without it. The --llm check needs it.
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
 BILLS_DIR = Path(__file__).parent / "bills"
 TEXT_DIR = BILLS_DIR / "text"
 
@@ -131,9 +135,10 @@ def compare_with_llm(bill: dict[str, Any]) -> tuple[list[str], list[str]]:
         wanted = normalize_item(want["item"])
         if got.item != wanted:
             if wanted.startswith(got.item):
-                warnings.append(
-                    f"item {position}: the printed bill truncates {wanted!r} to {got.item!r}"
-                )
+                # Not truncation on this path. The parser is told to put the
+                # rate and the day count into `amount` and `qty`, so it drops
+                # the "10,500 x 5 days" suffix from the description on purpose.
+                warnings.append(f"item {position}: the parser reads {wanted!r} as {got.item!r}")
             else:
                 problems.append(f"item {position}: parsed {got.item!r} vs JSON {want['item']!r}")
         if abs(got.amount - want["amount"]) > 0.01:
