@@ -96,6 +96,24 @@ class AuditFlowTest(unittest.TestCase):
     def wait(self, timeout: int = PAGE_TIMEOUT) -> WebDriverWait:
         return WebDriverWait(self.driver, timeout)
 
+    def select_option(self, testid: str, value: str) -> None:
+        """Choose a dropdown value, waiting for the option to exist first.
+
+        Both dropdowns are filled from the API - the policies from /policies,
+        the sums insured from the chosen policy's room rent table - so the
+        select element is on the page before its options are. Selecting too
+        early raises NoSuchElementException, which only shows up when the
+        machine is loaded and reads like a missing option rather than a race.
+        """
+        self.wait().until(
+            EC.presence_of_element_located(
+                (By.CSS_SELECTOR, f"[data-testid='{testid}'] option[value='{value}']")
+            )
+        )
+        Select(
+            self.driver.find_element(By.CSS_SELECTOR, f"[data-testid='{testid}']")
+        ).select_by_value(value)
+
     def test_a_pasted_bill_produces_a_cited_report(self):
         driver = self.driver
         driver.get(APP)
@@ -111,12 +129,8 @@ class AuditFlowTest(unittest.TestCase):
         )
         textarea.send_keys(BILL)
 
-        Select(driver.find_element(By.CSS_SELECTOR, "[data-testid='policy']")).select_by_value(
-            "star_health"
-        )
-        Select(driver.find_element(By.CSS_SELECTOR, "[data-testid='sum-insured']")).select_by_value(
-            "300000"
-        )
+        self.select_option("policy", "star_health")
+        self.select_option("sum-insured", "300000")
 
         # Selenium 4 relative locators. The submit button is the one below the
         # optional room-limit field - which also asserts the form's order, since
