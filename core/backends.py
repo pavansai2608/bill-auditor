@@ -310,6 +310,51 @@ class Unreachable(BackendError):
     """
 
 
+def healthy(backend: str) -> bool:
+    """Is the backend answering at all?
+
+    Cheap and specific: Ollama publishes its model list, and asking for it says
+    the server is up without spending a generation on finding out. Groq has no
+    equivalent that is free, so it is assumed reachable and the next real call
+    decides - the retry loop above it is what limits the damage either way.
+    """
+    if backend != OLLAMA:
+        return True
+    try:
+        import httpx
+
+        response = httpx.get(f"{settings.ollama_base_url.rstrip('/')}/api/tags", timeout=5)
+        return response.status_code == 200
+    except Exception:
+        return False
+
+
+def wait_until_healthy(backend: str, deadline: float) -> bool:
+    """Poll until the backend answers again, or the deadline passes.
+
+    Written for the case that killed a 44-bill run: Ollama stopped responding
+    after twenty minutes and three fast retries into a dead socket turned a
+    recoverable outage into a lost afternoon. Backing off and re-probing costs
+    nothing when the server is fine and saves the run when it is not.
+    """
+    delay = 2.0
+    while time.monotonic() < deadline:
+        if healthy(backend):
+            return True
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            break
+        log.warning(
+            "%s is not answering; retrying in %.0fs (%.0fs left before giving up)",
+            backend,
+            min(delay, remaining),
+            remaining,
+        )
+        time.sleep(min(delay, remaining))
+        delay = min(delay * 2, 30.0)
+    return healthy(backend)
+
+
 def is_unreachable(error: Exception) -> bool:
     """A network problem or a server-side fault, as opposed to our mistake."""
     text = str(error).lower()
