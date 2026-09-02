@@ -28,6 +28,11 @@ services:
     build:
       context: .
       dockerfile: services/ingestion/Dockerfile
+    # BA_GROQ_API_KEY comes from .env, which is gitignored and never baked into
+    # an image. `environment:` below still wins over `env_file:`, so a local
+    # .env pointing BA_OLLAMA_BASE_URL at localhost cannot break the container.
+    env_file:
+      - .env
     environment:
       # Ingestion labels every clause with its rule_type through the model, so
       # it needs Ollama just as much as the audit service does. Without this it
@@ -62,6 +67,8 @@ services:
     build:
       context: .
       dockerfile: services/audit/Dockerfile
+    env_file:
+      - .env
     environment:
       BA_OLLAMA_BASE_URL: http://ollama:11434
       BA_RETRIEVAL_URL: http://retrieval-service:8000
