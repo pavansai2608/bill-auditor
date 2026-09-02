@@ -23,25 +23,51 @@ RUN uv pip install --system --no-cache \
       --index-strategy unsafe-best-match \
       -r requirements-retrieval.txt
 
+# --- the model weights, fetched at build time and never at runtime ----------
+# These two must equal settings.embedding_model and settings.reranker_model.
+# core/ is deliberately NOT copied into this stage: a one-character edit to a
+# core module would otherwise invalidate this layer and re-download 1.6 GB on
+# every build. tests/test_services.py asserts the two stay in step instead.
+ARG EMBEDDING_MODEL=BAAI/bge-base-en-v1.5
+ARG RERANKER_MODEL=BAAI/bge-reranker-base
+ENV HF_HOME=/opt/hf
+# Instantiated through the real loader classes rather than snapshot_download,
+# because what the image needs is exactly what these two constructors touch -
+# a hand-written allow-list is how a file gets missed and the offline check
+# fails in production instead of here.
+RUN python -c "from sentence_transformers import SentenceTransformer, CrossEncoder; SentenceTransformer('$EMBEDDING_MODEL'); CrossEncoder('$RERANKER_MODEL')" \
+  && find /opt/hf \( -name '*.onnx' -o -name '*.h5' -o -name '*.msgpack' -o -name '*.ot' \) -delete \
+  && find /opt/hf -name '*.incomplete' -delete
+
 FROM python:3.14-slim
 WORKDIR /app
 ENV PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1
 COPY --from=builder /usr/local/lib/python3.14/site-packages /usr/local/lib/python3.14/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
+# The weights live in the image. HF_HUB_OFFLINE makes that a guarantee rather
+# than a hope: with it set, huggingface_hub cannot open a socket at all, so a
+# missing file fails loudly at build time below instead of turning into a
+# 10-minute download on a pod restart - or an outright failure on a box with
+# no internet, which is what the Oracle deployment is.
+ENV HF_HOME=/opt/hf HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
+COPY --from=builder /opt/hf /opt/hf
 # core/ is the shared library. Every Python service copies the same one rather
 # than reimplementing a rule.
 COPY core/ ./core/
 COPY api/ ./api/
 COPY services/ ./services/
 COPY data/clauses.json data/non_payable.json ./data/
+# Prove the bake worked, in the layer that ships. If either model is short a
+# file this fails the build; without it the gap surfaces as a broken container.
+ARG EMBEDDING_MODEL=BAAI/bge-base-en-v1.5
+ARG RERANKER_MODEL=BAAI/bge-reranker-base
+RUN python -c "from sentence_transformers import SentenceTransformer, CrossEncoder; SentenceTransformer('$EMBEDDING_MODEL').encode('ok'); CrossEncoder('$RERANKER_MODEL').predict([('ok','ok')]); print('models load offline')"
 EXPOSE 8000
 # /ready, not /health: this service loads an embedding model (and a
 # cross-encoder) at startup, and compose should not report it healthy - or let
-# a dependent service start - until that is done. start-period covers the load.
-# start-period is minutes, not seconds: a fresh container has no HuggingFace
-# cache, so the warm-up downloads bge-base and the cross-encoder before it can
-# load them. Measured at 606s on this machine. Baking the weights into the
-# image would remove that wait at the cost of about a gigabyte.
-HEALTHCHECK --interval=15s --timeout=10s --start-period=900s --retries=3 \
+# a dependent service start - until that is done.
+# start-period covers a load from local disk, measured at 44-74s. It was 900s
+# while the weights were downloaded on first boot; baking them removed that.
+HEALTHCHECK --interval=15s --timeout=10s --start-period=180s --retries=3 \
   CMD python -c "import urllib.request;urllib.request.urlopen('http://localhost:8000/ready')"
 CMD ["uvicorn", "services.retrieval.main:app", "--host", "0.0.0.0", "--port", "8000"]
