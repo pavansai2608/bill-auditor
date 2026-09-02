@@ -156,24 +156,49 @@ class AuditFlowTest(BrowserTest):
             EC.presence_of_element_located((By.CSS_SELECTOR, "[data-testid='bill-form']"))
         )
 
-        # The form opens on the upload dropzone; switch it to the textarea.
-        driver.find_element(By.CSS_SELECTOR, "[data-testid='toggle-input-mode']").click()
+        # The bill area is one surface now - paste and drop are the same box,
+        # not two modes behind a link - so there is nothing to switch first.
         textarea = self.wait().until(
             EC.visibility_of_element_located((By.CSS_SELECTOR, "[data-testid='bill-text']"))
         )
         textarea.send_keys(BILL)
+
+        # The reading under the document is the page saying it understood the
+        # paste. It is the only feedback before a minute of waiting, so it is
+        # worth asserting rather than assuming.
+        count = self.wait().until(
+            EC.visibility_of_element_located((By.CSS_SELECTOR, "[data-testid='bill-count']"))
+        )
+        self.assertIn("items", count.text)
 
         self.select_option("policy", "star_health")
         self.select_option("sum-insured", "300000")
         # Required since the form started saying what it is waiting for.
         self.set_date("policy-start", "2022-06-15")
 
-        # Selenium 4 relative locators. The submit button is the one below the
-        # optional room-limit field - which also asserts the form's order, since
-        # that field has to come before the button a user presses.
+        # Selenium 4 relative locators, on the thing this layout actually
+        # promises: at 1440 the policy column sits beside the bill, not under
+        # it. That is the whole point of the two-column screen, and a silent
+        # collapse back to one column would otherwise pass every other check.
+        bill_doc = driver.find_element(By.CSS_SELECTOR, ".bill-doc")
+        policy = driver.find_element(
+            locate_with(By.CSS_SELECTOR, ".policy-panel").to_right_of(bill_doc)
+        )
+        self.assertTrue(policy.is_displayed())
+
+        # The submit still has to come after the last field. That is document
+        # order, and it is asserted as document order: the button is sticky, so
+        # geometrically it can sit above the field it follows, and `.below()`
+        # reports the layout rather than the form's sequence.
         room_limit = driver.find_element(By.CSS_SELECTOR, "[data-testid='room-limit']")
-        submit = driver.find_element(locate_with(By.TAG_NAME, "button").below(room_limit))
-        self.assertEqual(submit.get_attribute("data-testid"), "submit")
+        submit = driver.find_element(By.CSS_SELECTOR, "[data-testid='submit']")
+        follows = driver.execute_script(
+            "return !!(arguments[0].compareDocumentPosition(arguments[1]) "
+            "& Node.DOCUMENT_POSITION_FOLLOWING);",
+            room_limit,
+            submit,
+        )
+        self.assertTrue(follows, "submit must come after the room-limit field")
         submit.click()
 
         # While it runs, the progress line must say something true rather than
