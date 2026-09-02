@@ -58,6 +58,12 @@ export function useAuditJob(): AuditJob {
     (nextKind: "audit" | "compare") => (values: AuditFormValues) => {
       setError(null);
       setKind(nextKind);
+      // Drop the previous job id in the same update that changes the kind.
+      // Without this there is one render where kind is already "compare" and
+      // jobId is still the finished audit's, so the poller asks
+      // /compare/<an audit id> and gets a 404 - which the user sees as the
+      // comparison failing, a moment before it starts working.
+      setJobId(null);
       startedAt.current = Date.now();
       const starter = nextKind === "audit" ? startAudit : startCompare;
       return starter(values);
