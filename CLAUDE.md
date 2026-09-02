@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Current state (update this at the end of every phase)
 
-**Last updated: 2026-09-01, end of Phase 11. Every phase in `PHASES.md` is built. v5 remains the recorded eval at 68.3%.**
+**Last updated: 2026-09-02. Every phase in `PHASES.md` is built. The recorded eval is `v6-cpu` at 50.0% line accuracy over all 44 bills, on a corrected clause index.**
 
 Built and passing:
 
@@ -60,24 +60,44 @@ Not built yet — do not assume these exist:
   healthcheck probed `localhost` against an IPv4-only nginx, and `qwen3:8b`
   was OOM-killed in a 7.7 GB VM. See B-02.
 
-Last recorded eval: **v5, line accuracy 68.3%** — v0 24.4% → v2 51.2% → v3
-54.9% → v4 59.8% → v5 68.3%. Citation accuracy 56.8%, fabricated clauses 0,
-abstention recall 100%, false answers 0, dodges 21 (`eval/results.md`, 10
-bills, 82 lines).
+Last recorded eval: **`v6-cpu`, line accuracy 50.0% over 44 bills / 328 lines.**
+Citation accuracy 45.3%, payout error 65.6%, abstention recall 90.0%, false
+answers 3, dodges 126, **fabricated clauses 0**. Backend ollama (qwen3:8b),
+retrieval on cpu.
+
+**The version ladder is a different denominator and must not be joined to it:**
+v0 24.4% → v4 59.8% → v5 68.3% are ten bills / 82 lines, held constant so
+versions compare. `eval/results.md` holds no row for v2 or v3, so the 51.2% and
+54.9% quoted in `PHASES.md` and `PROGRESS.md` are not reproducible from it.
+
+**The number fell from v5-full's 59.5% and the cause is established.** The PDF
+table extraction was reading a horizontally merged cell as belonging only to its
+first column, and the forward-fill then carried column headings down into data
+rows. Fixing that removed corrupted text from 11 of 402 clauses, 5 of them
+star_health. Cleaner text means a different embedding, so those clauses rank
+differently, and the judge - given a different top three - answered differently
+on 45 star_health lines, all of which went from answered to abstained. Ruled out
+along the way: `core/room_limit.py`, which resolves all nine star_health sums
+insured correctly and is now pinned by `tests/test_room_limit_golden.py`; and the
+retrieval device, since `v6-cpu` reproduces `v6` on every accuracy metric.
+**Part of the old 59.5% was luck on corrupted data**; 50.0% on a correct index is
+the honest figure. The full write-up is under the `v6-cpu` row.
 
 **Where the remaining errors are:**
 
-- `sub_limit` is **0.0%**, dodging all 6 lines, and is the largest block left.
-  The cause is written up in `KNOWN_LIMITATIONS.md`: the loop can find a limit
-  or fail to find one, but has no way to conclude "nothing limits this line, so
-  pay it in full". Fixing it changes the judge contract and risks turning safe
-  abstentions into confident overpayments, so it needs its own eval slice.
-- `waiting_period` went 0.0% → **100%** at v5 and `clean` sits at 73.3%.
-- **Payout error rose 38.1% → 44.0% at v5, deliberately.** The waiting
-  guardrail turns B03's wrongly-excluded cataract line (the judge zeroed a
-  61-month-old policy under a 24-month exclusion) into an abstention. The line
-  was wrong before and is still not right, but it is now honest about it -
-  abstentions count as zero in the payout total.
+- `room_rent_over` is **32.5%** over 83 lines with 28 dodges, and is now the
+  largest block. The judge stops returning a limit for associated lines and
+  falls through to II.1's "specified in your Policy Schedule" wording.
+- `clean` fell to **38.5%** with 38 dodges - the same mechanism.
+- **The judge will apply a room per-day cap to a line the cap does not reach.**
+  On B01 it allowed Rs 5,000 for medicines under II.1. This is a judging
+  weakness the corrected index exposed rather than caused. Fixing it changes the
+  judge contract, so it needs its own eval slice.
+- `sub_limit` is **34.6%** with 16 dodges. The cause is in
+  `KNOWN_LIMITATIONS.md`: the loop can find a limit or fail to find one, but has
+  no way to conclude "nothing limits this line, so pay it in full".
+- **Payout error is 65.6%**, up from 41.1%, because an abstention counts as zero
+  in the payout total and there are now 126 of them.
 - **Three eval rows were withdrawn and re-run, with the reasons recorded in
   `eval/results.md` rather than deleted.** The first v2 counted 18 correct
   `IRDAI-List-I` citations as fabrications (scorer bug); the first v3 took its
