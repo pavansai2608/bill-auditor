@@ -290,3 +290,83 @@ Average attempts per line: 1.76
 Lines that went past attempt 1: 163  
 ...of which a later attempt actually produced an answer: **73** (45%)
 
+### v6 - 2026-09-02
+
+Bills run: 44   
+Bills with no answers filled in yet: 0   
+Lines scored: 328   Lines skipped (key not filled): 0
+
+| metric | value |
+|---|---|
+| Backend | ollama (qwen3:8b), retrieval on mps |
+| Line accuracy (allowed within Rs 1) | 50.0% |
+| Citation accuracy | 45.3% |
+| Payout error | 65.6% |
+| Abstention recall (flagged when it should) | 90.0% |
+| Abstention precision (flagged and was right) | 17.6% |
+| False answers (answered, should have flagged) | 3 |
+| Dodges (flagged, key has an answer) | 126 |
+| **Fabricated clauses** | **0** |
+| p95 latency per bill | 99.5s |
+| Avg tool calls per bill | 15.8 |
+
+| category | lines | line acc | citation acc | dodges | false answers |
+|---|---|---|---|---|---|
+| clean | 65 | 38.5% | 33.8% | 38 | 0 |
+| non_payable | 95 | 71.6% | 70.5% | 25 | 0 |
+| room_category_limit | 15 | 60.0% | 33.3% | 5 | 1 |
+| room_rent_over | 83 | 32.5% | 27.8% | 28 | 0 |
+| schedule_missing | 13 | 61.5% | 41.7% | 4 | 1 |
+| sub_limit | 26 | 34.6% | 28.0% | 16 | 1 |
+| waiting_period | 31 | 58.1% | 58.1% | 10 | 0 |
+
+**Retry loop**  
+Lines settled on the non-payable fast path (no search, no judge call): 125  
+Average attempts per line: 1.76  
+Lines that went past attempt 1: 142  
+...of which a later attempt actually produced an answer: **29** (20%)
+
+> **What changed between v5-full and v6, and the drop.**
+>
+> Three deliberate changes, applied together:
+>
+> 1. **Corrected table extraction, re-ingested.** A horizontally merged cell was
+>    being read as belonging only to its first column, and the forward-fill then
+>    carried column headings down into data rows. `star_health II.5` showed
+>    "Vaporisation of the prostate" as the limit for nine sum insureds. Fixing it
+>    changed the text of **11 of 402 clauses**, so every embedding for those
+>    clauses moved.
+> 2. **Two key entries became abstentions.** B03 and B31 line 1 (niva_bupa shared
+>    room, no schedule supplied). Both derivations said "no schedule supplied and
+>    no default stated" and then answered anyway; `_defers_to_schedule` flags
+>    them, and the key now agrees.
+> 3. **The citation rule changed, across 85 lines.** A line now cites the clause
+>    that authorises *that line's* treatment: the room-rent line cites the room
+>    limit clause, a line the second pass rescales or excludes cites the
+>    associated-medical-expenses definition. Projected on v5-full's own output
+>    this rule scored 43.2% against the old 51.9%; it landed at 45.3%.
+>
+> **Line accuracy fell 59.5% to 50.0%. Not adjusted, not explained away.**
+>
+> Change 3 cannot move line accuracy - it is a citation rule - and change 2
+> accounts for at most two lines. The fall comes from the re-ingest. Comparing
+> the system's own output between the two runs, **45 lines went from answered to
+> abstained** (2 went the other way, 7 changed amount), which matches dodges
+> rising 90 to 126. **All 45 are star_health**, which is where 5 of the 11
+> changed clauses live.
+>
+> Twenty of the 45 abstain with *"room limit is set by the policy schedule, which
+> was not provided"* - on a policy whose room limit comes from a table. The
+> deferral predicate itself is **not** what changed: the same three clauses
+> (II.1, III.35, IV.12) trip it before and after. What changed is upstream - the
+> judge stopped returning a limit for those lines, so II.1's schedule wording
+> became the deciding candidate. Which displaced clause causes that is **not
+> established**.
+>
+> **A second variable moved without being controlled:** v5-full records retrieval
+> on cpu, v6 on mps. A spot check during the worker-pool work found the device
+> changes retrieval scores only in the sixth decimal and not the ranking, so it
+> is unlikely to be the cause - but the two rows differ in more than the three
+> changes above, and saying otherwise would overstate the evidence.
+>
+> The v5-full row above is untouched. Both rows stand.
