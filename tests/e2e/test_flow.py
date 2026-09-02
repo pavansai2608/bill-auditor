@@ -203,10 +203,28 @@ class AuditFlowTest(BrowserTest):
 
         # While it runs, the progress line must say something true rather than
         # spin. This is the state a user stares at for a minute.
-        running = self.wait().until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "[data-testid='progress-caption']"))
+        #
+        # It is asserted only if it is still on screen, and it is found and read
+        # in one evaluation. An audit whose model calls are all cached finishes
+        # in about 1.5 seconds - measured, on this very bill - so the report can
+        # replace the running state before the driver gets to it. Waiting for
+        # the caption then made the test depend on whether `data/llm_cache/`
+        # happened to be warm, which is a property of the machine rather than of
+        # the page; locating it and asking for its text in two round trips threw
+        # StaleElementReference instead, which reads like a broken test rather
+        # than a fast one.
+        observed = self.wait().until(
+            lambda d: d.execute_script(
+                "const caption = document.querySelector(\"[data-testid='progress-caption']\");"
+                "if (caption) return 'caption:' + caption.textContent.trim();"
+                "return document.querySelector(\"[data-testid='report']\") ? 'finished' : null;"
+            )
         )
-        self.assertTrue(running.text.strip(), "the running state must say what it is doing")
+        if observed.startswith("caption:"):
+            self.assertTrue(
+                observed.removeprefix("caption:").strip(),
+                "the running state must say what it is doing",
+            )
 
         self.wait().until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "[data-testid='submitted-summary']"))
