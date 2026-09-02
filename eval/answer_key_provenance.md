@@ -101,6 +101,53 @@ The benefit clause wins; the list entry is read as covering ambulance equipment
 billed as an item. For HDFC and Niva, which have no matching benefit clause in
 the retrieved wording, ambulance is currently paid in full — **this is weak.**
 
+## Decisions applied on 2026-09-02
+
+Three decisions taken by the repo owner after the review in
+[`answer_key_review.md`](answer_key_review.md), and applied to the key in one
+pass. Nothing else in the key was touched.
+
+**1. The citation rule: cite the clause that authorises *that line's* treatment.**
+The room-rent line cites the clause setting the room limit (II.1, B.1.1). A line
+the second pass rescales - or leaves alone because it falls outside the
+definition - cites the clause defining associated medical expenses (I.Def45,
+A.1.2.Def5). Where one clause states both scope and formula, as niva_bupa 6.2.4
+does, that clause covers both.
+
+*Why:* II.1 caps room rent and says nothing about a surgeon's fee. What
+authorises reducing the surgeon's fee is the definition, not the cap. Citing the
+cap on a line the cap does not reach is the wrong citation **even though it
+scores better** - measured against the v5-full output, the old citations scored
+51.9% and this rule scores 43.2%, because the system had learned to cite the cap
+as well. Applied to **85 lines**: 47 star_health, 38 hdfc_ergo. niva_bupa is
+unaffected.
+
+**2. B03 and B31 line 1 became abstentions.** Both derivations said "no schedule
+supplied and no default stated" and then answered anyway. `_defers_to_schedule`
+in `core/audit.py` returns True for niva_bupa 6.2.4, so the system's own rule
+flags these; the key now agrees. `allowed` is null, `needs_human` is true, and
+each bill's `expected_total_allowed` drops by 2,500 as a consequence. **This
+lowers recorded line accuracy, and that is the correct outcome.**
+
+**3. B21's ambulance keeps its answer; only the derivation changed.** B.1.1
+indemnifies medical expenses up to the sum insured and states "At Actuals" for
+room rent and ICU. At Actuals is a limit - an unbounded one - so paid in full is
+grounded rather than a gap, and the derivation now says so instead of "no
+specific limit found".
+
+**What that settles for B43.** The conflict recorded below is resolved in favour
+of the document: At Actuals is a stated default, so B43's room-rent line is
+correctly answered rather than abstained, and `SCHEDULE_DEFERRAL_RE` paired with
+`STATES_A_DEFAULT_RE` in `core/audit.py` is right to let HDFC through while niva
+Bupa still abstains. B43's derivation already said this and needed no change.
+
+**Still inconsistent, and deliberately left alone.** Six further rows carry the
+same "no limit found" language and are answered rather than flagged: B01[8]
+disposable syringes, B10[7] and B28[8] ambulance, and B16[0], B25[0], B30[0]
+shared-room rent lines. Decisions 2 and 3 name only B03, B31, B21 and B43, so
+the rest are untouched - but the reasoning applies to them equally and they need
+the same call.
+
 ## Where the key contradicts the bills' own design
 
 **B43 now comes back fully answered, and it was built to abstain.**

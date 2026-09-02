@@ -118,6 +118,12 @@ Agentic RAG that audits Indian health insurance claim bills. A bill line is chec
 
 - **The LLM never does arithmetic.** `JudgeOutput` deliberately has no `allowed` field — the model returns a limit plus a `clause_id`, and Python multiplies/subtracts. 8B models are unreliable at maths, and a wrong total is invisible.
 - **Every verdict must cite a `clause_id` present in `data/clauses.json`.** An ID not in the index means reject the verdict and retry. A fabricated citation is the worst failure this system can produce; the eval tracks it as a metric that must stay at 0.
+- **Which clause to cite: the one that authorises *that line's* treatment.** Not the one that happens to be nearby, and not whichever scores best.
+  - the room-rent line itself → the clause that sets the room limit (`star_health II.1`, `hdfc_ergo B.1.1`)
+  - a line the second pass rescales, or one it leaves alone because the line falls outside the definition → the clause defining associated medical expenses (`star_health I.Def45`, `hdfc_ergo A.1.2.Def5`)
+  - where one clause states both the scope and the formula (`niva_bupa 6.2.4`) → that clause
+  
+  `II.1` caps room rent and says nothing about a surgeon's fee. What authorises reducing the surgeon's fee is the definition of associated medical expenses, not the cap. **Citing the cap on a line the cap does not reach is the wrong citation even though it scores** - it scored 51.9% against v5-full's output and the correct rule scores 43.2% on the same output, because the system had learned to cite the cap too. Recorded as decision D-12; applied to the answer key across 85 lines.
 - **`core/` imports no web framework.** Pure Python logic; `api/` calls into it.
 - **`num_ctx=8192` on every Ollama call.** The default is 2048 and truncates retrieved clauses silently — no error, just confident nonsense. Set in `core/config.py`, applied in `core/llm.py`.
 - **Every LLM call is cached to disk by prompt hash.** The eval is re-run 50+ times.
