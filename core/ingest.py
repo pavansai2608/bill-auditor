@@ -11,17 +11,30 @@ import json
 import re
 from pathlib import Path
 
-import pdfplumber
 from pydantic import BaseModel
 
 from core.config import settings
-from core.embeddings import get_embeddings
 from core.llm import complete_structured
 from core.logging_conf import get_logger, setup_logging
 from core.models import Clause, RuleType
-from core.splitter import split_pdf
 
 log = get_logger(__name__)
+
+
+# Imported on use, not on import. This module is the doorway to clauses.json,
+# so the gateway and the audit service both import it - and neither has any
+# business pulling in pdfplumber or a tensor library to read a JSON file.
+def _split_pdf():
+    from core.splitter import split_pdf
+
+    return split_pdf
+
+
+def _embeddings():
+    from core.embeddings import get_embeddings
+
+    return get_embeddings()
+
 
 COLLECTION = "policy_clauses"
 
@@ -116,7 +129,7 @@ def build_clauses() -> list[Clause]:
         if not path.exists():
             log.warning("missing %s, skipping %s", path, policy)
             continue
-        clauses.extend(split_pdf(path, policy))
+        clauses.extend(_split_pdf()(path, policy))
 
     if not clauses:
         raise FileNotFoundError(
@@ -170,6 +183,8 @@ def parse_non_payable() -> list[dict]:
         return []
 
     items: list[tuple[int | None, str]] = []
+    import pdfplumber
+
     with pdfplumber.open(path) as pdf:
         for page in pdf.pages:
             for table in page.extract_tables():
@@ -262,7 +277,7 @@ def build_vector_store(clauses: list[Clause], *, reset: bool = True):
     settings.db_dir.mkdir(parents=True, exist_ok=True)
     store = Chroma(
         collection_name=COLLECTION,
-        embedding_function=get_embeddings(),
+        embedding_function=_embeddings(),
         persist_directory=str(settings.db_dir),
         collection_metadata={"hnsw:space": "cosine"},
     )

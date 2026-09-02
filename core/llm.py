@@ -22,6 +22,7 @@ silently, and with no way to tell from the report.
 
 import hashlib
 import json
+import threading
 import time
 from pathlib import Path
 from typing import Any
@@ -59,6 +60,21 @@ _backend: str | None = None
 # changed model half way either.
 FELL_BACK: dict[str, Any] = {"happened": False, "reason": ""}
 
+# When Groq refused a call, the moment it is worth trying again.
+#
+# This used to be `use_backend(OLLAMA)` - a module-level mutation - so a single
+# transient failure moved the whole process to the local model permanently.
+# Every later line in that audit, and every later audit in that container, ran
+# at 29.5s instead of 6.1s, and nothing said so: /health reported the
+# configured backend rather than the live one. A seven-minute audit looked like
+# a slow model.
+#
+# The fallback is per call now. This timestamp only avoids paying a failed
+# round trip on every line while a quota window is still shut, and it expires,
+# so the process comes back by itself.
+_groq_down_until: float = 0.0
+_fallback_lock = threading.Lock()
+
 
 def use_backend(name: str) -> str:
     """Fix the backend for this process. Returns what was chosen."""
@@ -82,11 +98,59 @@ def get_llm():
 
 def reset_client() -> None:
     """Drop the cached clients so changed settings take effect. Tests use this."""
-    global _backend
+    global _backend, _groq_down_until
     _backend = None
+    _groq_down_until = 0.0
     FELL_BACK["happened"] = False
     FELL_BACK["reason"] = ""
     backends.reset_clients()
+
+
+def groq_is_down() -> bool:
+    """True while a refused Groq call is still inside its cooldown."""
+    with _fallback_lock:
+        return time.monotonic() < _groq_down_until
+
+
+def _note_groq_refused(problem: Exception) -> None:
+    global _groq_down_until
+    with _fallback_lock:
+        _groq_down_until = time.monotonic() + settings.groq_cooldown_s
+    FELL_BACK["happened"] = True
+    FELL_BACK["reason"] = str(problem)
+
+
+def _invoke_resilient(messages: list[BaseMessage], structured: Any = None) -> Any:
+    """One call, surviving the server going away underneath it.
+
+    A connection-level failure is not a bad answer, it is no answer: the model
+    server is down, restarting, or has dropped the socket mid-stream. Those are
+    the three shapes seen when a 44-bill eval died at bill 38 - "timed out",
+    "peer closed connection without sending complete message body", then
+    "[Errno 61] Connection refused" - and none of them gets better by asking
+    again half a second later, which is exactly what the structured-output
+    retry did before giving up and taking the run with it.
+
+    So they are handled separately from a malformed response: back off, re-probe
+    the backend, and try the same call again until `backend_recovery_s` is spent.
+    A response that arrives and is merely wrong still costs a structured retry,
+    which is the right budget for it.
+
+    The backend never changes here. A row's numbers have to come from one model.
+    """
+    deadline = time.monotonic() + settings.backend_recovery_s
+    while True:
+        try:
+            return _invoke(messages, structured=structured)
+        except backends.BackendError:
+            raise
+        except Exception as exc:
+            if not backends.is_unreachable(exc) or time.monotonic() >= deadline:
+                raise
+            log.warning("backend unreachable (%s); waiting for it to come back", exc)
+            if not backends.wait_until_healthy(active_backend(), deadline):
+                raise
+            log.info("%s is answering again, retrying the call", active_backend())
 
 
 def _invoke(messages: list[BaseMessage], structured: Any = None) -> Any:
@@ -95,18 +159,30 @@ def _invoke(messages: list[BaseMessage], structured: Any = None) -> Any:
     The fallback is the whole reason this is not just `client().invoke(...)`.
     Groq's free tier ends abruptly, and it can end mid-audit; carrying on with
     Ollama is slower but finishes, which is what the person waiting wants.
+
+    It is per call. The previous version answered the same need by calling
+    `use_backend(OLLAMA)`, which is a module-level mutation: one transient
+    failure and the process never went back, for the life of the container.
+    See the note on `_groq_down_until`.
     """
     backend = active_backend()
+    if backend == GROQ and groq_is_down():
+        # Still inside the cooldown from an earlier refusal. Going straight to
+        # Ollama, rather than spending a round trip to be told no again.
+        return backends.invoke(OLLAMA, messages, structured=structured)
     try:
         return backends.invoke(backend, messages, structured=structured)
     except (QuotaExhausted, Unreachable) as problem:
         if backend != GROQ:
             raise
-        FELL_BACK["happened"] = True
-        FELL_BACK["reason"] = str(problem)
+        _note_groq_refused(problem)
         why = "quota exhausted" if isinstance(problem, QuotaExhausted) else "unreachable"
-        log.warning("groq %s, falling back to ollama: %s", why, problem)
-        use_backend(OLLAMA)
+        log.warning(
+            "groq %s, this call falls back to ollama; retrying groq in %.0fs: %s",
+            why,
+            settings.groq_cooldown_s,
+            problem,
+        )
         return backends.invoke(OLLAMA, messages, structured=structured)
 
 
@@ -254,12 +330,18 @@ def complete_structured[TModel: BaseModel](
 
     for attempt in range(1, attempts + 1):
         try:
-            result = _invoke(messages, schema)
+            result = _invoke_resilient(messages, schema)
         except backends.BackendError:
             # A missing key, or text that still has an identifier in it. Neither
             # gets better on the second try, and retrying buries the reason.
             raise
-        except Exception as exc:  # ollama down, malformed JSON, schema mismatch
+        except Exception as exc:  # malformed JSON, schema mismatch, a dead server
+            if backends.is_unreachable(exc):
+                # `_invoke_resilient` already spent the whole recovery budget
+                # waiting for this backend. Spending it twice more here turns a
+                # three-minute wait into a nine-minute one and still fails.
+                raise
+
             last_error = exc
             log.warning(
                 "structured call failed (%d/%d) for %s: %s",
