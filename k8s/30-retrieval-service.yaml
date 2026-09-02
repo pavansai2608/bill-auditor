@@ -24,10 +24,18 @@ spec:
           resources:
             requests: { cpu: "500m", memory: "1Gi" }
             limits: { cpu: "1", memory: "2Gi" }
+          # Readiness, not liveness, gates traffic. /ready returns 503 until
+          # bge-base and the cross-encoder are loaded - 44-74s cold - so no
+          # request is routed to a pod that would make the caller wait for a
+          # model load. failureThreshold covers that window; liveness stays on
+          # /health so a slow warm-up cannot restart the pod it is waiting for.
           readinessProbe:
-            httpGet: { path: /health, port: 8000 }
-            initialDelaySeconds: 30
-            periodSeconds: 10
+            httpGet: { path: /ready, port: 8000 }
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            # 5s x 180 = 15 minutes. A fresh pod downloads the model weights
+            # before loading them; measured at 606s in a container.
+            failureThreshold: 180
           livenessProbe:
             httpGet: { path: /health, port: 8000 }
             initialDelaySeconds: 90

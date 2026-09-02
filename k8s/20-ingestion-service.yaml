@@ -24,10 +24,16 @@ spec:
           resources:
             requests: { cpu: "500m", memory: "1Gi" }
             limits: { cpu: "2", memory: "3Gi" }
+          # See the note in 30-retrieval-service.yaml: readiness waits for the
+          # embedding model, liveness does not, so a slow warm-up cannot
+          # restart the pod it is waiting for.
           readinessProbe:
-            httpGet: { path: /health, port: 8000 }
-            initialDelaySeconds: 20
-            periodSeconds: 10
+            httpGet: { path: /ready, port: 8000 }
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            # 5s x 180 = 15 minutes. A fresh pod downloads the model weights
+            # before loading them; measured at 606s in a container.
+            failureThreshold: 180
           livenessProbe:
             httpGet: { path: /health, port: 8000 }
             initialDelaySeconds: 90
