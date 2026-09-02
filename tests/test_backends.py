@@ -185,7 +185,55 @@ class BackoffAndFallbackTest(unittest.TestCase):
         self.assertEqual(result, "from ollama")
         self.assertEqual(seen, [GROQ, OLLAMA])
         self.assertTrue(llm.FELL_BACK["happened"])
-        self.assertEqual(llm.active_backend(), OLLAMA, "the rest of the run stays local")
+        # The fallback is for this call. The process stays configured for Groq
+        # and returns to it when the cooldown expires. This assertion used to
+        # read OLLAMA, pinning a permanent switch - which is exactly the defect
+        # it turned out to be: one refused call degraded the container for its
+        # whole life, and nothing reported it.
+        self.assertEqual(llm.active_backend(), GROQ, "the process is not switched")
+        self.assertTrue(llm.groq_is_down(), "but groq is skipped until the cooldown ends")
+
+    def test_the_cooldown_stops_every_line_paying_for_a_refusal(self):
+        """One refusal, then straight to Ollama - no second round trip."""
+        seen = []
+
+        def fake_invoke(backend, messages, structured=None):
+            seen.append(backend)
+            if backend == GROQ:
+                raise QuotaExhausted("groq daily quota is used up for today")
+            return "from ollama"
+
+        llm.use_backend(GROQ)
+        with mock.patch.object(backends, "invoke", side_effect=fake_invoke):
+            for _ in range(4):
+                llm._invoke([FakeMessage("clean text")])
+
+        # Groq is tried once, not four times. Without the cooldown every line
+        # of a ten-line bill spends a failed call to learn what line one knew.
+        self.assertEqual(seen.count(GROQ), 1)
+        self.assertEqual(seen.count(OLLAMA), 4)
+
+    def test_the_cooldown_expires_so_the_process_recovers(self):
+        """A quota window reopens. Nothing should need a restart to notice."""
+        seen = []
+
+        def fake_invoke(backend, messages, structured=None):
+            seen.append(backend)
+            if backend == GROQ and len(seen) == 1:
+                raise QuotaExhausted("groq daily quota is used up for today")
+            return "ok"
+
+        llm.use_backend(GROQ)
+        self.addCleanup(setattr, settings, "groq_cooldown_s", settings.groq_cooldown_s)
+        settings.groq_cooldown_s = 0.05
+        with mock.patch.object(backends, "invoke", side_effect=fake_invoke):
+            llm._invoke([FakeMessage("clean text")])
+            self.assertTrue(llm.groq_is_down())
+            time.sleep(0.06)
+            self.assertFalse(llm.groq_is_down())
+            llm._invoke([FakeMessage("clean text")])
+
+        self.assertEqual(seen, [GROQ, OLLAMA, GROQ])
 
     def test_the_fallback_reaches_the_report_as_an_assumption(self):
         assumptions = Assumptions()
@@ -365,4 +413,5 @@ class BadWifiTest(unittest.TestCase):
         self.assertEqual(result, "finished locally")
         self.assertEqual(seen, [GROQ, OLLAMA])
         self.assertTrue(llm.FELL_BACK["happened"])
-        self.assertEqual(llm.active_backend(), OLLAMA)
+        self.assertEqual(llm.active_backend(), GROQ, "bad wifi does not reconfigure the process")
+        self.assertTrue(llm.groq_is_down())

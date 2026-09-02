@@ -9,6 +9,7 @@ The tests run the real script in `.githooks/`, so a change to the hook that
 breaks a rule fails here rather than three weeks later in a review.
 """
 
+import os
 import stat
 import subprocess
 import tempfile
@@ -119,3 +120,64 @@ class BodyTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class SecretsAreBlockedTest(unittest.TestCase):
+    """A leaked key cannot be un-leaked by a later commit, so it is stopped here.
+
+    `.env` being gitignored is not enough on its own: `git add -f` gets past it,
+    a stray `.env.local` is a different name, and a key pasted into a .py file
+    is not a filename problem at all.
+
+    The hook asks git what is staged, so these tests put a shim named `git` at
+    the front of PATH that answers with whatever the case needs. That tests the
+    hook's own logic without building a scratch repository, and without any
+    real git command running.
+    """
+
+    def run_pre_commit(self, names: str, diff: str) -> tuple[int, str]:
+        with tempfile.TemporaryDirectory() as tmp:
+            shim = Path(tmp) / "git"
+            shim.write_text(
+                "#!/bin/sh\n"
+                "# Answers the three questions the hook asks, and nothing else.\n"
+                "# The staged-python query returns nothing: these tests are about\n"
+                "# the secret guard, and the ruff stage has its own tests.\n"
+                'case "$*" in\n'
+                "  *'*.py'*) : ;;\n"
+                "  *--name-only*) cat <<'NAMES'\n"
+                f"{names}\n"
+                "NAMES\n"
+                "  ;;\n"
+                "  *) cat <<'DIFF'\n"
+                f"{diff}\n"
+                "DIFF\n"
+                "  ;;\n"
+                "esac\n"
+            )
+            shim.chmod(0o755)
+            env = dict(os.environ, PATH=f"{tmp}:{os.environ['PATH']}")
+            done = subprocess.run(
+                [str(PRE_COMMIT)], capture_output=True, text=True, cwd=ROOT, env=env, check=False
+            )
+            return done.returncode, done.stdout + done.stderr
+
+    def test_a_staged_env_file_is_refused(self):
+        for name in (".env", ".env.local", "config/.env"):
+            with self.subTest(name=name):
+                code, out = self.run_pre_commit(names=name, diff="+BA_GROQ_API_KEY=gsk_x")
+                self.assertEqual(code, 1)
+                self.assertIn("refusing to commit", out)
+
+    def test_the_example_file_is_still_allowed(self):
+        code, out = self.run_pre_commit(names=".env.example", diff="+BA_GROQ_API_KEY=")
+        self.assertEqual(code, 0, out)
+
+    def test_a_key_pasted_into_any_file_is_refused(self):
+        code, out = self.run_pre_commit(names="core/notes.py", diff='+KEY = "gsk_' + "a" * 52 + '"')
+        self.assertEqual(code, 1)
+        self.assertIn("Groq API key", out)
+
+    def test_ordinary_content_still_commits(self):
+        code, out = self.run_pre_commit(names="notes.md", diff="+nothing secret here")
+        self.assertEqual(code, 0, out)

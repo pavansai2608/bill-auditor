@@ -7,11 +7,14 @@ gateway masks before anything crosses a network boundary, and that the
 gateway's health tells the truth about its dependencies.
 """
 
+import pathlib
+import re
 import unittest
 from unittest import mock
 
 from fastapi.testclient import TestClient
 
+from core.config import settings
 from core.models import Clause
 from core.retrieve import RetrievedClause
 from services.audit import remote_retrieval
@@ -319,3 +322,57 @@ class WarmUpGatesReadinessTest(unittest.TestCase):
 
             common.warm_up(reranker=True)
             reranker.assert_called_once()
+
+
+class BakedModelsMatchSettingsTest(unittest.TestCase):
+    """The Dockerfiles name the model weights they download; config names the
+    weights the code loads. They are two files and they can drift.
+
+    Drift is silent in the worst way: the image would ship one model, the
+    service would ask for another, and HF_HUB_OFFLINE=1 turns that into a
+    container that will not start rather than a slow one. This is the check
+    that makes it a test failure instead.
+
+    The names are duplicated on purpose - copying core/ into the builder stage
+    would make a one-character edit to any core module re-download 1.6 GB.
+    """
+
+    ROOT = pathlib.Path(__file__).resolve().parents[1]
+
+    def _args(self, service: str) -> dict[str, str]:
+        text = (self.ROOT / "services" / service / "Dockerfile").read_text()
+        return dict(re.findall(r"^ARG (\w+)=(\S+)$", text, re.MULTILINE))
+
+    def test_retrieval_bakes_both_models(self):
+        args = self._args("retrieval")
+        self.assertEqual(args.get("EMBEDDING_MODEL"), settings.embedding_model)
+        self.assertEqual(args.get("RERANKER_MODEL"), settings.reranker_model)
+
+    def test_ingestion_bakes_the_embedder_only(self):
+        args = self._args("ingestion")
+        self.assertEqual(args.get("EMBEDDING_MODEL"), settings.embedding_model)
+        # Ingestion writes the index and never ranks a result. Baking the
+        # cross-encoder here would be 550 MB this service cannot reach.
+        self.assertNotIn("RERANKER_MODEL", args)
+
+    def test_the_weights_are_never_fetched_at_runtime(self):
+        """HF_HUB_OFFLINE is what makes the bake a guarantee.
+
+        Without it a missing file degrades to a download - which is exactly the
+        behaviour this change removed, and it would come back unnoticed because
+        a warm developer machine has the cache and would never see it.
+        """
+        for service in ("retrieval", "ingestion"):
+            text = (self.ROOT / "services" / service / "Dockerfile").read_text()
+            with self.subTest(service=service):
+                self.assertIn("HF_HUB_OFFLINE=1", text)
+                self.assertIn("HF_HOME=/opt/hf", text)
+
+    def test_the_start_period_no_longer_covers_a_download(self):
+        """900s was sized for a cold download. A load from disk is ~60s."""
+        for service in ("retrieval", "ingestion"):
+            text = (self.ROOT / "services" / service / "Dockerfile").read_text()
+            found = re.search(r"--start-period=(\d+)s", text)
+            with self.subTest(service=service):
+                self.assertIsNotNone(found)
+                self.assertLessEqual(int(found.group(1)), 300)
