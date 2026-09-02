@@ -32,6 +32,8 @@ from selenium.webdriver.support.ui import Select, WebDriverWait
 
 API = os.environ.get("BA_E2E_API", "http://localhost:8000")
 APP = os.environ.get("BA_E2E_APP", "http://localhost:5173")
+# "/" is the landing page; the form moved here when the landing page landed.
+AUDIT_APP = f"{APP}/audit"
 STRICT = os.environ.get("BA_E2E_STRICT") == "1"
 HEADLESS = os.environ.get("BA_E2E_HEADLESS", "1") == "1"
 
@@ -67,8 +69,13 @@ def why_not_running() -> str | None:
     return None
 
 
-class AuditFlowTest(unittest.TestCase):
-    """The whole path a patient takes: paste a bill, get a cited report."""
+class BrowserTest(unittest.TestCase):
+    """One headless Chrome per class, plus the waits every test here needs.
+
+    A base class rather than a mixin on AuditFlowTest, because subclassing a
+    TestCase that already holds tests would re-run them - and the audit flow
+    takes minutes.
+    """
 
     driver: webdriver.Chrome
 
@@ -96,6 +103,29 @@ class AuditFlowTest(unittest.TestCase):
     def wait(self, timeout: int = PAGE_TIMEOUT) -> WebDriverWait:
         return WebDriverWait(self.driver, timeout)
 
+    def set_date(self, testid: str, value: str) -> None:
+        """Fill a React-controlled date input, in the ISO form the value uses.
+
+        send_keys types into the browser's *display* format, which follows the
+        machine's locale - dd/mm/yyyy here, mm/dd/yyyy elsewhere - so a typed
+        date is a portability bug waiting to happen. Setting .value directly
+        does not work either: React tracks the previous value on the node and
+        ignores an assignment it did not make. Going through the prototype
+        setter and dispatching input is what React itself listens for.
+        """
+        element = self.driver.find_element(By.CSS_SELECTOR, f"[data-testid='{testid}']")
+        self.driver.execute_script(
+            """
+            const [el, value] = arguments;
+            const setter = Object.getOwnPropertyDescriptor(
+                window.HTMLInputElement.prototype, 'value').set;
+            setter.call(el, value);
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+            """,
+            element,
+            value,
+        )
+
     def select_option(self, testid: str, value: str) -> None:
         """Choose a dropdown value, waiting for the option to exist first.
 
@@ -114,9 +144,13 @@ class AuditFlowTest(unittest.TestCase):
             self.driver.find_element(By.CSS_SELECTOR, f"[data-testid='{testid}']")
         ).select_by_value(value)
 
+
+class AuditFlowTest(BrowserTest):
+    """The whole path a patient takes: paste a bill, get a cited report."""
+
     def test_a_pasted_bill_produces_a_cited_report(self):
         driver = self.driver
-        driver.get(APP)
+        driver.get(AUDIT_APP)
 
         self.wait().until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "[data-testid='bill-form']"))
@@ -131,6 +165,8 @@ class AuditFlowTest(unittest.TestCase):
 
         self.select_option("policy", "star_health")
         self.select_option("sum-insured", "300000")
+        # Required since the form started saying what it is waiting for.
+        self.set_date("policy-start", "2022-06-15")
 
         # Selenium 4 relative locators. The submit button is the one below the
         # optional room-limit field - which also asserts the form's order, since
@@ -147,6 +183,9 @@ class AuditFlowTest(unittest.TestCase):
         )
         self.assertTrue(running.text.strip(), "the running state must say what it is doing")
 
+        self.wait().until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "[data-testid='submitted-summary']"))
+        )
         self.wait(REPORT_TIMEOUT).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "[data-testid='report']"))
         )
@@ -187,6 +226,41 @@ class AuditFlowTest(unittest.TestCase):
         )
         self.assertTrue(trace.text.strip())
 
+    def test_the_example_button_fills_the_whole_form(self):
+        """One click has to reach a submittable form, or it is not an example.
+
+        A first-time visitor has no bill to paste and no idea what a valid one
+        looks like. This is the shortcut, so it has to leave nothing else to
+        fill in - which is exactly what the blocked-submit note now reveals.
+        """
+        driver = self.driver
+        driver.get(AUDIT_APP)
+        self.wait().until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "[data-testid='bill-form']"))
+        )
+
+        blocked = driver.find_element(By.CSS_SELECTOR, "[data-testid='submit-blocked']")
+        self.assertIn("Add", blocked.text)
+
+        driver.find_element(By.CSS_SELECTOR, "[data-testid='load-example']").click()
+
+        text = self.wait().until(
+            EC.visibility_of_element_located((By.CSS_SELECTOR, "[data-testid='bill-text']"))
+        )
+        self.assertIn("Room Rent", text.get_attribute("value"))
+        self.assertEqual(
+            driver.find_element(By.CSS_SELECTOR, "[data-testid='policy-start']").get_attribute(
+                "value"
+            ),
+            "2022-06-15",
+        )
+
+        # Nothing outstanding, so the note is gone and the button is live.
+        self.wait().until_not(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "[data-testid='submit-blocked']"))
+        )
+        self.assertTrue(driver.find_element(By.CSS_SELECTOR, "[data-testid='submit']").is_enabled())
+
     def test_the_api_docs_open_in_a_second_tab(self):
         """Selenium 4's window API, used for something worth checking.
 
@@ -195,7 +269,7 @@ class AuditFlowTest(unittest.TestCase):
         CORS or port mistake shows up here.
         """
         driver = self.driver
-        driver.get(APP)
+        driver.get(AUDIT_APP)
         original = driver.current_window_handle
 
         driver.switch_to.new_window("tab")
@@ -210,3 +284,30 @@ class AuditFlowTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class LandingPageTest(BrowserTest):
+    """The front door, and the one link off it that matters."""
+
+    def test_the_landing_page_leads_to_the_audit_form(self):
+        driver = self.driver
+        driver.get(APP)
+
+        heading = self.wait().until(EC.presence_of_element_located((By.CSS_SELECTOR, "h1")))
+        self.assertIn("line by line", heading.text)
+
+        # The worked example carries real figures, not placeholders.
+        body = driver.find_element(By.TAG_NAME, "body").text
+        self.assertIn("25,000", body)
+        self.assertIn("II.1", body)
+
+        # Selenium 4 relative locators: the primary action sits below the lead
+        # paragraph, which also asserts the hero reads before it is pressed.
+        lead = driver.find_element(By.CSS_SELECTOR, ".landing-lead")
+        cta = driver.find_element(locate_with(By.CSS_SELECTOR, "a.landing-cta").below(lead))
+        cta.click()
+
+        self.wait().until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "[data-testid='bill-form']"))
+        )
+        self.assertTrue(driver.current_url.rstrip("/").endswith("/audit"))
