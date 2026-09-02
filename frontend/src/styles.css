@@ -28,6 +28,23 @@
   --text-figure: 2rem;
   --text-display: 3rem;
 
+  /* tokens.json carries these; the stylesheet did not, so anything using
+     var(--leading-tight) was quietly falling back to its own guess. */
+  /* The landing page's warm ground and hairline borders. They live here, with
+     everything else, so there is one palette rather than two that drift. */
+  --colour-paper: #faf9f7;
+  --colour-paper-raised: #ffffff;
+  --colour-paper-sunken: #f2f0ec;
+  --colour-hairline: rgba(11, 31, 42, 0.1);
+  --colour-hairline-strong: rgba(11, 31, 42, 0.16);
+
+  --text-display-lg: 5.5rem;
+  --text-display-md: 4rem;
+
+  --leading-tight: 1.2;
+  --leading-normal: 1.5;
+  --leading-loose: 1.65;
+
   --weight-regular: 400;
   --weight-medium: 500;
   --weight-semibold: 600;
@@ -54,10 +71,13 @@
   --control-height: 42px;
 
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Instrument Serif", Georgia, "Times New Roman", serif;
   --font-mono: "SF Mono", ui-monospace, "JetBrains Mono", Menlo, monospace;
 
   --motion-fast: 120ms ease;
   --motion-normal: 200ms ease;
+  --motion-reveal: 520ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  --cta-height: 52px;
 }
 
 * { box-sizing: border-box; }
@@ -216,4 +236,289 @@ table.lines tr.flagged td:first-child { box-shadow: inset 3px 0 0 var(--colour-f
   table.lines td::before { content: attr(data-label); font-size: var(--text-caption); text-transform: uppercase; letter-spacing: 0.06em; color: var(--colour-ink-muted); font-weight: var(--weight-semibold); }
   table.lines td.num { text-align: right; }
   .reason { max-width: none; text-align: right; }
+}
+
+/* The masthead doubles as a link home once there is somewhere to go back to. */
+.masthead-home {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  text-decoration: none;
+  color: inherit;
+}
+
+.masthead-home:focus-visible {
+  outline: 2px solid var(--colour-focus);
+  outline-offset: 4px;
+  border-radius: var(--radius-sm);
+}
+
+/* ---------------------------------------------------------------------------
+   The audit screen, dressed like the landing page.
+
+   Same warm paper ground, same display serif, same hairlines. The two heavy
+   white cards are gone: a form is one thing a person works down, and drawing a
+   box round each half made it read as two. Hairline rules separate the groups
+   instead.
+   --------------------------------------------------------------------------- */
+
+body:has(.audit-page) {
+  background: var(--colour-paper);
+}
+
+.audit-page .masthead h1 {
+  font-family: var(--font-display);
+  font-size: var(--text-display-md);
+  font-weight: var(--weight-regular);
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+
+.audit-page .masthead {
+  align-items: center;
+  margin-bottom: var(--space-3);
+}
+
+.audit-page .explainer {
+  max-width: 54ch;
+  margin-bottom: var(--space-7);
+}
+
+.form-group {
+  padding: var(--space-7) 0;
+  border-top: 1px solid var(--colour-hairline);
+}
+
+.form-group:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.form-group-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.form-group-head h2 {
+  font-size: var(--text-heading);
+  letter-spacing: -0.01em;
+}
+
+.form-note {
+  margin-top: var(--space-2);
+  color: var(--colour-ink-muted);
+  font-size: var(--text-small);
+  max-width: 52ch;
+}
+
+/* Present but never competing with the primary action. */
+.btn-quiet {
+  flex: none;
+  height: auto;
+  padding: var(--space-2) var(--space-4);
+  background: var(--colour-paper-raised);
+  border: 1px solid var(--colour-hairline-strong);
+  color: var(--colour-accent);
+  font-size: var(--text-small);
+}
+
+.btn-quiet:hover {
+  border-color: var(--colour-accent);
+  background: var(--colour-accent-soft);
+}
+
+.audit-page .field > label {
+  color: var(--colour-ink-muted);
+}
+
+.audit-page input[type="text"],
+.audit-page input[type="date"],
+.audit-page input[type="number"],
+.audit-page select,
+.audit-page textarea {
+  background: var(--colour-paper-raised);
+  border-color: var(--colour-hairline-strong);
+}
+
+.audit-page input[aria-invalid="true"] {
+  border-color: var(--colour-deduct);
+}
+
+/* One line saying why the pair below is being asked for at all. */
+.field-lede {
+  margin-bottom: var(--space-3);
+  font-size: var(--text-small);
+  color: var(--colour-ink-muted);
+}
+
+.field-error {
+  margin: calc(var(--space-2) * -1) 0 var(--space-4);
+  font-size: var(--text-small);
+  color: var(--colour-deduct);
+}
+
+/* The whole area is the control: the native file button is small, ugly and
+   permanently says "No file chosen" beside itself. */
+.audit-page .dropzone {
+  display: block;
+  position: relative;
+  border: 1px dashed var(--colour-hairline-strong);
+  border-radius: var(--radius-lg);
+  background: var(--colour-paper-raised);
+  padding: var(--space-8) var(--space-5);
+  cursor: pointer;
+}
+
+.audit-page .dropzone:hover {
+  border-color: var(--colour-accent);
+  background: var(--colour-accent-soft);
+}
+
+.audit-page .dropzone:focus-within {
+  outline: 2px solid var(--colour-focus);
+  outline-offset: 2px;
+}
+
+.audit-page .dropzone strong {
+  font-size: var(--text-lead);
+  font-weight: var(--weight-medium);
+}
+
+.audit-page .dropzone span {
+  font-size: var(--text-small);
+}
+
+/* Covers the dropzone, invisible, still focusable and still a file input. */
+.audit-page .dropzone input[type="file"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.help .why {
+  display: inline;
+}
+
+.help .why > summary {
+  display: inline;
+  color: var(--colour-accent);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.help .why > p {
+  margin-top: var(--space-2);
+  max-width: 60ch;
+}
+
+.audit-form .actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--colour-hairline);
+}
+
+/* A disabled button that does not say why is a dead end. */
+.actions-note {
+  font-size: var(--text-small);
+  color: var(--colour-ink-muted);
+}
+
+/* --- what was sent ------------------------------------------------------- */
+
+.submitted {
+  border: 1px solid var(--colour-hairline);
+  border-radius: var(--radius-lg);
+  background: var(--colour-paper-raised);
+  margin-bottom: var(--space-5);
+}
+
+.submitted > summary {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  cursor: pointer;
+  font-size: var(--text-small);
+}
+
+.submitted-line {
+  color: var(--colour-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.submitted-more {
+  color: var(--colour-accent);
+  white-space: nowrap;
+}
+
+.submitted-detail {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0 var(--space-5) var(--space-5);
+  border-top: 1px solid var(--colour-hairline);
+  padding-top: var(--space-5);
+}
+
+.submitted-detail dt {
+  font-size: var(--text-caption);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--colour-ink-faint);
+}
+
+.submitted-detail dd {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-small);
+  color: var(--colour-ink);
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+.submitted-bill {
+  margin: 0 var(--space-5) var(--space-5);
+  padding: var(--space-4);
+  border-radius: var(--radius-sm);
+  background: var(--colour-paper-sunken);
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+  line-height: 1.8;
+  color: var(--colour-ink-muted);
+  overflow-x: auto;
+}
+
+@media (max-width: 760px) {
+  .audit-page .masthead h1 {
+    font-size: 2rem;
+  }
+
+  .form-group-head {
+    flex-direction: column;
+  }
+
+  .btn-quiet {
+    width: 100%;
+  }
+
+  .audit-form .actions .btn-primary {
+    width: 100%;
+  }
+
+  .submitted-detail {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }

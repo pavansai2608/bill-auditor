@@ -269,8 +269,67 @@ Step-by-step setup, including what to do when that stage goes red, is in
   was routed to a pod that was still warming. The services now warm up in a
   background thread at startup and expose `/ready`, which returns 503 until the
   models are loaded; readiness gates on that, liveness stays on `/health` so a
-  slow warm-up cannot restart the pod it is waiting for. Baking the weights into
-  the image would remove the download too, at about a gigabyte each.
+  slow warm-up cannot restart the pod it is waiting for.
+
+  **The 606s was a download, not a load** — and that is a dependency, not a slow
+  start: the pod could not serve traffic without HuggingFace being reachable, on
+  every restart, and on a box with no internet it would never start at all. The
+  weights are now fetched in the builder stage and `HF_HUB_OFFLINE=1` is set in
+  the final image, so a missing file fails the build instead of a pod. `docker
+  compose up -d` to `/ready` returning 200:
+
+  | | cold start | of which, model load | readiness window |
+  |---|---|---|---|
+  | downloading at boot | 606s | — | 15 min |
+  | baked into the image | **13.8s** | 10.5s | 3 min |
+
+  The cost is 1.5 GB in retrieval-service (bge-base plus the reranker) and
+  419 MB in ingestion-service, which embeds but never reranks. A bigger image
+  against a pod that starts in fourteen seconds and works with the network
+  unplugged is the right trade for a single box.
+
+- **A fallback that never came back.** A Groq call that fails is meant to fall
+  back to Ollama for that call. It was implemented as `use_backend(OLLAMA)` — a
+  module-level mutation — so one transient failure moved the whole process to
+  the local model permanently: every later line in that audit, and every later
+  audit in that container, at 29.5s instead of 6.1s. Nothing surfaced it,
+  because `/health` reported `settings.ollama_model` unconditionally, so it
+  described the configured backend rather than the live one either way. A
+  seven-minute audit looked like a slow model.
+
+  Fixed as a genuine per-call fallback with a cooldown that expires, so the
+  process recovers without a restart, plus a `/stats` endpoint reporting what is
+  actually running — backend in force, whether it fell back, workers, and where
+  the seconds went. Two existing tests had to be rewritten: they asserted
+  `active_backend() == OLLAMA` after a failure, which was pinning the defect in
+  place as if it were the contract.
+
+- **The obvious optimisation was applied to the part that was not the problem.**
+  The audit judged bill lines in a `for` loop for the whole project. Lines are
+  independent in the first pass, so bounded concurrency needed no change to any
+  audit rule — a `ThreadPoolExecutor` and `BA_AUDIT_WORKERS`. I expected roughly
+  4x. B01 through the gateway on Groq, cache off, idle machine:
+
+  | workers | wall clock | per line | speed-up | in the model | limiter asleep |
+  |---|---|---|---|---|---|
+  | 1 | 222.6s | 22.3s | 1.00x | 14.1s | 0.0s |
+  | 2 | **175.1s** | 17.5s | **1.27x** | 16.7s | 0.0s |
+  | 4 | 170.6s | 17.1s | 1.30x | 14.6s | 37.3s |
+
+  **1.27x, not 4x.** The model is 6-8% of a line at every width; retrieval is
+  the rest, and one search already pegs all ten cores, so extra workers queue
+  for a resource that was never idle. The fourth worker buys 2.6% — noise — and
+  puts the token bucket to sleep for 37 seconds. The default is 2. Making an
+  audit materially faster means a cheaper reranker, not more of it at once,
+  and 6 of the 10 lines retried, so each of those paid for retrieval two or
+  three times.
+
+  The pool also found a bug that sequential execution could not reach:
+  `lru_cache` is not atomic, so all four workers missed the same cold cache and
+  each opened its own ChromaDB client on one directory — `'RustBindingsAPI'
+  object has no attribute 'bindings'`, then `Could not connect to tenant
+  default_tenant`, as a 500. Concurrency did not cause it; it made a latent
+  race reachable on the first request.
 
 - **35 GB of images became 4.6 GB by asking what each service actually
   imports.** Two questions, no cleverness:
