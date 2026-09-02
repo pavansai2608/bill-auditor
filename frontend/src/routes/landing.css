@@ -1,0 +1,762 @@
+/* The landing page.
+ *
+ * Every value is a token from design/tokens.json - the same variables the audit
+ * screens use, so the two are one product rather than two that resemble each
+ * other. There are no var(--x, fallback) pairs here on purpose: a missing token
+ * should break visibly rather than quietly render someone's guess.
+ *
+ * Three decisions carry the look:
+ *   - a serif display face against a sans body, which is what separates a page
+ *     that was designed from one that was defaulted;
+ *   - a warm paper ground rather than white, with depth from layered surfaces
+ *     and hairline borders instead of drop shadows;
+ *   - the rupee figures set large and tabular, because they are the reason
+ *     anyone is on this page.
+ *
+ * Loaded by Landing.tsx rather than the global stylesheet, so a visitor who
+ * goes straight to /audit never downloads it.
+ */
+
+.landing {
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: 0 var(--space-5) var(--space-8);
+  background: var(--colour-paper);
+}
+
+/* The ground is the page, not a box on it. */
+body:has(.landing) {
+  background: var(--colour-paper);
+}
+
+/* Present for keyboard users, out of the way for everyone else. */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+}
+
+.skip-link:focus {
+  left: var(--space-5);
+  top: var(--space-3);
+  z-index: 10;
+  padding: var(--space-2) var(--space-4);
+  background: var(--colour-paper-raised);
+  border: 1px solid var(--colour-accent);
+  border-radius: var(--radius-sm);
+  color: var(--colour-accent);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* --- reveal ------------------------------------------------------------ */
+
+/* Only an armed section hides. Without JavaScript, or before it runs, every
+   section is simply visible. */
+.reveal.is-armed {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity var(--motion-reveal) var(--reveal-delay, 0ms),
+    transform var(--motion-reveal) var(--reveal-delay, 0ms);
+}
+
+.reveal.is-armed.is-shown {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* The hook already returns shown-from-the-start, but a stylesheet that
+     depends on JavaScript having run is a stylesheet that fails. */
+  .reveal,
+  .reveal.is-armed {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* --- masthead ---------------------------------------------------------- */
+
+.landing-masthead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-5) 0;
+}
+
+.landing-wordmark {
+  font-size: var(--text-body);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.02em;
+  color: var(--colour-ink);
+}
+
+/* --- hero -------------------------------------------------------------- */
+
+.landing-hero {
+  padding: var(--space-7) 0 calc(var(--space-8) + var(--space-6));
+}
+
+/* The headline takes the full measure of the page. Display type in a narrow
+   column sets one or two words to a line and reads as a stack, not a
+   sentence - 80px needs roughly 950px to fall in three lines. */
+.landing-hero h1 {
+  margin: 0 0 var(--space-7);
+  max-width: 17ch;
+  font-family: var(--font-display);
+  font-size: clamp(2.75rem, 5.6vw, 5rem);
+  line-height: 1;
+  font-weight: var(--weight-regular);
+  letter-spacing: -0.025em;
+  color: var(--colour-ink);
+  text-wrap: balance;
+}
+
+.hero-row {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr);
+  gap: var(--space-7);
+  align-items: start;
+}
+
+.hero-copy {
+  max-width: 40ch;
+}
+
+.landing-lead {
+  margin: var(--space-5) 0 var(--space-6);
+  font-size: var(--text-lead);
+  line-height: 1.6;
+  color: var(--colour-ink-muted);
+  max-width: 42ch;
+  text-wrap: pretty;
+}
+
+.landing-cta {
+  display: inline-flex;
+  align-items: center;
+  height: var(--cta-height);
+  padding: 0 var(--space-6);
+  border-radius: var(--radius-sm);
+  background: var(--colour-accent);
+  color: var(--colour-accent-ink);
+  font-size: var(--text-lead);
+  font-weight: var(--weight-medium);
+  text-decoration: none;
+  transition:
+    background var(--motion-fast),
+    transform var(--motion-fast);
+}
+
+.landing-cta:hover {
+  background: var(--colour-accent-hover);
+  transform: translateY(-1px);
+}
+
+.landing-cta:focus-visible {
+  outline: 2px solid var(--colour-focus);
+  outline-offset: 3px;
+}
+
+.landing-cta-note {
+  margin: var(--space-4) 0 0;
+  font-size: var(--text-small);
+  color: var(--colour-ink-faint);
+}
+
+/* --- the hero plate ---------------------------------------------------- */
+
+.hero-plate {
+  position: relative;
+  min-height: 400px;
+  perspective: 1400px;
+  /* Runs past the right edge of the column, and the page crops it. A product
+     shown whole reads as a screenshot; a product running off the page reads
+     as a product. */
+  margin-right: calc(var(--space-8) * -2);
+}
+
+.plate {
+  position: absolute;
+  background: var(--colour-paper-raised);
+  border: 1px solid var(--colour-hairline);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+}
+
+.plate-label {
+  display: block;
+  margin-bottom: var(--space-4);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--colour-ink-faint);
+}
+
+.plate--bill {
+  top: 0;
+  left: 0;
+  width: 330px;
+  transform: rotateY(9deg) rotateX(2deg) rotateZ(-2deg);
+  background: var(--colour-paper-sunken);
+}
+
+.plate-bill {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  line-height: 1.9;
+  color: var(--colour-ink-faint);
+  white-space: pre;
+  overflow: hidden;
+}
+
+/* Overlaps the bill, sits in front of it, and is the one you read. */
+.plate--report {
+  top: 128px;
+  left: 156px;
+  width: 384px;
+  transform: rotateY(9deg) rotateX(2deg) rotateZ(-2deg);
+  border-color: var(--colour-hairline-strong);
+}
+
+.plate-lines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.plate-lines li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 74px;
+  gap: var(--space-3);
+  align-items: baseline;
+  padding: var(--space-3) 0;
+  border-top: 1px solid var(--colour-hairline);
+}
+
+.plate-lines li:first-child {
+  border-top: 0;
+}
+
+.plate-item {
+  font-size: var(--text-small);
+  color: var(--colour-ink-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.plate-amount {
+  font-size: var(--text-body);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--weight-medium);
+  color: var(--colour-ink);
+}
+
+.plate-amount--cut {
+  color: var(--colour-accent);
+  font-weight: var(--weight-semibold);
+}
+
+.plate-amount--flag {
+  color: var(--colour-flag);
+  font-size: var(--text-small);
+}
+
+.plate-clause {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  color: var(--colour-ink-faint);
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* --- shared section furniture ------------------------------------------ */
+
+.landing-section {
+  padding: var(--space-8) 0;
+  border-top: 1px solid var(--colour-hairline);
+}
+
+.landing-section > h2,
+.landing-closing h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-display-md);
+  line-height: 1.05;
+  font-weight: var(--weight-regular);
+  letter-spacing: -0.02em;
+  color: var(--colour-ink);
+}
+
+.landing-section-note {
+  margin: var(--space-4) 0 var(--space-6);
+  font-size: var(--text-body);
+  color: var(--colour-ink-muted);
+  max-width: 62ch;
+  text-wrap: pretty;
+}
+
+/* --- the worked example ------------------------------------------------ */
+
+.example-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5);
+  align-items: start;
+}
+
+.example-panel {
+  border: 1px solid var(--colour-hairline);
+  border-radius: var(--radius-lg);
+  background: var(--colour-paper-raised);
+  padding: var(--space-6);
+  min-width: 0;
+}
+
+.example-label {
+  margin: 0 0 var(--space-4);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--colour-ink-faint);
+}
+
+.example-bill {
+  margin: 0;
+  padding: var(--space-4);
+  border-radius: var(--radius-sm);
+  background: var(--colour-paper-sunken);
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+  line-height: 1.9;
+  color: var(--colour-ink-muted);
+  overflow-x: auto;
+}
+
+.example-table,
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-small);
+}
+
+.example-table th,
+.example-table td,
+.results-table th,
+.results-table td {
+  padding: var(--space-4) var(--space-2);
+  text-align: left;
+  border-bottom: 1px solid var(--colour-hairline);
+  vertical-align: baseline;
+}
+
+.example-table thead th,
+.results-table thead th {
+  padding-top: 0;
+  font-size: var(--text-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--colour-ink-faint);
+  border-bottom-color: var(--colour-hairline-strong);
+}
+
+.example-table tbody th,
+.results-table tbody th {
+  font-weight: var(--weight-regular);
+  color: var(--colour-ink);
+}
+
+.example-table tbody tr:last-child th,
+.example-table tbody tr:last-child td,
+.results-table tbody tr:last-child th,
+.results-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/* Every rupee figure on the page lines up in its column. */
+.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.charged {
+  color: var(--colour-ink-faint);
+}
+
+/* The figures are the emotional content: set them up, and keep the rest quiet
+   enough that they carry. */
+.amount {
+  font-size: var(--text-heading);
+  font-weight: var(--weight-medium);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.amount-cut {
+  color: var(--colour-accent);
+  font-weight: var(--weight-semibold);
+}
+
+.amount-paid {
+  color: var(--colour-ink);
+}
+
+.flagged {
+  font-size: var(--text-small);
+  font-weight: var(--weight-medium);
+  color: var(--colour-flag);
+}
+
+/* A clause id is the evidence the whole page rests on. Treated as a citation:
+   mono, small, boxed, never decorative. */
+.clause {
+  display: inline-block;
+  padding: 2px var(--space-2);
+  border: 1px solid var(--colour-hairline);
+  border-radius: var(--radius-sm);
+  background: var(--colour-paper-sunken);
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+  color: var(--colour-ink-muted);
+  white-space: nowrap;
+}
+
+.example-legend {
+  margin: var(--space-5) 0 0;
+  font-size: var(--text-caption);
+  line-height: 1.7;
+  color: var(--colour-ink-faint);
+}
+
+.example-detail {
+  margin-top: var(--space-5);
+  border: 1px solid var(--colour-hairline);
+  border-left: 2px solid var(--colour-accent);
+  border-radius: var(--radius-lg);
+  background: var(--colour-paper-raised);
+}
+
+.example-detail summary {
+  padding: var(--space-5) var(--space-6);
+  font-size: var(--text-lead);
+  font-weight: var(--weight-medium);
+  color: var(--colour-ink);
+  cursor: pointer;
+}
+
+.example-detail summary:focus-visible {
+  outline: 2px solid var(--colour-focus);
+  outline-offset: -2px;
+  border-radius: var(--radius-lg);
+}
+
+.example-detail-body {
+  padding: 0 var(--space-6) var(--space-6);
+}
+
+.example-detail-body p {
+  margin: 0 0 var(--space-4);
+  font-size: var(--text-body);
+  line-height: 1.7;
+  color: var(--colour-ink-muted);
+  max-width: 68ch;
+  text-wrap: pretty;
+}
+
+.example-detail-body p:last-child {
+  margin-bottom: 0;
+}
+
+.clause-id {
+  font-family: var(--font-mono);
+  font-size: var(--text-small);
+  color: var(--colour-accent);
+}
+
+.clause-maths {
+  font-variant-numeric: tabular-nums;
+}
+
+.clause-maths strong,
+.clause-quote strong {
+  color: var(--colour-ink);
+  font-weight: var(--weight-semibold);
+}
+
+/* --- how it works ------------------------------------------------------ */
+
+.steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-6);
+}
+
+.steps li {
+  display: flex;
+  gap: var(--space-5);
+  align-items: baseline;
+}
+
+.step-number {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--colour-hairline);
+  background: var(--colour-accent-soft);
+  color: var(--colour-accent);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+.steps h3,
+.not-list h3 {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-lead);
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.01em;
+  color: var(--colour-ink);
+}
+
+.steps p,
+.not-list p {
+  margin: 0;
+  font-size: var(--text-body);
+  line-height: 1.7;
+  color: var(--colour-ink-muted);
+  max-width: 64ch;
+  text-wrap: pretty;
+}
+
+/* --- what it does not do ----------------------------------------------- */
+
+.not-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5);
+}
+
+.not-list li {
+  padding: var(--space-6);
+  border: 1px solid var(--colour-hairline);
+  border-radius: var(--radius-lg);
+  background: var(--colour-paper-raised);
+}
+
+.not-footnote {
+  margin: var(--space-7) 0 0;
+  padding-left: var(--space-5);
+  border-left: 2px solid var(--colour-flag-border);
+  font-size: var(--text-body);
+  line-height: 1.7;
+  color: var(--colour-ink-muted);
+  max-width: 68ch;
+}
+
+/* --- results ----------------------------------------------------------- */
+
+.results-table {
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.accuracy {
+  font-size: var(--text-lead);
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.01em;
+  color: var(--colour-ink);
+}
+
+.zero {
+  font-size: var(--text-lead);
+  font-weight: var(--weight-semibold);
+  color: var(--colour-accent);
+}
+
+.results-note {
+  margin: var(--space-5) 0 0;
+  font-size: var(--text-body);
+  line-height: 1.7;
+  color: var(--colour-ink-muted);
+  max-width: 68ch;
+  text-wrap: pretty;
+}
+
+/* --- closing and footer ------------------------------------------------ */
+
+.landing-closing {
+  padding: var(--space-8) 0;
+  border-top: 1px solid var(--colour-hairline);
+}
+
+.landing-closing p {
+  margin: var(--space-4) 0 var(--space-6);
+  font-size: var(--text-lead);
+  color: var(--colour-ink-muted);
+  max-width: 52ch;
+}
+
+.landing-footer {
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--colour-hairline);
+}
+
+.landing-footer p {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-small);
+  color: var(--colour-ink-faint);
+  max-width: 64ch;
+}
+
+.landing-footer a {
+  color: var(--colour-accent);
+}
+
+.landing-footer a:focus-visible {
+  outline: 2px solid var(--colour-focus);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.landing-disclaimer {
+  line-height: 1.7;
+}
+
+/* --- 390px -------------------------------------------------------------- */
+
+@media (max-width: 760px) {
+  .landing {
+    padding: 0 var(--space-4) var(--space-7);
+  }
+
+  /* The plate stacks under the copy rather than beside it, upright rather than
+     angled: a 3D transform in a 390px column is a gimmick, not depth. */
+  .landing-hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-6);
+    padding: var(--space-6) 0 var(--space-7);
+  }
+
+  .hero-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-6);
+  }
+
+  .hero-copy {
+    max-width: none;
+  }
+
+  .landing-hero h1 {
+    max-width: none;
+    margin-bottom: var(--space-5);
+    line-height: 1.02;
+  }
+
+  .landing-lead {
+    font-size: var(--text-body);
+    max-width: none;
+  }
+
+  /* A full-width target, because this is the only thing to press. */
+  .landing-cta {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .hero-plate {
+    position: static;
+    min-height: 0;
+    margin-right: 0;
+    perspective: none;
+  }
+
+  .plate {
+    position: static;
+    width: auto;
+    transform: none;
+  }
+
+  .plate--bill {
+    display: none;
+  }
+
+  .plate--report {
+    padding: var(--space-4);
+  }
+
+  .plate-lines li {
+    grid-template-columns: minmax(0, 1fr) auto 64px;
+  }
+
+  .landing-section,
+  .landing-closing {
+    padding: var(--space-7) 0;
+  }
+
+  .landing-section > h2,
+  .landing-closing h2 {
+    font-size: 2rem;
+  }
+
+  .example-grid,
+  .not-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .example-panel,
+  .not-list li {
+    padding: var(--space-5);
+  }
+
+  .example-bill {
+    font-size: 0.6875rem;
+  }
+
+  .example-table {
+    font-size: var(--text-caption);
+  }
+
+  .amount {
+    font-size: var(--text-body);
+  }
+
+  /* The results table has to fit without sideways scrolling, because the
+     column that matters - fabricated citations, always zero - is the last one,
+     and anything a reader has to scroll to find is a claim they never see.
+     What changed and the line count are the two that can go. */
+  .results-table {
+    display: table;
+    white-space: normal;
+    font-size: var(--text-caption);
+  }
+
+  .col-what,
+  .col-lines {
+    display: none;
+  }
+}
