@@ -34,6 +34,19 @@ class Assumption:
 
 
 DIFFERENTIAL_BILLING = "differential_billing"
+LLM_FALLBACK = "llm_backend_fallback"
+
+LLM_FALLBACK_STATEMENT = (
+    "the hosted model became unavailable part way through, so the rest of this "
+    "audit was decided by the local model"
+)
+LLM_FALLBACK_WHY = (
+    "Two things end a hosted run: the free tier's daily request limit, and the "
+    "network. Either way, finishing on the local model is slower but complete; "
+    "stopping half way would leave a report that looks finished and is not. The "
+    "two models do not always agree, so the lines after the switch were judged "
+    "by a different model from the lines before it."
+)
 
 DIFFERENTIAL_BILLING_STATEMENT = (
     "assumed the hospital follows differential billing, so proportionate deduction applies"
@@ -68,6 +81,17 @@ class Assumptions:
             because=DIFFERENTIAL_BILLING_WHY,
             clause_id=clause_id,
             clause_text=(clause_text or "")[:400] or None,
+        )
+        self.recorded.append(entry)
+        return entry
+
+    def note_llm_fallback(self, reason: str) -> Assumption:
+        """Record that the backend changed mid-audit. Never silent."""
+        entry = Assumption(
+            name=LLM_FALLBACK,
+            holds=True,
+            statement=LLM_FALLBACK_STATEMENT,
+            because=f"{LLM_FALLBACK_WHY} The backend reported: {reason}",
         )
         self.recorded.append(entry)
         return entry
