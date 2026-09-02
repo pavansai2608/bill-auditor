@@ -1,0 +1,257 @@
+=== page 10 table 0 ===
+[table] Sum Insured (Rs.) 1,00,000/- - Limit (Rs.) Up to 2,000/- per day
+[table] Sum Insured (Rs.) 2,00,000/- - Limit (Rs.) Up to 2,000/- per day
+[table] Sum Insured (Rs.) 3,00,000/- - Limit (Rs.) Up to 5,000/- per day
+[table] Sum Insured (Rs.) 4,00,000/- - Limit (Rs.) Up to 5,000/- per day
+[table] Sum Insured (Rs.) 5,00,000/- - Limit (Rs.) Single Standard A/C Room
+[table] Sum Insured (Rs.) 10,00,000/- - Limit (Rs.) Single Standard A/C Room
+[table] Sum Insured (Rs.) 15,00,000/- - Limit (Rs.) Single Standard A/C Room
+[table] Sum Insured (Rs.) 20,00,000/- - Limit (Rs.) Single Standard A/C Room
+[table] Sum Insured (Rs.) 25,00,000/- - Limit (Rs.) Single Standard A/C Room
+=== page 10 table 1 ===
+[table] Cataract is su Sum Insured (Rs.) - Limit per eye (in Rs.) - Limit per Policy Period (in Rs.)
+[table] Cataract is su 1,00,000/- - Up to 12,000/- per eye, per Policy Period - Up to 12,000/- per eye, per Policy Period
+[table] Cataract is su 2,00,000/- - Up to 12,000/- per eye, per Policy Period - Up to 12,000/- per eye, per Policy Period
+[table] Cataract is su 3,00,000/- - Up to 25,000/- - Up to 35,000/-
+[table] Cataract is su 4,00,000/- - Up to 30,000/- - Up to 45,000/-
+[table] Cataract is su 5,00,000/- - Up to 40,000/- - Up to 60,000/-
+[table] Cataract is su 10,00,000/- - Up to 50,000/- - Up to 75,000/-
+[table] Cataract is su 15,00,000/- - Up to 50,000/- - Up to 75,000/-
+[table] Cataract is su 20,00,000/- - Up to 50,000/- - Up to 75,000/-
+[table] Cataract is su 25,00,000/- - Up to 50,000/- - Up to 75,000/-
+=== page 11 table 0 ===
+[table] Sum Insured (Rs.) - Uterine artery Embolization and HIFU - Balloon Sinuplasty - Deep Brain Stimulation - Oral Chemotherapy* (Sublimits including Pre and Post Hospitalization) - Immunotheraphy- Monoclonal Antibody to be given as injection - Intra Vitreal injections
+[table] Sum Insured (Rs.) - Limit per Policy Period for each treatment/procedure (Rs.) - Limit per Policy Period for each treatment/procedure (Rs.) - Limit per Policy Period for each treatment/procedure (Rs.) - Limit per Policy Period for each treatment/procedure (Rs.) - Limit per Policy Period for each treatment/procedure (Rs.) - Limit per Policy Period for each treatment/procedure (Rs.)
+[table] 1,00,000/- - 12,500/- - 5,000/- - 25,000/- - 12,500/- - 25,000/- - 5,000/-
+[table] 2,00,000/- - 25,000/- - 10,000/- - 50,000/- - 25,000/- - 50,000/- - 10,000/-
+[table] 3,00,000/- - 37,500/- - 15,000/- - 75,000/- - 37,500/- - 75,000/- - 15,000/-
+[table] 4,00,000/- - 1,00,000/- - 40,000/- - 2,00,000/- - 1,00,000/- - 2,00,000/- - 40,000/-
+[table] 5,00,000/- - 1,25,000/- - 50,000/- - 2,50,000/- - 1,25,000/- - 2,50,000/- - 50,000/-
+[table] 10,00,000/- - 1,50,000/- - 1,00,000/- - 3,00,000/- - 2,00,000/- - 4,00,000/- - 75,000/-
+[table] 15,00,000/- - 1,75,000/- - 1,25,000/- - 4,00,000/- - 2,50,000/- - 5,00,000/- - 1,00,000/-
+[table] 20,00,000/- - 2,00,000/- - 1,50,000/- - 4,50,000/- - 2,75,000/- - 5,50,000/- - 1,25,000/-
+[table] 25,00,000/- - 2,00,000/- - 1,50,000/- - 5,00,000/- - 3,00,000/- - 6,00,000/- - 1,50,000/-
+[table] * Sublimits are all inclusive with or without hospitalization wherever hospitalization includes pre and post hospitalization.
+=== page 11 table 1 ===
+[table] Sum Insured (Rs.) - Robotic surgeries - Stereotactic radio surgeries - Bronchical Thermoplasty - Vaporisation of the prostate (Green laser treatment or holmium laser treatment) - IONM-(Intra Operative Neuro Monitoring) - Stem cell therapy: Hematopoietic stem cells for bone marrow transplant for haematological conditions
+[table] Sum Insured (Rs.) - Limit per Policy Period for each treatment/procedure (Rs.) - Limit per Policy Period for each treatment/procedure (Rs.) - Limit per Policy Period for each treatment/procedure (Rs.) - Limit per Policy Period for each treatment/procedure (Rs.) - Limit per Policy Period for each treatment/procedure (Rs.) - Limit per Policy Period for each treatment/procedure (Rs.)
+[table] 1,00,000/- - 25,000/- - 25,000/- - Up to Sum Insured - Up to Sum Insured - Up to Sum Insured - 25,000/-
+[table] 2,00,000/- - 50,000/- - 50,000/- - Up to Sum Insured - Up to Sum Insured - Up to Sum Insured - 50,000/-
+[table] 3,00,000/- - 75,000/- - 75,000/- - Up to Sum Insured - Up to Sum Insured - Up to Sum Insured - 75,000/-
+[table] 4,00,000/- - 2,00,000/- - 1,75,000/- - Up to Sum Insured - Up to Sum Insured - Up to Sum Insured - 2,00,000/-
+[table] 5,00,000/- - 2,50,000/- - 2,00,000/- - Up to Sum Insured - Up to Sum Insured - Up to Sum Insured - 2,50,000/-
+[table] 10,00,000/- - 3,00,000/- - 2,25,000/- - Up to Sum Insured - Up to Sum Insured - Up to Sum Insured - 3,00,000/-
+[table] 15,00,000/- - 4,00,000/- - 2,50,000/- - Up to Sum Insured - Up to Sum Insured - Up to Sum Insured - 4,00,000/-
+[table] 20,00,000/- - 4,50,000/- - 2,75,000/- - Up to Sum Insured - Up to Sum Insured - Up to Sum Insured - 4,50,000/-
+[table] 25,00,000/- - 5,00,000/- - 3,00,000/- - Up to Sum Insured - Up to Sum Insured - Up to Sum Insured - 5,00,000/-
+=== page 13 table 0 ===
+[table] STAR HEALT Sum Insured - TH AND ALLIED INSURANCE Limit per hospitalization
+[table] STAR HEALT Up to Rs.4,00,000/- - TH AND ALLIED INSURANCE Up to Rs.5,000/-
+[table] STAR HEALT Rs.5,00,000/- to Rs.15,00,000/- - TH AND ALLIED INSURANCE Up to Rs.7,500/-
+[table] STAR HEALT Rs.20,00,000/- and Rs.25,00,000/- - TH AND ALLIED INSURANCE Up to Rs.10,000/-
+=== page 15 table 0 ===
+[table] Illustration
+[table] Illustration - STAR HEALTH AND ALLIED INSURAN Illustration - NCE COMPANY LIMITED | P Scenario 1 (New Policy) - POLICY WORDINGS Scenario 2 (Renewal)
+[table] Illustration - STAR HEALTH AND ALLIED INSURAN Sum Insured (SI) - NCE COMPANY LIMITED | P Rs.10,00,000/- - POLICY WORDINGS Rs.10,00,000/-
+[table] Illustration - STAR HEALTH AND ALLIED INSURAN Loyalty Bonus - NCE COMPANY LIMITED | P 0 - POLICY WORDINGS Rs.2,50,000/-
+[table] Illustration - STAR HEALTH AND ALLIED INSURAN Recharge - NCE COMPANY LIMITED | P Rs.1,50,000/- - POLICY WORDINGS Rs.1,50,000/-
+[table] Illustration - STAR HEALTH AND ALLIED INSURAN Total Cover Available - NCE COMPANY LIMITED | P Rs.11,50,000/- - POLICY WORDINGS Rs.14,00,000/-
+[table] Illustration
+[table] Illustration - STAR HEALTH AND ALLIED INSURAN 1st Claim settled - NCE COMPANY LIMITED | P Rs.5,00,000/- - POLICY WORDINGS Rs.5,00,000/-
+[table] 1st Claim - STAR HEALTH AND ALLIED INSURAN Total Coverage available for next claim - NCE COMPANY LIMITED | P Rs.6,50,000/- (Balance SI Rs.5,00,000/-+ Recharge Rs.1,50,000/-) - POLICY WORDINGS Rs.9,00,000/- (Balance SI Rs. 5,00,000/- + Bonus Rs.2,50,000/- + Recharge Rs.1,50,000/-)
+[table] 2nd Claim - STAR HEALTH AND ALLIED INSURAN Will the restoration kick in? If yes How Yes, Why - Since there is full Much? utilization of Limit of coverage - NCE COMPANY LIMITED | P Rs.10,00,000/- - POLICY WORDINGS Rs.10,00,000/-
+[table] 2nd Claim
+[table] 3rd Claim - STAR HEALTH AND ALLIED INSURAN Will the restoration kick in ? If yes How No, Why - Since the Limit o f Much? coverage is not utilized in full coverage - NCE COMPANY LIMITED | P 0 - POLICY WORDINGS 0
+[table] 3rd Claim
+[table] 4th Claim - STAR HEALTH AND ALLIED INSURAN Claim Settled - NCE COMPANY LIMITED | P 0 (Automatic Restoration is not available for Same illness) - POLICY WORDINGS 0 (Automatic Restoration is not available for Same illness)
+[table] 4th Claim
+[table] 5th Claim - STAR HEALTH AND ALLIED INSURAN Will the restoration kick in ? If yes How Yes, Why - Since there is full Much? utilization of Limit of Coverage - NCE COMPANY LIMITED | P Rs.10,00,000/- - POLICY WORDINGS Rs.10,00,000/-
+=== page 16 table 0 ===
+[table] Sum Insured (Rs.) - Limit (Rs.)
+[table] 1,00,000/- - Not Available
+[table] 2,00,000/- - Not Available
+[table] 3,00,000/- - 75,000/-
+[table] 4,00,000/- - 1,00,000/-
+[table] 5,00,000/- - 1,50,000/-
+[table] 10,00,000/- - 1,50,000/-
+[table] 15,00,000/- - 1,50,000/-
+[table] 20,00,000/- - 1,50,000/-
+[table] 25,00,000/- - 1,50,000/-
+=== page 18 table 0 ===
+[table] Sum Insured (Rs.) - Limit per day (Rs.)
+[table] 1,00,000/- - Not Available
+[table] 2,00,000/- - Not Available
+[table] 3,00,000/- - 800/- per day
+[table] 4,00,000/- - 800/- per day
+[table] 5,00,000/- - 800/- per day
+[table] 10,00,000/- - 800/- per day
+[table] 15,00,000/- - 800/- per day
+[table] 20,00,000/- - 1000/- per day
+[table] 25,00,000/- - 1000/- per day
+=== page 18 table 1 ===
+[table] Sum Insured and subje Sum Insured (Rs.) - Package applicable
+[table] Sum Insured and subje 1,00,000/- - Not Available
+[table] Sum Insured and subje 2,00,000/- - Not Available
+[table] Sum Insured and subje 3,00,000/- - Package A
+[table] Sum Insured and subje 4,00,000/- - Package A
+[table] Sum Insured and subje 5,00,000/- - Package A
+[table] Sum Insured and subje 10,00,000/- - Package A
+[table] Sum Insured and subje 15,00,000/- - Package B
+[table] Sum Insured and subje 20,00,000/- - Package B
+[table] Sum Insured and subje 25,00,000/- - Package B
+=== page 21 table 0 ===
+[table] 18 years and above onl
+[table] Wellness Points Earned - Discount in Premium
+[table] 200 to 350 - 4%
+[table] 351 to 600 - 10%
+[table] 601 to 750 - 14%
+[table] 751 and above - 20%
+=== page 21 table 1 ===
+[table] Family Size - Weightage
+[table] Self, Spouse** - 1:1
+[table] Self, Spouse** and Dependent Children (up to 17 years) - 1:1:0:0:0
+[table] Self, Spouse** and Dependent Children (aged 18 years and above) - 2:2:1:1:1
+[table] **Spouse / Live-in Partner / Same Sex Partner
+=== page 22 table 0 ===
+[table] Sr. No. - Activity - Maximum number of Wellness Points that can be earned under each activity in a Policy Year
+[table] 1. - Sign up points for Enrolling to Wellness Program - 100
+[table] 2. - a. Online Health Risk Assessment (HRA) - 150
+[table] 3. - a. Participating in Walkathon, Marathon, Cyclothon and similar activities - 200
+[table] 4. - Stay Active - If the Insured member achieves the step count target on “Star Health” Mobile App - 250
+[table] 5. - Sharing 'Active Life Success Story' through adoption of Star Wellness Program - 50
+[table] 6. - Condition Management Program (CMP): Weight Management , Diabetes Management, Hypertension, De-Stress & Mind Body Healing Program. - 150
+[table] 7. - For Submission of Vaccination Certificate Eg: Vaccine for Covid, HPV, Pneumoccocal, Swine Flu (H1N1), Hepatitis etc.. - 20
+[table] 8. - For Submission of Preventive Eye Check-up report - 20
+[table] 9. - For Submission of Preventive Dental Check-up report - 20
+[table] 10. - For Submission of Mammography & PAP Test (for Women) report - 20
+[table] 11. - For Submission of Prostate specific antigen (PSA) test report (for Male persons aged > 50 years) - 20
+[table] 12. - Glaucoma Screening (for persons aged > 50 years) - 20
+[table] Value Added Services
+[table] Medical Concierge Services
+[table] Digital Health Vault
+[table] Wellness Content
+[table] Post-Operative Care
+[table] Discounts from Network Providers
+=== page 24 table 1 ===
+[table] MPANY LIMITED | POLICY WORDINGS Sr. No. - NY LIMITED | P Name of the Ailment - POLICY WORDING Values to be submitted - GS Criteria to get the Wellness points
+[table] MPANY LIMITED | POLICY WORDINGS 1. - NY LIMITED | P Obesity (If BMI is above 29) - POLICY WORDING Height & Weight (to calculate BMI) - GS Achieving and maintaining the BMI between 18 and 29
+[table] MPANY LIMITED | POLICY WORDINGS 2. - NY LIMITED | P Overweight (If BMI is between 25 and 29) - POLICY WORDING Height & Weight (to calculate BMI) - GS Reducing BMI by two points and maintaining the same BMI in the Policy Year
+[table] - Values (for BMI) shall be submitted for every 2 months (up to 5 times in each Policy Year)
+=== page 25 table 0 ===
+[table] Sr. No. - STAR HEALTH Name of the Ailment - H AND ALLIED IN Test to be submitted - NSURANCE Values Criteria to get the additional Wellness points
+[table] 1. - STAR HEALTH Diabetes(Insured can submit either HbA1c test value (or) Fasting Blood Sugar (FBS) Range and Postprandial test value) - H AND ALLIED IN Fasting Blood Sugar (FBS) Range and Postprandial test value - NSURANCE 100 to 125 mg/dl below 160 mg/dl
+[table] 2. - STAR HEALTH Hypertension - H AND ALLIED IN Measured with - BP apparatus - NSURANCE Systolic Range - 110 to 140 mmHg Diastolic Range - 70 to 90 mmHg
+[table] 3. - STAR HEALTH Cardiovascular Disease - H AND ALLIED IN LDL Cholesterol and Total Cholesterol / HDL Cholesterol Ratio - NSURANCE 100 to 159 mg/dl ≤ 4.0
+[table] 4. - STAR HEALTH Asthma - H AND ALLIED IN PFT (Pulmonary Function Test) - NSURANCE FEV1 (PFC) is 75% or more FEV1/ FVC is 70% or more
+=== page 27 table 0 ===
+[table] A 51 year old Individual Gopal and his wife Ramya along with their two dependent children (aged below 18 years) buy a Family Health Optima Insurance Plan with Sum Insured 10 Lacs, let's understand how they can earn Wellness Points. Gopal has declared that he is suffering from Diabetes. Ramya has declared her BMI as 27. Gopal and Ramya enrolled under the Star wellness program and completed the following wellness activities.
+[table] Illustration of Benefit Sr. No. - Illustration of Bene Activity - Wellness Points Earned by Gopal - Wellness Points Earned by Ramya
+[table] Illustration of Benefit 1. - Illustration of Bene Sign up points for Enrolling to Wellness Program - 100 - 100
+[table] Illustration of Benefit 2. - Illustration of Bene a. Online Health Risk Assessment (HRA) - 150 - 150
+[table] Illustration of Benefit 3. - Illustration of Bene a. Participating in Walkathon, Marathon, Cyclothon and similar activities - 200 - 0
+[table] Illustration of Benefit 3. - Illustration of Bene b. Membership in a health club - 100 - 150
+[table] Illustration of Benefit 4. - Illustration of Bene Stay Active (Wellness points based on Step Count) - 250 - 120
+[table] Illustration of Benefit 5. - Illustration of Bene For Sharing 'Active Life Success Story' - 50 - 0
+[table] Illustration of Benefit 6. - Illustration of Bene Condition Management Program (CMP) - 150 - 150
+[table] Illustration of Benefit 7. - Illustration of Bene Submission of Vaccination Certificate - 20 - 20
+[table] Illustration of Benefit 8. - Illustration of Bene For Submission of Preventive Eye Check-up report - 20 - 0
+[table] Illustration of Benefit 9. - Illustration of Bene For Submission of Preventive Dental Check-up report - 0 - 20
+[table] Illustration of Benefit 10. - Illustration of Bene For Submission of Mammography & PAP Test (for Women) report - 0 - 20
+[table] Illustration of Benefit 11. - Illustration of Bene For Submission of Prostate specific antigen (PSA) test report (for Male persons aged > 50 years) - 20 - 0
+[table] Illustration of Benefit 12. - Illustration of Bene Glaucoma Screening (for persons aged > 50 years) - 20 - 0
+[table] Illustration of Benefit 12. - Illustration of Bene Total Number of Wellness Points earned - 1280 - 930
+[table] Illustration of Benefit 12. - Illustration of Bene No of wellness points based upon weightage - 1:1:0:0 - 640 (1280x1/2) - 465 (930x1/2)
+[table] Total Number of Wellness Points earned by Gopal and Ramya = 1105 (640+465) Based on the no of Wellness Points earned, Gopal & Ramya are eligible to get 20% discount on renewal premium
+=== page 28 table 0 ===
+[table] Co-payment % - Company will provide Discount %
+[table] 10% - Company will provide 10%
+[table] 20% - Company will provide 20%
+=== page 34 table 0 ===
+[table] C. F or Sl. No. - Reimbursement c Type of Claim - Prescribed time limit
+[table] C. F or 1 - Reimbursement c Reimbursement of hospitalization, day care and pre hospitalization expenses - Claim must be filed within 15 days from the date of dis- charge from the Hospital
+[table] C. F or 2 - Reimbursement c Reimbursement of Post hospitalization - Within 15 days after completion of 90 days from the date of discharge from hospital
+=== page 44 table 0 ===
+[table] SI.No. - Item
+[table] 1 - BABY CHARGES (UNLESS SPECIFIED / INDICATED)
+[table] 2 - HAND WASH
+[table] 3 - SHOE COVER
+[table] 4 - CAPS
+[table] 5 - CRADLE CHARGES
+[table] 6 - COMB
+[table] 7 - EAU-DE-COLOGNE / ROOM FRESHNERS
+[table] 8 - FOOT COVER
+[table] 9 - GOWN
+[table] 10 - SLIPPERS
+[table] 11 - TISSUE PAPER
+[table] 12 - TOOTH PASTE
+[table] 13 - TOOTH BRUSH
+[table] 14 - BED PAN
+[table] 15 - FACE MASK
+[table] 16 - FLEXI MASK
+[table] 17 - HAND HOLDER
+[table] 18 - SPUTUM CUP
+[table] 19 - DISINFECTANT LOTIONS
+[table] 20 - LUXURY TAX
+[table] 21 - HVAC
+[table] 22 - HOUSE KEEPING CHARGES
+[table] 23 - AIR CONDITIONER CHARGES
+[table] 24 - IM IV INJECTION CHARGES
+[table] 25 - CLEAN SHEET
+[table] 26 - BLANKET / WARMER BLANKET
+[table] 27 - ADMISSION KIT
+[table] 28 - DIABETIC CHART CHARGES
+[table] 29 - DOCUMENTATION CHARGES / ADMINISTRATIVE EXPENSES
+[table] 30 - DISCHARGE PROCEDURE CHARGES
+[table] 31 - DAILY CHART CHARGES
+[table] 32 - ENTRANCE PASS / VISITORS PASS CHARGES
+[table] 33 - EXPENSES RELATED TO PRESCRIPTION ON DISCHARGE
+[table] 34 - FILE OPENING CHARGES
+[table] 35 - INCIDENTAL EXPENSES / MISC. CHARGES (NOT EXPLAINED)
+[table] 36 - PATIENT IDENTIFICATION BAND / NAME TAG
+[table] 37 - PULSEOXYMETER CHARGES
+=== page 44 table 1 ===
+[table] SI.No. - Item
+[table] 1 - HAIR REMOVAL CREAM
+[table] 2 - DISPOSABLES RAZORS CHARGES (for site preparations)
+[table] 3 - EYE PAD
+[table] 4 - EYE SHEILD
+[table] 5 - CAMERA COVER
+[table] 6 - DVD, CD CHARGES
+[table] 7 - GAUSE SOFT
+[table] 8 - GAUZE
+[table] 9 - WARD AND THEATRE BOOKING CHARGES
+[table] 10 - ARTHROSCOPY AND ENDOSCOPY INSTRUMENTS
+[table] 11 - MICROSCOPE COVER
+[table] 12 - SURGICAL BLADES, HARMONICSCALPEL,SHAVER
+[table] 13 - SURGICAL DRILL
+[table] 14 - EYE KIT
+[table] 15 - EYE DRAPE
+[table] 16 - X-RAY FILM
+[table] 17 - BOYLES APPARATUS CHARGES
+[table] 18 - COTTON
+[table] 19 - COTTON BANDAGE
+[table] 20 - SURGICAL TAPE
+[table] 21 - APRON
+[table] 22 - TORNIQUET
+[table] 23 - ORTHOBUNDLE, GYNAEC BUNDLE
+=== page 44 table 2 ===
+[table] 23
+[table] SI No. - Item
+[table] 1 - ADMISSION / REGISTRATION CHARGES
+[table] 2 - HOSPITALIZATION FOR EVALUATION / DIAGNOSTIC PURPOSE
+[table] 3 - URINE CONTAINER
+[table] 4 - BLOOD RESERVATION CHARGES AND ANTE NATAL BOOKING CHARGES
+[table] 5 - PAP MACHINE
+[table] 6 - CPAP / CAPD EQUIPMENTS
+[table] 7 - INFUSION PUMP— COST
+[table] 8 - HYDROGEN PEROXIDE\SPIRIT / DISINFECTANTS ETC
+[table] 9 - NUTRITION PLANNING CHARGES - DIETICIAN CHARGES - DIET CHARGES
+[table] 10 - HIV KIT
+[table] 11 - ANTISEPTIC MOUTHWASH
+[table] 12 - LOZENGES
+[table] 13 - MOUTH PAINT
+[table] 14 - VACCINATION CHARGES
+[table] 15 - ALCOHOL SWABES
+[table] 16 - SCRUB SOLUTION / STERILLIUM
+[table] 17 - GLUCOMETER & STRIPS
+[table] 18 - URINE BAG
