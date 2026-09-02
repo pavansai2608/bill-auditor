@@ -3,21 +3,26 @@
 Audits an Indian health insurance claim bill against the policy that governs it,
 line by line, and names the clause behind every deduction.
 
-![The audit report](frontend/design/screenshots/screen-2-audit-report-1440.png)
+![The landing page](frontend/design/screenshots/screen-0-landing-1440.png)
 
 ## Results
 
-Measured against 44 hand-written bills whose answers were derived from the
-policy PDFs directly, never from this system. Line accuracy means the rupee
-figure matches the key within Rs 1.
+Scored against hand-written bills whose answers were derived from the policy
+PDFs directly, never from this system. Line accuracy means the rupee figure
+matches the key within Rs 1.
 
-| Version | What changed | Line accuracy | Citation accuracy | Fabricated citations |
-|---|---|---|---|---|
-| v0 | Naive: one search, one judge call, no retry | 24.4% | 22.2% | **0** |
-| v2 | LangGraph agent loop, retried on low confidence | 51.2% | 33.3% | **0** |
-| v3 | Proportionate-deduction second pass | 54.9% | 44.4% | **0** |
-| v4 | Room limit read from the table, not the model | 59.8% | 48.1% | **0** |
-| v5 | Waiting periods decided from dates, not the model | **68.3%** | **56.8%** | **0** |
+The version rows are the ten-bill quick run used to compare one version against
+the next. The last row is the same v5 system over the whole 44-bill set, and it
+is the number to plan around.
+
+| Version | What changed | Bills | Line accuracy | Citation accuracy | Fabricated citations |
+|---|---|---|---|---|---|
+| v0 | Naive: one search, one judge call, no retry | 10 | 24.4% | 22.2% | **0** |
+| v2 | LangGraph agent loop, retried on low confidence | 10 | 51.2% | 33.3% | **0** |
+| v3 | Proportionate-deduction second pass | 10 | 54.9% | 44.4% | **0** |
+| v4 | Room limit read from the table, not the model | 10 | 59.8% | 48.1% | **0** |
+| v5 | Waiting periods decided from dates, not the model | 10 | **68.3%** | **56.8%** | **0** |
+| v5 | The same system, every bill in the set | 44 | 59.5% | 51.9% | **0** |
 
 A fabricated citation — a clause id that does not exist in the policy — is the
 worst thing this system could produce, because it is confident and
@@ -61,6 +66,8 @@ did not survive PDF extraction. Both are in
 [`KNOWN_LIMITATIONS.md`](KNOWN_LIMITATIONS.md).
 
 ## How it works
+
+![The audit report](frontend/design/screenshots/screen-2-audit-report-1440.png)
 
 ![The input screen](frontend/design/screenshots/screen-1-audit-a-bill-1440.png)
 
@@ -226,6 +233,79 @@ Step-by-step setup, including what to do when that stage goes red, is in
 - **One wrong number can cost four wrong lines.** When the judge misread a room
   limit, the second pass faithfully propagated that wrong premise to every
   associated expense. Errors in a pipeline do not stay where they start.
+- **A local model made every line 5x slower, and only a third of that was the
+  model.** One bill line, same clause, one judge attempt, measured on an idle
+  machine with `eval/where_time_goes.py`:
+
+  | | Groq (hosted) | Ollama (local) |
+  |---|---:|---:|
+  | **Total per line** | **6.1s** | **29.5s** |
+  | Retrieval, 2 searches | 3.7s | 18.3s |
+  | Model call | 1.7s | 8.1s |
+  | Rate limiter asleep | 0.0s | 0.0s |
+
+  The model call is 4.8x slower locally, which is expected. The surprise is the
+  retrieval row: it is *the same work* in both runs — the same two searches, the
+  same cross-encoder, no model involved — and it takes five times longer when
+  Ollama is the backend. Ollama saturates the CPU that the reranker needs. Two
+  components that never call each other, coupled through the machine they share.
+
+  What that implies is the part worth keeping: on a single box, "use a local
+  model to stay free" is not a self-contained decision. It taxes every other
+  CPU-bound stage of the pipeline, and the bill arrives somewhere you were not
+  looking. That is the argument for the hosted backend being the API's default —
+  measured, not assumed.
+
+  Two guesses died on the way to this table. The rate limiter never slept, so
+  "the token cap is throttling us" was wrong. And "the LLM was never the
+  bottleneck" was wrong too — locally it is 27% of the line directly and a good
+  share of the retrieval row indirectly.
+
+- **The first request after a deploy was paying for a model load.** Loading
+  bge-base and the cross-encoder takes 44-74s on the host and **606s in a fresh
+  container**, which has no HuggingFace cache and downloads them first. Whoever
+  arrived first waited for it, and in Kubernetes it was worse: the readiness
+  probe pointed at `/health`, which passes the moment uvicorn binds, so traffic
+  was routed to a pod that was still warming. The services now warm up in a
+  background thread at startup and expose `/ready`, which returns 503 until the
+  models are loaded; readiness gates on that, liveness stays on `/health` so a
+  slow warm-up cannot restart the pod it is waiting for. Baking the weights into
+  the image would remove the download too, at about a gigabyte each.
+
+- **35 GB of images became 4.6 GB by asking what each service actually
+  imports.** Two questions, no cleverness:
+
+  | Image | Before | Split by imports | Plus CPU-only torch |
+  |---|---:|---:|---:|
+  | gateway | 8.82 GB | 350 MB | **350 MB** |
+  | audit-service | 8.82 GB | 354 MB | **354 MB** |
+  | retrieval-service | 8.82 GB | 8.64 GB | **1.93 GB** |
+  | ingestion-service | 8.82 GB | 8.72 GB | **2.01 GB** |
+  | **Total** | **35.3 GB** | 18.1 GB | **4.64 GB — 87% smaller** |
+
+  Every service installed the whole `requirements.txt`, so the gateway — which
+  forwards HTTP and reads a JSON file — shipped `sentence-transformers`, and
+  through it `torch`. Splitting the dependencies into extras and giving each
+  service its own generated file took the two that never embed anything down by
+  96%.
+
+  That left the two that do embed at 8.6 GB, and `du` inside the image said why:
+  **nvidia 2.9 GB and triton 650 MB**, the CUDA build of torch, in a container
+  with no GPU to use it — Docker Desktop on macOS has no passthrough and the k8s
+  manifests request no device. Pinning torch to the CPU wheel index removed
+  three and a half gigabytes per image.
+
+  Two details worth keeping. `[tool.uv.sources]` only applies to *direct*
+  dependencies, so torch had to be named in `pyproject.toml` even though it
+  arrives through `sentence-transformers`. And the split only works because the
+  heavy imports are lazy: `core.embeddings` imported `sentence_transformers` at
+  module level, and `services/common.py` imports `core.ingest`, so every
+  service pulled torch simply by starting up.
+
+  The reranker turned out to be a dead end worth recording: ingestion never
+  reranks, but `HuggingFaceCrossEncoder` lives in `langchain-community`, which
+  ingestion needs anyway for the BM25 index it builds. The reranker *model* was
+  never in the image — it downloads at runtime. No saving there.
 
 ## Where it still fails
 
@@ -250,6 +330,57 @@ disputes about whether a treatment was medically necessary. It does not judge
 whether the hospital's rates were fair — only what the policy says the insurer
 owes against the rates charged. It is not legal advice, and a flagged line means
 a person still has to look.
+
+## Two LLM backends, for two different jobs
+
+| Backend | Model | Speed | Limits | Default for |
+|---|---|---|---|---|
+| `ollama` | Qwen3 8B, local | ~11s a line | none, works offline | the eval, the CLI, the tests |
+| `groq` | gpt-oss 120B, hosted | ~1s a call | 30 req/min, 6,000 tokens/min, 1,000 req/day | the API and the UI |
+
+The split exists because the two are good at opposite things. Groq is fast per
+call and rate limited; Ollama is slow per call, unlimited and offline. A person
+waiting on a ten-line bill should not wait two minutes, and a 44-bill
+evaluation is roughly 400 calls — it would spend Groq's entire daily allowance
+and then crawl under the token cap.
+
+Every default lives in `core/config.py` (`backend_for`), never at a call site.
+`BA_LLM_BACKEND` overrides all of them, which is how Docker and Kubernetes
+choose with no code change, and `--backend` forces one for a single run:
+
+```bash
+uv run python eval/evaluate.py --quick --agent --backend groq
+uv run python -m core.audit bill.txt --backend ollama
+```
+
+Four things hold across both, and each has a test:
+
+- **The judge contract.** Both go through the same
+  `with_structured_output(JudgeOutput)` path, so parsing that works for one and
+  not the other is a bug rather than a difference of backend.
+- **The disk cache is keyed by backend and model**, so switching does not serve
+  a Qwen answer as a Llama one.
+- **Masking runs first, and the hosted path refuses text that still contains an
+  identifier.** `core.backends.guard_pii` raises before the client is reached.
+  That guard is what makes a hosted backend acceptable at all.
+- **Fabricated-citation checking is unchanged.** Same rules, both backends.
+
+The token cap binds before the request cap — 6,000 tokens a minute is about six
+judge calls, well inside the 30 requests the same minute allows — so the
+limiter counts tokens, not requests. A 429 is retried with exponential backoff,
+honouring Groq's own `try again in Ns` when it sends one. When the *daily*
+quota is gone the audit does not stop: it finishes on Ollama, logs the switch,
+and records it in the report's assumptions block, because a report that changed
+model half way through has to say so.
+
+The same fallback covers a dead network, which is the likelier failure when you
+are demonstrating this in a room with bad wifi. Groq gives you nothing; the
+laptop's model is still there. A wrong model name or a rejected key is treated
+differently — those fail on the first call rather than being retried, because
+they are a configuration mistake and will fail identically every time.
+
+Get a free key at <https://console.groq.com/keys> and put it in `.env` as
+`BA_GROQ_API_KEY`. See `.env.example`; `.env` is gitignored.
 
 ## Running locally
 

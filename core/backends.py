@@ -173,6 +173,7 @@ class GroqLimiter:
             )
         waited = self.tokens.take(token_estimate)
         waited += self.requests.take(1)
+        STATS["limiter_wait_s"] += waited
         if waited > 1.0:
             log.info("groq rate limiter waited %.1fs for %d tokens", waited, token_estimate)
         self.used_today += 1
@@ -180,6 +181,23 @@ class GroqLimiter:
     def note_quota_exhausted(self) -> None:
         """Groq itself said the day is over; believe it over our own count."""
         self.used_today = self.daily_cap
+
+
+# Where the wall clock actually goes. Kept because "the LLM is not the
+# bottleneck" is a claim, and a claim about latency that nobody measured is a
+# guess. Reset with reset_stats() before timing anything.
+STATS: dict[str, float] = {
+    "calls": 0.0,
+    "api_s": 0.0,
+    "limiter_wait_s": 0.0,
+    "rate_limit_retries": 0.0,
+    "backoff_s": 0.0,
+}
+
+
+def reset_stats() -> None:
+    for key in STATS:
+        STATS[key] = 0.0
 
 
 _limiter: GroqLimiter | None = None
@@ -366,7 +384,11 @@ def invoke(backend: str, messages: list[Any], *, structured: Any = None) -> Any:
     runnable = model.with_structured_output(structured) if structured is not None else model
 
     if backend == OLLAMA:
-        return runnable.invoke(messages)
+        started = time.monotonic()
+        answer = runnable.invoke(messages)
+        STATS["calls"] += 1
+        STATS["api_s"] += time.monotonic() - started
+        return answer
 
     guard_pii(messages)
     estimate = estimate_tokens(messages)
@@ -374,8 +396,12 @@ def invoke(backend: str, messages: list[Any], *, structured: Any = None) -> Any:
 
     for attempt in range(1, settings.groq_max_retries + 1):
         limiter().acquire(estimate)
+        started = time.monotonic()
         try:
-            return runnable.invoke(messages)
+            answer = runnable.invoke(messages)
+            STATS["calls"] += 1
+            STATS["api_s"] += time.monotonic() - started
+            return answer
         except Exception as exc:
             last = exc
             if is_permanent(exc):
@@ -391,6 +417,8 @@ def invoke(backend: str, messages: list[Any], *, structured: Any = None) -> Any:
                 limiter().note_quota_exhausted()
                 raise QuotaExhausted(str(exc)) from exc
             wait = retry_after(exc) or settings.groq_backoff_base_s * (2 ** (attempt - 1))
+            STATS["rate_limit_retries"] += 1
+            STATS["backoff_s"] += wait
             log.warning(
                 "groq rate limited (attempt %d/%d), backing off %.1fs",
                 attempt,
