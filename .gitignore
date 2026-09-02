@@ -27,6 +27,11 @@ data/llm_cache/
 data/policies/*.pdf
 data/traces/
 
+# Eval run checkpoints - derived from the bills and the key, and machine-local.
+# They exist so a crashed 44-bill run resumes instead of starting over.
+eval/.cache/
+eval_full.log
+
 # Frontend
 node_modules/
 
