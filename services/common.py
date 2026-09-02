@@ -80,9 +80,18 @@ def warm_up(*, reranker: bool) -> None:
 
         get_embeddings().embed_query("warm up")
         if reranker:
-            from core.retrieve import get_cross_encoder
+            from core.retrieve import get_cross_encoder, get_retriever, get_vector_store
 
             get_cross_encoder().score([("warm up", "warm up")])
+            # The vector store and the per-policy retrievers too, not just the
+            # two models. Leaving these to the first request meant four
+            # concurrent searches all missed the same `lru_cache` and each
+            # opened its own Chroma client on one directory, which is a 500,
+            # not a slow path. `core.retrieve` locks the builders as well;
+            # building them here means the lock is never contended in anger.
+            get_vector_store()
+            for policy in sorted({clause.policy for clause in load_clauses()}):
+                get_retriever(policy)
         _warm["ready"] = True
     except Exception as exc:  # a failed warm-up must be visible, not silent
         _warm["error"] = f"{type(exc).__name__}: {exc}"
