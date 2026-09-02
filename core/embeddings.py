@@ -66,8 +66,9 @@ def _cached_load(model_name: str) -> SentenceTransformer:
     """
     from sentence_transformers import SentenceTransformer
 
-    log.info("loading embedding model %s", model_name)
-    return SentenceTransformer(model_name)
+    device = settings.torch_device or None
+    log.info("loading embedding model %s on %s", model_name, device or "the default device")
+    return SentenceTransformer(model_name, device=device)
 
 
 def _load(model_name: str) -> SentenceTransformer:

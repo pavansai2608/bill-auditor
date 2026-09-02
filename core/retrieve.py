@@ -148,7 +148,11 @@ def _build_cross_encoder() -> HuggingFaceCrossEncoder:
     from langchain_community.cross_encoders import HuggingFaceCrossEncoder
 
     log.info("loading reranker %s", settings.reranker_model)
-    return HuggingFaceCrossEncoder(model_name=settings.reranker_model)
+    # model_kwargs reaches sentence_transformers.CrossEncoder, which takes the
+    # device the same way the embedder does. Both have to move together: half
+    # the retrieval stack on the GPU is still contending for it.
+    kwargs = {"device": settings.torch_device} if settings.torch_device else {}
+    return HuggingFaceCrossEncoder(model_name=settings.reranker_model, model_kwargs=kwargs)
 
 
 def get_cross_encoder() -> HuggingFaceCrossEncoder:

@@ -98,9 +98,30 @@ class Settings(BaseSettings):
     # Ollama could not do without a restart.
     groq_cooldown_s: float = 120.0
 
+    # How long to keep waiting for a backend that has stopped answering before
+    # giving up on the call. A 40-minute batch job should survive its model
+    # server restarting; three fast retries into a dead socket is not a retry
+    # policy, it is a crash with extra steps.
+    backend_recovery_s: float = 180.0
+
     llm_cache_enabled: bool = True
 
     # --- Retrieval ------------------------------------------------------
+    # Where torch puts the embedder and the reranker. Blank lets
+    # sentence-transformers choose, which on an Apple machine is "mps".
+    #
+    # That is the same Metal GPU Ollama runs qwen3:8b on. A 44-bill eval died
+    # at bill 38 after 20 minutes of both hammering it: three connection-level
+    # failures in a row, ending in "Connection refused", followed by
+    #
+    #     Error: command buffer exited with error status.
+    #     The Metal Performance Shaders operations encoded on it may not have
+    #     completed. <AGXG13XFamilyCommandBuffer> device = Apple M1 Pro
+    #
+    # Setting this to "cpu" takes our two models off the GPU and leaves Metal
+    # to Ollama alone. See eval/results.md for what it costs in latency.
+    torch_device: str = ""
+
     embedding_model: str = "BAAI/bge-base-en-v1.5"
     reranker_model: str = "BAAI/bge-reranker-base"
     # 20 each. Halving these to 10 was tried as the biggest available lever on
