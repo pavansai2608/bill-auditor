@@ -35,6 +35,9 @@ eval_full.log
 # Frontend
 node_modules/
 
+# Local tool settings, not part of the project
+.claude/
+
 # OS
 .DS_Store
 docker-compose.override.yml
