@@ -258,3 +258,64 @@ class CompareProgressTest(unittest.TestCase):
             audit_main.run_compare("job", audit_main.AuditRequest(bill_text="x", sum_insured=3e5))
 
         self.assertEqual(recorded[0], (0, 30))
+
+
+class WarmUpGatesReadinessTest(unittest.TestCase):
+    """A pod must not take traffic before its models are loaded.
+
+    Measured cold on a laptop, loading bge-base and the cross-encoder takes
+    44-74s. /health passes the moment uvicorn binds, so pointing a readiness
+    probe at it routes the first real request into a minute of model loading -
+    a production bug that looks like a slow bill.
+    """
+
+    def setUp(self):
+        from services import common
+
+        common._warm.update({"ready": False, "error": "", "seconds": 0.0})
+
+    def test_ready_is_503_until_the_models_are_loaded(self):
+        from services.retrieval.main import app
+
+        client = TestClient(app)
+        response = client.get("/ready")
+        self.assertEqual(response.status_code, 503)
+        self.assertFalse(response.json()["ready"])
+
+    def test_ready_is_200_once_warm(self):
+        from services import common
+        from services.retrieval.main import app
+
+        common._warm.update({"ready": True, "seconds": 51.3})
+        response = TestClient(app).get("/ready")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["warm_seconds"], 51.3)
+
+    def test_liveness_stays_green_while_warming(self):
+        """Otherwise Kubernetes restarts the pod it is waiting for."""
+        from services.retrieval.main import app
+
+        self.assertEqual(TestClient(app).get("/health").status_code, 200)
+
+    def test_a_failed_warm_up_is_reported_not_hidden(self):
+        from services import common
+        from services.retrieval.main import app
+
+        common._warm.update({"ready": False, "error": "OSError: no such model"})
+        body = TestClient(app).get("/ready").json()
+        self.assertIn("no such model", body["error"])
+
+    def test_warm_up_loads_the_reranker_only_where_it_is_used(self):
+        """Ingestion embeds but never reranks, so it must not load one."""
+        from services import common
+
+        with (
+            mock.patch("core.embeddings.get_embeddings") as embeddings,
+            mock.patch("core.retrieve.get_cross_encoder") as reranker,
+        ):
+            common.warm_up(reranker=False)
+            embeddings.assert_called_once()
+            reranker.assert_not_called()
+
+            common.warm_up(reranker=True)
+            reranker.assert_called_once()

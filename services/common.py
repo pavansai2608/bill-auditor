@@ -48,3 +48,58 @@ def probe(name: str, url: str) -> dict[str, Any]:
             }
     except Exception as exc:
         return {"service": name, "url": url, "status": "unreachable", "error": str(exc)[:120]}
+
+
+# --------------------------------------------------------------------------
+# warm-up
+# --------------------------------------------------------------------------
+
+_warm = {"ready": False, "error": "", "seconds": 0.0}
+
+
+def warm_state() -> dict[str, Any]:
+    return dict(_warm)
+
+
+def warm_up(*, reranker: bool) -> None:
+    """Load the models now, so the first request does not pay for them.
+
+    Measured cold on a laptop: 44-74s to load bge-base and, where needed, the
+    bge-reranker cross-encoder. Without this the first person to reach a freshly
+    deployed pod waits a minute for something that has nothing to do with their
+    bill - and in Kubernetes it is worse, because the readiness probe passes the
+    moment uvicorn binds and traffic is routed to a pod that is still warming.
+
+    Ingestion embeds but never reranks, so it skips the cross-encoder.
+    """
+    import time
+
+    started = time.monotonic()
+    try:
+        from core.embeddings import get_embeddings
+
+        get_embeddings().embed_query("warm up")
+        if reranker:
+            from core.retrieve import get_cross_encoder
+
+            get_cross_encoder().score([("warm up", "warm up")])
+        _warm["ready"] = True
+    except Exception as exc:  # a failed warm-up must be visible, not silent
+        _warm["error"] = f"{type(exc).__name__}: {exc}"
+        log.exception("warm-up failed")
+    finally:
+        _warm["seconds"] = round(time.monotonic() - started, 1)
+        if _warm["ready"]:
+            log.info("models warm in %.1fs", _warm["seconds"])
+
+
+def start_warm_up(*, reranker: bool) -> None:
+    """Warm in a background thread.
+
+    Not in the lifespan's critical path: a synchronous load would hold the
+    event loop for a minute, which makes the liveness probe time out and
+    Kubernetes restart the pod it is waiting for.
+    """
+    import threading
+
+    threading.Thread(target=warm_up, kwargs={"reranker": reranker}, daemon=True).start()
