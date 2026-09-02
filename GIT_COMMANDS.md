@@ -349,3 +349,160 @@ git bisect reset
        flat line
      - `git status` is clean
      - main contains exactly one merge, from release/v1.0.0 -->
+
+## Landing page
+
+A new feature branch off `develop`, as always - never off whichever branch you
+are standing on.
+
+```bash
+git checkout develop
+git checkout -b feature/landing-page
+```
+
+```bash
+git add frontend/package.json frontend/package-lock.json
+git commit -m "build(frontend): add react-router for the landing route [BA-86]"
+```
+
+```bash
+git add frontend/src/App.tsx frontend/src/main.tsx frontend/src/routes/AuditPage.tsx
+git commit -m "refactor(frontend): move the audit screen to /audit [BA-87]"
+```
+
+```bash
+git add frontend/src/routes/Landing.tsx frontend/src/routes/landing.css
+git commit -m "feat(frontend): add the landing page at / [BA-88]"
+```
+
+```bash
+git add frontend/src/styles.css
+git commit -m "fix(frontend): define the leading tokens the stylesheet claimed [BA-89]"
+```
+
+```bash
+git add frontend/design/landing
+git commit -m "docs(design): record the landing tokens and what was reconciled [BA-90]"
+```
+
+```bash
+git add tests/e2e/test_flow.py tests/e2e/capture_screenshots.py
+git commit -m "test(e2e): cover the landing route and shoot it [BA-91]"
+```
+
+```bash
+git add frontend/design/screenshots README.md
+git commit -m "docs(readme): lead with the landing page and the full-set row [BA-92]"
+```
+
+```bash
+git checkout develop
+git merge --no-ff feature/landing-page -m "Merge feature/landing-page into develop [BA-93]"
+git push origin develop
+```
+
+## Landing page: visual pass, and the audit screen to match
+
+```bash
+git checkout develop
+git checkout -b feature/visual-pass
+```
+
+```bash
+git add frontend/index.html frontend/design/tokens.json frontend/src/styles.css
+git commit -m "feat(design): add the display serif and the paper ground [BA-94]"
+```
+
+```bash
+git add frontend/src/hooks/useReveal.ts
+git commit -m "feat(frontend): reveal on scroll, and count a figure up [BA-95]"
+```
+
+```bash
+git add frontend/src/routes/Landing.tsx frontend/src/routes/landing.css
+git commit -m "feat(frontend): set the landing page in the new direction [BA-96]"
+```
+
+```bash
+git add frontend/src/lib/exampleBill.ts tests/test_example_bill.py
+git commit -m "feat(frontend): bundle a real bill for the example button [BA-97]"
+```
+
+```bash
+git add frontend/src/components/BillForm.tsx
+git commit -m "feat(frontend): say why submit is blocked, and catch bad dates [BA-98]"
+```
+
+```bash
+git add frontend/src/components/SubmittedSummary.tsx frontend/src/routes/AuditPage.tsx
+git commit -m "feat(frontend): keep what was sent on screen while it runs [BA-99]"
+```
+
+```bash
+git add tests/e2e/test_flow.py tests/e2e/capture_screenshots.py
+git commit -m "test(e2e): fill dates the way React reads them [BA-100]"
+```
+
+```bash
+git add frontend/design/landing frontend/design/screenshots
+git commit -m "docs(design): record the visual direction and the tokens [BA-101]"
+```
+
+```bash
+git checkout develop
+git merge --no-ff feature/visual-pass -m "Merge feature/visual-pass into develop [BA-102]"
+git push origin develop
+```
+
+## Slimmer images, and a second LLM backend
+
+```bash
+git checkout develop
+git checkout -b feature/backends-and-images
+```
+
+```bash
+git add core/embeddings.py core/retrieve.py core/ingest.py
+git commit -m "refactor(core): import torch on use, not on import [BA-103]"
+```
+
+```bash
+git add pyproject.toml uv.lock requirements.txt requirements-gateway.txt requirements-audit.txt requirements-retrieval.txt requirements-ingestion.txt
+git commit -m "build: split dependencies per service, torch from the cpu index [BA-104]"
+```
+
+```bash
+git add services/gateway/Dockerfile services/audit/Dockerfile services/retrieval/Dockerfile services/ingestion/Dockerfile
+git commit -m "build(docker): install only what each service imports [BA-105]"
+```
+
+```bash
+git add core/backends.py core/llm.py core/config.py .env.example
+git commit -m "feat(llm): add groq as a second backend, metered and fenced [BA-106]"
+```
+
+```bash
+git add core/assumptions.py core/audit.py
+git commit -m "feat(audit): record a mid-run backend fallback as an assumption [BA-107]"
+```
+
+```bash
+git add api/main.py services/gateway/main.py services/audit/main.py services/ingestion/main.py services/retrieval/main.py eval/evaluate.py
+git commit -m "feat(config): pick the backend by context, override with --backend [BA-108]"
+```
+
+```bash
+git add tests/test_backends.py
+git commit -m "test(llm): backoff, fallback, the pii fence and cache keying [BA-109]"
+```
+
+```bash
+git add README.md
+git commit -m "docs(readme): record the image split and the backend table [BA-110]"
+```
+
+```bash
+git checkout develop
+git merge --no-ff feature/backends-and-images -m "Merge feature/backends-and-images into develop [BA-111]"
+git push origin develop
+```
