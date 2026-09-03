@@ -286,6 +286,7 @@ pdfplumber==0.11.10
     # via bill-auditor
 pillow==12.3.0
     # via pdfplumber
+pip==26.2.1
 pluggy==1.6.0
     # via pytest
 propcache==0.5.2
