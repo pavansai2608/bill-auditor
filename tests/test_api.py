@@ -69,6 +69,13 @@ class MetaTest(unittest.TestCase):
         self.assertGreater(body["clauses"], 0)
         self.assertIn("star_health", body["policies"])
 
+    def test_health_says_whether_a_repeat_audit_can_be_answered_from_disk(self):
+        """Without this, a cache switched off for a timing run is invisible."""
+        body = client.get("/health").json()
+        self.assertIn("enabled", body["llm_cache"])
+        self.assertIn("dir", body["llm_cache"])
+        self.assertIn(body["backend"], {"ollama", "groq"})
+
     def test_policies_lists_the_dropdown(self):
         body = client.get("/policies").json()
         ids = {row["id"] for row in body}

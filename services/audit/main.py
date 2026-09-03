@@ -166,6 +166,10 @@ def stats() -> dict[str, Any]:
         "fell_back": dict(llm.FELL_BACK),
         "workers": worker_count(),
         "seconds": backends.STATS,
+        # Whether a repeat audit can be answered from disk at all. A run that
+        # is slow every time, with the same bill and the same policy, is this
+        # field reading false far more often than it is a cache key problem.
+        "llm_cache": llm.cache_health(),
     }
 
 

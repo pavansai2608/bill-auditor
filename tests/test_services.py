@@ -202,6 +202,13 @@ class AuditServiceTest(unittest.TestCase):
         self.assertIn("model", body)
         self.assertIn("remote_retrieval", body)
 
+    def test_stats_says_whether_the_llm_cache_is_on(self):
+        """A bill that is slow on every submission is usually this, not the key."""
+        cache = self.client.get("/stats").json()["llm_cache"]
+        self.assertIn("enabled", cache)
+        self.assertIn("dir", cache)
+        self.assertIn("entries", cache)
+
 
 class IngestionServiceTest(unittest.TestCase):
     def setUp(self):
