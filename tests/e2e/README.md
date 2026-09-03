@@ -20,7 +20,7 @@ Ollama must be running with `qwen3:8b` pulled, and the clause index must exist
 ## Run it
 
 ```bash
-uv run python -m unittest tests.e2e.test_flow
+uv run python -m unittest tests.e2e.browser_flow
 ```
 
 Expect `Ran 2 tests ... OK`, in about a minute the first time and a few seconds
@@ -37,7 +37,7 @@ To turn those skips into failures - which is what Jenkins does, because there
 the services really are started first:
 
 ```bash
-BA_E2E_STRICT=1 uv run python -m unittest tests.e2e.test_flow
+BA_E2E_STRICT=1 uv run python -m unittest tests.e2e.browser_flow
 ```
 
 ## Settings
