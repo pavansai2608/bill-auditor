@@ -415,6 +415,11 @@ def write_results(text: str) -> None:
     if not existing.startswith("# Evaluation results"):
         existing = header + existing
     RESULTS_PATH.write_text(existing.rstrip() + "\n\n" + text, encoding="utf-8")
+    # Printed here, by the function that actually writes. It used to be printed
+    # by the caller, so a test that mocks this out still announced "appended
+    # to eval/results.md" - which read, in a Jenkins log, exactly like the test
+    # suite scribbling on the committed results file. It never did.
+    print(f"appended to {RESULTS_PATH}")
 
 
 def main() -> int:
@@ -594,7 +599,6 @@ def main() -> int:
 
     if args.write:
         write_results(report)
-        print(f"appended to {RESULTS_PATH}")
 
     if args.threshold is not None:
         accuracy = run.overall.line_accuracy or 0.0
