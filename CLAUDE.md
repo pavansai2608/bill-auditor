@@ -50,8 +50,14 @@ Not built yet — do not assume these exist:
   `audit.py`, **7** (PII) in `core/masking.py`. There is no central module and
   not all 8 are implemented.
 - Nothing from `PHASES.md` is unbuilt. What is *unverified* is in
-  `BLOCKED.md`: minikube is not installed here and no Jenkins server has ever
-  run this pipeline. **Docker is no longer unverified** — as of 2026-09-01 all
+  `BLOCKED.md`. **Kubernetes is no longer unverified** - as of 2026-09-03 every
+  pod reaches `1/1 Running` on minikube and `rollout status deploy/gateway`
+  exits 0. Getting there found three defects: the Docker stage built
+  `bill-auditor/gateway-service` while the manifest asks for
+  `bill-auditor/gateway`; minikube runs its own Docker daemon so images built
+  into Docker Desktop are invisible to it and must be `minikube image load`ed;
+  and ollama's 6Gi request left no room for two replicas of audit and retrieval,
+  so both are now one. See B-01. **Docker is no longer unverified** — as of 2026-09-01 all
   five images build, all six containers report healthy and B01 was audited end
   to end through the gateway. Running it found four defects that syntax
   checking could not: the four Python images could not build at all (`-e .` in
