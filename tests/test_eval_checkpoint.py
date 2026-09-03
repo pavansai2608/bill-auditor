@@ -8,13 +8,18 @@ never writes a row.
 
 import json
 import pathlib
+import shutil
 import sys
+import tempfile
 import unittest
+from pathlib import Path
 from unittest import mock
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "eval"))
 
 import checkpoint as cp
+
+ROOT = Path(__file__).resolve().parents[1]
 
 from core.models import AuditReport, LineVerdict
 
@@ -48,6 +53,7 @@ def a_checkpoint(**over) -> cp.Checkpoint:
         "model": "qwen3:8b",
         "bill_hash": "billhash",
         "key_hash": "keyhash",
+        "fingerprint": "codeprint",
     }
     fields.update(over)
     return cp.Checkpoint(**fields)
@@ -64,7 +70,9 @@ class CheckpointRoundTripTest(unittest.TestCase):
 
     def test_a_saved_bill_comes_back_unchanged(self):
         cp.save("v5-full", a_checkpoint())
-        got = cp.load("v5-full", "B01", bill_hash="billhash", key_hash="keyhash")
+        got = cp.load(
+            "v5-full", "B01", bill_hash="billhash", key_hash="keyhash", fingerprint="codeprint"
+        )
 
         self.assertIsNotNone(got)
         self.assertEqual(got.report.total_allowed, 80000.0)
@@ -78,12 +86,16 @@ class CheckpointRoundTripTest(unittest.TestCase):
     def test_the_trace_survives(self):
         """`render` reads attempts and fast-path counts out of the trace."""
         cp.save("v5-full", a_checkpoint())
-        got = cp.load("v5-full", "B01", bill_hash="billhash", key_hash="keyhash")
+        got = cp.load(
+            "v5-full", "B01", bill_hash="billhash", key_hash="keyhash", fingerprint="codeprint"
+        )
         self.assertEqual(got.report.trace[0]["attempts"], 1)
 
     def test_versions_do_not_share_results(self):
         cp.save("v5-full", a_checkpoint())
-        self.assertIsNone(cp.load("v6", "B01", bill_hash="billhash", key_hash="keyhash"))
+        self.assertIsNone(
+            cp.load("v6", "B01", bill_hash="billhash", key_hash="keyhash", fingerprint="codeprint")
+        )
 
 
 class AStaleCheckpointIsRefusedTest(unittest.TestCase):
@@ -101,28 +113,52 @@ class AStaleCheckpointIsRefusedTest(unittest.TestCase):
         cp.save("v5-full", a_checkpoint())
 
     def test_a_changed_bill_invalidates_it(self):
-        got = cp.load("v5-full", "B01", bill_hash="the bill was edited", key_hash="keyhash")
+        got = cp.load(
+            "v5-full",
+            "B01",
+            bill_hash="the bill was edited",
+            key_hash="keyhash",
+            fingerprint="codeprint",
+        )
         self.assertIsNone(got)
 
     def test_a_changed_answer_key_entry_invalidates_it(self):
-        got = cp.load("v5-full", "B01", bill_hash="billhash", key_hash="the key was edited")
+        got = cp.load(
+            "v5-full",
+            "B01",
+            bill_hash="billhash",
+            key_hash="the key was edited",
+            fingerprint="codeprint",
+        )
         self.assertIsNone(got)
 
     def test_an_older_format_is_refused(self):
-        path = cp.path_for("v5-full", "B01")
+        path = cp.path_for("v5-full", "B01", "codeprint")
         raw = json.loads(path.read_text())
         raw["format"] = cp.FORMAT - 1
         path.write_text(json.dumps(raw))
-        self.assertIsNone(cp.load("v5-full", "B01", bill_hash="billhash", key_hash="keyhash"))
+        self.assertIsNone(
+            cp.load(
+                "v5-full", "B01", bill_hash="billhash", key_hash="keyhash", fingerprint="codeprint"
+            )
+        )
 
     def test_a_truncated_file_is_refused_rather_than_raising(self):
         """The failure being defended against is a process dying mid-write."""
-        cp.path_for("v5-full", "B01").write_text('{"format": 2, "bill_id": "B0')
-        self.assertIsNone(cp.load("v5-full", "B01", bill_hash="billhash", key_hash="keyhash"))
+        cp.path_for("v5-full", "B01", "codeprint").write_text('{"format": 2, "bill_id": "B0')
+        self.assertIsNone(
+            cp.load(
+                "v5-full", "B01", bill_hash="billhash", key_hash="keyhash", fingerprint="codeprint"
+            )
+        )
 
     def test_clear_removes_them(self):
         self.assertEqual(cp.clear("v5-full"), 1)
-        self.assertIsNone(cp.load("v5-full", "B01", bill_hash="billhash", key_hash="keyhash"))
+        self.assertIsNone(
+            cp.load(
+                "v5-full", "B01", bill_hash="billhash", key_hash="keyhash", fingerprint="codeprint"
+            )
+        )
 
 
 class DigestIsStableTest(unittest.TestCase):
@@ -273,6 +309,78 @@ class PartialRunsDoNotWriteARowTest(unittest.TestCase):
         code = self._run(["--write", "--version", "test-crashed"], written, finishes=False)
         self.assertEqual(code, 4)
         self.assertEqual(written, [], "an unfinished run must not be recorded")
+
+
+class TheFingerprintDecidesWhatCanBeReplayedTest(unittest.TestCase):
+    """A checkpoint is only valid for the code that produced it.
+
+    This is the bug the fingerprint exists to close. Jenkins keeps its
+    workspace, so the checkpoints survive between builds; with only the inputs
+    hashed, a commit that damaged the auditor replayed the previous build's
+    reports and the Eval stage passed in one second. The gate failed at exactly
+    the job it exists to do.
+    """
+
+    def setUp(self):
+        cp.RUNS_DIR = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, cp.RUNS_DIR, ignore_errors=True)
+        cp.save("v7", a_checkpoint())
+
+    def load(self, fingerprint):
+        return cp.load(
+            "v7", "B01", bill_hash="billhash", key_hash="keyhash", fingerprint=fingerprint
+        )
+
+    def test_the_same_code_replays(self):
+        """The saving is real and must survive an unrelated commit."""
+        self.assertIsNotNone(self.load("codeprint"))
+
+    def test_changed_code_is_refused(self):
+        """The important one. A different fingerprint must recompute the bill."""
+        self.assertIsNone(self.load("a different build of the auditor"))
+
+    def test_the_fingerprint_is_stored_not_only_compared(self):
+        """A stored result should say which code produced it."""
+        raw = json.loads(cp.path_for("v7", "B01", "codeprint").read_text())
+        self.assertEqual(raw["fingerprint"], "codeprint")
+
+
+class WhatTheFingerprintCoversTest(unittest.TestCase):
+    """Which edits invalidate a run, and which must not."""
+
+    def test_editing_the_audit_path_changes_it(self):
+        """QUERY_ANGLES is in core/agent.py, and it decides what is retrieved."""
+        before = cp.code_digest()
+        target = cp.AUDIT_SOURCE_DIR / "agent.py"
+        original = target.read_bytes()
+        try:
+            target.write_bytes(original.replace(b'"{item} limit coverage"', b'"policy"'))
+            cp.code_digest.cache_clear()
+            self.assertNotEqual(before, cp.code_digest())
+        finally:
+            target.write_bytes(original)
+            cp.code_digest.cache_clear()
+        self.assertEqual(before, cp.code_digest(), "restoring the file restores the digest")
+
+    def test_a_file_outside_the_audit_path_does_not(self):
+        """A 40-minute run must not be thrown away by an unrelated commit."""
+        before = cp.code_digest()
+        stray = ROOT / "eval" / ".fingerprint_probe.txt"
+        stray.write_text("not part of the audit")
+        try:
+            cp.code_digest.cache_clear()
+            self.assertEqual(before, cp.code_digest())
+        finally:
+            stray.unlink(missing_ok=True)
+            cp.code_digest.cache_clear()
+
+    def test_the_run_flags_are_part_of_it(self):
+        """--second-pass rewrites every associated line; it cannot be ignored."""
+        plain = cp.fingerprint(use_agent=True, second_pass=False)
+        second = cp.fingerprint(use_agent=True, second_pass=True)
+        naive = cp.fingerprint(use_agent=False, second_pass=False)
+        self.assertNotEqual(plain, second)
+        self.assertNotEqual(plain, naive)
 
 
 if __name__ == "__main__":

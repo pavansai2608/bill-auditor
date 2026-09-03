@@ -28,7 +28,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from checkpoint import Checkpoint, digest, load, save
+from checkpoint import Checkpoint, digest, fingerprint, load, save
 from checkpoint import clear as clear_checkpoints
 
 from core import llm
@@ -332,7 +332,7 @@ def pct(value: float | None) -> str:
     return "n/a" if value is None else f"{value * 100:.1f}%"
 
 
-def render(run: Run, version: str, *, scope: str = "") -> str:
+def render(run: Run, version: str, *, scope: str = "", code: str = "") -> str:
     o = run.overall
     p95 = (
         statistics.quantiles(run.latencies, n=20)[-1]
@@ -361,6 +361,10 @@ def render(run: Run, version: str, *, scope: str = "") -> str:
         # to v5 predate core/backends.py and had to be reasoned about after the
         # fact, which is exactly the ambiguity this line removes.
         f"| Backend | {backend_label()} |",
+        # Which code produced this. Recorded for the same reason the backend
+        # is: a number in this file should say what made it, and "the audit
+        # changed" is as much a reason for a row to move as "the model did".
+        *([f"| Code fingerprint | `{code[:12]}` |"] if code else []),
         f"| Line accuracy (allowed within Rs {AMOUNT_TOLERANCE:.0f}) | {pct(o.line_accuracy)} |",
         f"| Citation accuracy | {pct(o.citation_accuracy)} |",
         f"| Payout error | {pct(o.payout_error)} |",
@@ -490,11 +494,21 @@ def main() -> int:
 
     # Read every usable checkpoint before auditing anything, so the run can say
     # up front how much of it is already done.
+    # One fingerprint for the whole run: the audit code, the clause index and
+    # the switches that change what a bill scores.
+    run_fingerprint = fingerprint(use_agent=args.agent, second_pass=args.second_pass)
+
     finished: dict[str, Checkpoint] = {}
     if not args.fresh:
         for bill_id in wanted:
             bill_hash, key_hash = hashes(bill_id, key[bill_id])
-            done = load(args.version, bill_id, bill_hash=bill_hash, key_hash=key_hash)
+            done = load(
+                args.version,
+                bill_id,
+                bill_hash=bill_hash,
+                key_hash=key_hash,
+                fingerprint=run_fingerprint,
+            )
             # A checkpoint from another model is not this row's evidence.
             if done is not None and done.backend == started_on:
                 finished[bill_id] = done
@@ -538,6 +552,7 @@ def main() -> int:
         # A bill with nothing filled in the key has no result worth keeping.
         if done is None and result is not None:
             result.bill_hash, result.key_hash = hashes(bill_id, expected)
+            result.fingerprint = run_fingerprint
             save(args.version, result)
         last_done = bill_id
 
@@ -559,7 +574,7 @@ def main() -> int:
     if len(wanted) < len(key):
         how = "--quick subset" if args.quick else "--bills selection"
         scope = f"Scope: {len(wanted)} of {len(key)} bills ({how}). Not a whole-set number."
-    report = render(run, args.version, scope=scope)
+    report = render(run, args.version, scope=scope, code=run_fingerprint)
 
     if args.write and run.bills_run < len(wanted):
         print(
