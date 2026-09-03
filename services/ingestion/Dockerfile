@@ -55,7 +55,12 @@ COPY core/ ./core/
 COPY api/ ./api/
 COPY services/ ./services/
 COPY data/clauses.json data/non_payable.json ./data/
-COPY data/policies/ ./data/policies/
+# The policy PDFs are deliberately NOT copied. `.gitignore` excludes
+# `data/policies/*.pdf`, so the directory does not exist in a clean checkout and
+# this build fails on any machine that is not the author's - which is exactly
+# what happened the first time Jenkins reached this stage. They are supplied at
+# runtime instead: docker-compose mounts ./data/policies read-only, and under
+# k8s the service works from the baked data/clauses.json checkpoint above.
 # Prove the bake worked, in the layer that ships. If the model is short a file
 # this fails the build; without it the gap surfaces as a broken container.
 ARG EMBEDDING_MODEL=BAAI/bge-base-en-v1.5
