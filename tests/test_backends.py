@@ -28,7 +28,26 @@ class RateLimited(Exception):
 
 
 class ContextDefaultsTest(unittest.TestCase):
-    """Where each default comes from, and that one override beats all of them."""
+    """Where each default comes from, and that one override beats all of them.
+
+    Every test here clears `llm_backend` first, because the *context* defaults
+    are only reachable when no explicit override is set - that is the whole
+    shape of `backend_for`. Reading whatever the ambient environment happens to
+    hold makes the result depend on the machine: these passed on a laptop whose
+    `.env` sets `BA_LLM_BACKEND=` (empty) and failed in Jenkins, where the
+    pipeline pins `BA_LLM_BACKEND=ollama` so CI never depends on a Groq key.
+
+    The override itself is still pinned, by
+    `test_an_explicit_backend_wins_everywhere`, which sets it deliberately.
+    """
+
+    def setUp(self):
+        # "" is the documented "no override, use the context default" value.
+        # Patched rather than assumed, so a .env, an exported variable or a
+        # Jenkins environment block all give the same answer.
+        patch = mock.patch.object(settings, "llm_backend", "")
+        patch.start()
+        self.addCleanup(patch.stop)
 
     def test_the_api_defaults_to_groq_and_the_eval_to_ollama(self):
         self.assertEqual(settings.backend_for("api"), GROQ)
@@ -46,7 +65,13 @@ class ContextDefaultsTest(unittest.TestCase):
                     self.assertEqual(settings.backend_for(context), GROQ)
 
     def test_the_tests_themselves_are_on_ollama(self):
-        self.assertEqual(llm.active_backend(), OLLAMA)
+        """`active_backend` falls back to the cli context, which is ollama.
+
+        `llm._backend` is cleared too: a previous test may have pinned it, and
+        this asserts the default rather than whatever ran last.
+        """
+        with mock.patch.object(llm, "_backend", None):
+            self.assertEqual(llm.active_backend(), OLLAMA)
 
 
 class TokenBucketTest(unittest.TestCase):
