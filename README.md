@@ -277,11 +277,31 @@ Jenkins multibranch. `feature/*` runs Build and Quality; `develop` adds Eval and
 E2E; `main` adds Docker and Deploy.
 
 **The Eval stage is the distinctive part.** It runs the auditor against the
-answer key and fails the build when line accuracy drops below 0.65:
+answer key and fails the build when line accuracy drops below the threshold:
 
 ```
-FAIL: line accuracy 0.610 is below the threshold 0.650
+FAIL: line accuracy 0.503 is below the threshold 0.520
 ```
+
+**The gate is `0.52`, against a baseline of 56.1%.** The stage runs `--quick`,
+the first 10 bills, because a full 44-bill run takes about 40 minutes and does
+not belong in CI. So the threshold is a *quick-subset* figure and must never be
+read against the headline 44-bill number: the ten are easier than the
+forty-four, and 51.5% over 44 bills and 56.1% over 10 are not comparable. The
+baseline is the `ci-baseline-v7-quick` row in
+[`eval/results.md`](eval/results.md) - 46 of 82 lines correct. One line is 1.22
+points, so 0.52 sits just under three lines below it: ordinary drift passes, a
+real regression does not. **It moves only when a new recorded row justifies it.**
+
+**It used to be 0.65, and that number was wrong for a reason worth stating.** It
+was set against v5's 68.3%, a quick-subset run measured on a clause index that
+was later found to contain corrupted tables - a merged cell read as belonging
+only to its first column, and column headings forward-filled into data rows, so
+`star_health II.5` carried "Vaporisation of the prostate" where nine sub-limits
+belong. The 68.3% was measured against data that was wrong, so a threshold
+derived from it never gated correct behaviour. It was replaced rather than
+lowered: the current baseline is the first quick figure recorded on a corrected
+index.
 
 Unit tests can pass while the audit quietly gets worse — a retrieval change, a
 prompt change, a splitter change. None of those break a test; all of them move

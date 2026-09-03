@@ -559,3 +559,67 @@ Lines that went past attempt 1: 152
 >
 > A correctness fix that costs accuracy is still worth making, and would have
 > been recorded here as such had the line accuracy gone the other way.
+
+### ci-baseline-v7-quick - 2026-09-03
+
+**Scope: 10 of 44 bills (--quick subset). Not a whole-set number.**
+
+Bills run: 10   
+Bills with no answers filled in yet: 0   
+Lines scored: 82   Lines skipped (key not filled): 0
+
+| metric | value |
+|---|---|
+| Backend | ollama (qwen3:8b), retrieval on cpu |
+| Line accuracy (allowed within Rs 1) | 56.1% |
+| Citation accuracy | 46.9% |
+| Payout error | 76.0% |
+| Abstention recall (flagged when it should) | 100.0% |
+| Abstention precision (flagged and was right) | 22.0% |
+| False answers (answered, should have flagged) | 0 |
+| Dodges (flagged, key has an answer) | 32 |
+| **Fabricated clauses** | **0** |
+| p95 latency per bill | 91.5s |
+| Avg tool calls per bill | 16.5 |
+
+| category | lines | line acc | citation acc | dodges | false answers |
+|---|---|---|---|---|---|
+| clean | 15 | 46.7% | 26.7% | 8 | 0 |
+| non_payable | 29 | 72.4% | 69.0% | 8 | 0 |
+| room_rent_over | 25 | 40.0% | 25.0% | 11 | 0 |
+| sub_limit | 6 | 16.7% | 16.7% | 5 | 0 |
+| waiting_period | 7 | 100.0% | 100.0% | 0 | 0 |
+
+**Retry loop**  
+Lines settled on the non-payable fast path (no search, no judge call): 34  
+Average attempts per line: 1.80  
+Lines that went past attempt 1: 35  
+...of which a later attempt actually produced an answer: **5** (14%)
+
+> **This row exists to gate the Jenkins pipeline, and for nothing else.**
+>
+> The Eval stage runs `--quick`, because a 40-minute full run does not belong in
+> CI. A gate therefore has to compare against a **quick-subset** figure. The
+> headline number for this system is `v7` at **51.5% over 44 bills**; this row is
+> **56.1% over the first 10**. They are different denominators and neither
+> predicts the other - the ten are easier than the forty-four. Gating one against
+> the other would be meaningless, which is exactly what the old `0.65` did.
+>
+> **Threshold: `--threshold 0.52`.** The baseline is 46 of 82 lines correct
+> (56.10%). One line is 1.22 percentage points, so 0.52 sits a little under three
+> lines below the baseline: 43 correct still passes at 52.44%, 42 fails at
+> 51.22%. That tolerates ordinary drift and fails on a real regression.
+>
+> **It moves only when a new row justifies it.** Raising or lowering the number
+> without a recorded run behind it turns the gate into decoration.
+>
+> ## What replaced 0.65, and why
+>
+> The old gate was `0.65`, set against the `v5` quick run of 68.3%. That run used
+> a clause index later found to contain corrupted tables: a horizontally merged
+> cell was read as belonging only to its first column, and column headings were
+> forward-filled into data rows, so `star_health II.5` carried "Vaporisation of
+> the prostate" where nine sub-limits belong. **The 68.3% was measured against
+> data that was wrong**, so the threshold derived from it was never a threshold
+> against correct behaviour. It is replaced, not lowered: this baseline is the
+> first quick figure recorded on a corrected index, and the gate is set from it.
