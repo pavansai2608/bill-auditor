@@ -24,7 +24,7 @@ from selenium.webdriver.support.ui import Select, WebDriverWait
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
-from tests.e2e.test_flow import APP, AUDIT_APP, BILL, why_not_running
+from tests.e2e.browser_flow import APP, AUDIT_APP, BILL, why_not_running
 
 OUT = ROOT / "frontend" / "design" / "screenshots"
 WIDTHS = {"1440": (1440, 1000), "390": (390, 844)}

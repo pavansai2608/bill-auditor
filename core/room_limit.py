@@ -125,6 +125,24 @@ def _rows(clause: Clause) -> dict[int, str]:
     return found
 
 
+def governs_room_rent(clause: Clause) -> bool:
+    """Is this the clause the room entitlement is actually stated in?
+
+    Decided from the clause's own content and never from the bill line: it
+    either carries the sum-insured rows the entitlement is read out of, or its
+    wording states the limit ("At Actuals") or hands it to the policy schedule.
+
+    `ROOM_CLAUSE_RE` is deliberately not the test. It matches any clause that
+    says "room rent" in passing - a definition, an exclusion, a benefit that
+    mentions the room while capping something else - and treating those as the
+    source of a room cap would reject verdicts that have nothing to do with the
+    room. The three things checked here are the same three `lookup()` reads.
+    """
+    return bool(_rows(clause)) or bool(
+        AT_ACTUALS_RE.search(clause.text) or DEFERS_RE.search(clause.text)
+    )
+
+
 def primary_room_clause(policy: str) -> Clause | None:
     """The clause a room-rent verdict should cite for this policy.
 

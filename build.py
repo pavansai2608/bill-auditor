@@ -34,9 +34,15 @@ def set_properties(project):
     project.set_property("unittest_module_glob", "test_*")
 
     # --- tests ------------------------------------------------------------
-    # The Selenium test needs a browser, an API and a frontend. It has its own
-    # Jenkins stage; keeping it out of the unit task means a failure there
-    # means what it says.
+    # The Selenium test needs a browser, an API and a frontend, so it must not
+    # be collected here. It is kept out by its *file name*, not by this config:
+    # PyBuilder finds test modules with os.walk and matches on the file name
+    # alone, offering no way to exclude a directory, so `tests/e2e/` cannot be
+    # filtered out by `unittest_module_glob`. The browser test is therefore
+    # named `tests/e2e/browser_flow.py`, which `test_*` does not match. Renaming
+    # it back to `test_*.py` would silently drag it into this task, where it
+    # fails for want of the services it drives - which is exactly what happened
+    # on the first Jenkins run.
     project.set_property("unittest_test_method_prefix", "test")
 
     # --- coverage ---------------------------------------------------------

@@ -199,10 +199,16 @@ class TheRunnerReusesACheckpointTest(unittest.TestCase):
 
 
 class PartialRunsDoNotWriteARowTest(unittest.TestCase):
-    """A row is a claim about the whole set.
+    """A row is a claim, and it has to say what it is a claim about.
 
-    A partial run that writes one puts a number in the record that no later
-    reader can tell apart from a complete one.
+    Two different things used to be refused together. A run that *crashed*
+    part-way through its selection must never be recorded - the number would be
+    indistinguishable from a finished one. A run that deliberately narrows the
+    selection is a different case: `--quick` is what the Jenkins Eval stage
+    runs, and a gate needs a recorded quick-subset figure to compare against.
+
+    So a narrowed run is recorded and carries its scope in the row; an
+    unfinished one is still refused.
     """
 
     def setUp(self):
@@ -210,25 +216,63 @@ class PartialRunsDoNotWriteARowTest(unittest.TestCase):
 
         self.evaluate = evaluate
 
-    def _run(self, argv: list[str], written: list):
+    def _run(self, argv: list[str], written: list, *, finishes: bool = True):
+        """Run main() with the audit stubbed out.
+
+        `finishes` is the whole point of the class: when True the stub counts
+        each bill as scored, which is a run that completed its selection; when
+        False it counts none, which is what a crash looks like to the guard.
+        """
+
+        def scored(bill_id, expected, valid_ids, run, *args, **kwargs):
+            if finishes:
+                run.bills_run += 1
+                # A run with no scored line reports "nothing to score" and
+                # returns before writing, so the stub has to look like it did
+                # some work or the guard under test is never reached.
+                run.overall.lines_scored += 1
+                run.overall.amount_right += 1
+
         with (
             mock.patch.object(sys, "argv", ["evaluate.py", *argv]),
             mock.patch.object(self.evaluate, "write_results", side_effect=written.append),
-            mock.patch.object(self.evaluate, "score_bill", return_value=None),
+            mock.patch.object(self.evaluate, "score_bill", side_effect=scored),
         ):
             return self.evaluate.main()
 
-    def test_a_narrowed_run_refuses_to_write(self):
+    def test_a_narrowed_run_records_its_scope(self):
+        """--bills is complete for what it selected, and says so in the row."""
         written: list[str] = []
         code = self._run(["--bills", "B01", "--write", "--version", "test-partial"], written)
-        self.assertEqual(code, 4)
-        self.assertEqual(written, [], "a one-bill run must not record a 44-bill row")
+        self.assertEqual(code, 0)
+        self.assertEqual(len(written), 1)
+        self.assertIn("Scope: 1 of", written[0])
+        self.assertIn("--bills selection", written[0])
+        self.assertIn("Not a whole-set number", written[0])
 
-    def test_quick_refuses_to_write(self):
+    def test_quick_records_its_scope(self):
+        """The Jenkins gate depends on this row existing."""
         written: list[str] = []
         code = self._run(["--quick", "--write", "--version", "test-quick"], written)
+        self.assertEqual(code, 0)
+        self.assertEqual(len(written), 1)
+        self.assertIn("--quick subset", written[0])
+        self.assertIn("Not a whole-set number", written[0])
+
+    def test_a_full_run_carries_no_scope_banner(self):
+        """The banner marks a narrowed run; a whole-set row must not wear it."""
+        written: list[str] = []
+        code = self._run(["--write", "--version", "test-full"], written)
+        self.assertEqual(code, 0)
+        self.assertEqual(len(written), 1)
+        self.assertNotIn("Scope:", written[0])
+
+    def test_a_run_that_did_not_finish_its_selection_is_still_refused(self):
+        """The crashed-run case, which is what the guard is really for."""
+        written: list[str] = []
+        code = self._run(["--write", "--version", "test-crashed"], written, finishes=False)
         self.assertEqual(code, 4)
-        self.assertEqual(written, [])
+        self.assertEqual(written, [], "an unfinished run must not be recorded")
 
 
 if __name__ == "__main__":

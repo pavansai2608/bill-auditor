@@ -75,6 +75,10 @@ build-backend = "uv_build"
 dev = [
     "coverage>=7.16.0",
     "flake8>=7.3.0",
+    # `pyb --no-venvs` installs its plugin packages into the active virtualenv
+    # using pip, and uv does not create one with pip in it. Without this the
+    # Jenkins Unit stage fails on "No module named 'pip'".
+    "pip>=25.0",
     "httpx>=0.28.1",
     "pybuilder>=0.13.21",
     "pytest>=9.1.1",
