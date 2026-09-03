@@ -465,3 +465,97 @@ Lines that went past attempt 1: 142
 > was guessed at. The judge choosing a room cap for a medicines line is a real
 > weakness this exposed; it is a change to judging behaviour and needs its own
 > eval slice, so it was not attempted here.
+
+### v7 - 2026-09-02
+
+Bills run: 44   
+Bills with no answers filled in yet: 0   
+Lines scored: 328   Lines skipped (key not filled): 0
+
+| metric | value |
+|---|---|
+| Backend | ollama (qwen3:8b), retrieval on cpu |
+| Line accuracy (allowed within Rs 1) | 51.5% |
+| Citation accuracy | 44.4% |
+| Payout error | 63.8% |
+| Abstention recall (flagged when it should) | 90.0% |
+| Abstention precision (flagged and was right) | 17.1% |
+| False answers (answered, should have flagged) | 3 |
+| Dodges (flagged, key has an answer) | 131 |
+| **Fabricated clauses** | **0** |
+| p95 latency per bill | 48.1s |
+| Avg tool calls per bill | 16.5 |
+
+| category | lines | line acc | citation acc | dodges | false answers |
+|---|---|---|---|---|---|
+| clean | 65 | 38.5% | 33.8% | 38 | 0 |
+| non_payable | 95 | 72.6% | 70.5% | 25 | 0 |
+| room_category_limit | 15 | 60.0% | 33.3% | 5 | 1 |
+| room_rent_over | 83 | 37.3% | 24.1% | 32 | 0 |
+| schedule_missing | 13 | 61.5% | 41.7% | 4 | 1 |
+| sub_limit | 26 | 34.6% | 28.0% | 16 | 1 |
+| waiting_period | 31 | 58.1% | 58.1% | 11 | 0 |
+
+**Retry loop**  
+Lines settled on the non-payable fast path (no search, no judge call): 125  
+Average attempts per line: 1.82  
+Lines that went past attempt 1: 152  
+...of which a later attempt actually produced an answer: **34** (22%)
+
+> **One variable: a guardrail on the judge. Nothing else changed between v6-cpu
+> and v7** - same index, same answer key, same device (cpu), same model.
+>
+> ## The rule
+>
+> A limit whose basis is **per_day**, cited from a clause that **governs the room
+> entitlement**, may only be applied to a **room-rent line**. For any other line
+> the verdict is rejected and the loop falls through to its ordinary
+> retry-then-abstain path. No other clause is substituted: inventing a citation
+> the model never gave would be worse than abstaining.
+>
+> It was stated in those terms before looking at which bills it touches, so it
+> could not be shaped to the eval set.
+>
+> **A clause governs the room entitlement** when `core.room_limit.governs_room_rent`
+> says so - it carries the sum-insured rows the entitlement is read out of, or
+> its wording states the limit ("At Actuals") or hands it to the policy schedule.
+> That is decided from the clause's own content; the bill line's wording is never
+> consulted for it. Matching the words "room rent" anywhere in a clause is
+> deliberately *not* the test: Star Health's ICU clause says "in addition to the
+> room rent payable under this policy" and states a per-day cap of its own, and
+> rejecting that would turn a correct ICU verdict into an abstention. There is a
+> test for exactly that case.
+>
+> **A line is a room-rent line** by `second_pass.ROOM_RE` - the same test that
+> already picks the line allowed to drive a proportionate deduction. The second
+> pass has always refused to let anything but room rent drive a deduction; the
+> judge had no equivalent, so a room cap could be applied *directly*.
+>
+> ## What it did
+>
+> | | v6-cpu | v7 | |
+> |---|---|---|---|
+> | Line accuracy | 50.0% | **51.5%** | +1.5pp |
+> | Citation accuracy | 45.3% | 44.4% | -0.9pp |
+> | Payout error | 65.6% | **63.8%** | better |
+> | Dodges | 126 | 131 | +5 |
+> | False answers | 3 | 3 | - |
+> | **Fabricated clauses** | **0** | **0** | - |
+>
+> `room_rent_over` moved 32.5% to 37.3%, which is where the rule bites. The
+> guardrail fired on **19 line-attempts across 11 bills**. The case it was
+> written for: B01's "Medicines and Drugs" was allowed Rs 5,000 of a Rs 38,000
+> charge under II.1, Star Health's Rs 5,000/day *room* cap; on retry the loop
+> found II.7 and allowed the full 38,000.
+>
+> ## Why it stays regardless
+>
+> **Applying a room cap to a medicines bill is wrong whether or not the answer
+> key rewards catching it.** This one happens to pay for itself, but it was not
+> kept because of that, and the two figures it cost are worth stating plainly:
+> citation accuracy fell 0.9pp and dodges rose by 5, because a rejected verdict
+> that finds nothing better on retry becomes an abstention rather than a
+> confident wrong answer. That is the trade the rule is meant to make.
+>
+> A correctness fix that costs accuracy is still worth making, and would have
+> been recorded here as such had the line accuracy gone the other way.

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Current state (update this at the end of every phase)
 
-**Last updated: 2026-09-02. Every phase in `PHASES.md` is built. The recorded eval is `v6-cpu` at 50.0% line accuracy over all 44 bills, on a corrected clause index.**
+**Last updated: 2026-09-02. Every phase in `PHASES.md` is built. The recorded eval is `v7` at 51.5% line accuracy over all 44 bills, on a corrected clause index.**
 
 Built and passing:
 
@@ -60,10 +60,19 @@ Not built yet — do not assume these exist:
   healthcheck probed `localhost` against an IPv4-only nginx, and `qwen3:8b`
   was OOM-killed in a 7.7 GB VM. See B-02.
 
-Last recorded eval: **`v6-cpu`, line accuracy 50.0% over 44 bills / 328 lines.**
-Citation accuracy 45.3%, payout error 65.6%, abstention recall 90.0%, false
-answers 3, dodges 126, **fabricated clauses 0**. Backend ollama (qwen3:8b),
+Last recorded eval: **`v7`, line accuracy 51.5% over 44 bills / 328 lines.**
+Citation accuracy 44.4%, payout error 63.8%, abstention recall 90.0%, false
+answers 3, dodges 131, **fabricated clauses 0**. Backend ollama (qwen3:8b),
 retrieval on cpu.
+
+**v7 adds one guardrail and nothing else.** A per-day limit cited from a clause
+that governs the room entitlement may only be applied to a room-rent line;
+anywhere else the verdict is rejected and the loop retries, then abstains. The
+second pass already refused to let anything but room rent drive a proportionate
+deduction - the judge had no equivalent, so a room cap could be applied
+directly. It fired on 19 line-attempts across 11 bills and moved
+`room_rent_over` from 32.5% to 37.3%. `core.room_limit.governs_room_rent`
+decides from the clause, never the line.
 
 **The version ladder is a different denominator and must not be joined to it:**
 v0 24.4% → v4 59.8% → v5 68.3% are ten bills / 82 lines, held constant so
@@ -89,10 +98,9 @@ the honest figure. The full write-up is under the `v6-cpu` row.
   largest block. The judge stops returning a limit for associated lines and
   falls through to II.1's "specified in your Policy Schedule" wording.
 - `clean` fell to **38.5%** with 38 dodges - the same mechanism.
-- **The judge will apply a room per-day cap to a line the cap does not reach.**
-  On B01 it allowed Rs 5,000 for medicines under II.1. This is a judging
-  weakness the corrected index exposed rather than caused. Fixing it changes the
-  judge contract, so it needs its own eval slice.
+- ~~The judge will apply a room per-day cap to a line the cap does not reach.~~
+  **Fixed in v7** by the guardrail above. B01's medicines line went from Rs 5,000
+  under II.1 to the full Rs 38,000 under II.7.
 - `sub_limit` is **34.6%** with 16 dodges. The cause is in
   `KNOWN_LIMITATIONS.md`: the loop can find a limit or fail to find one, but has
   no way to conclude "nothing limits this line, so pay it in full".

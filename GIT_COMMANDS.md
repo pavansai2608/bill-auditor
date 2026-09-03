@@ -590,3 +590,26 @@ git merge --no-ff feature/eval-resilience -m "chore(develop): merge the eval res
 git checkout feature/eval-resilience
 ```
 
+
+---
+
+# Phase 13 — the room-cap guardrail
+
+One change, one variable: the judge may no longer apply a per-day room-rent cap
+to a line that is not a room-rent line. `eval/results.md` gains the `v7` row.
+
+```bash
+git add core/room_limit.py core/agent.py
+git commit -m "fix(agent): a room cap may only reduce a room rent line [BA-164]"
+```
+
+```bash
+git add tests/test_room_cap_guardrail.py
+git commit -m "test(agent): the room cap rule, and when it must not fire [BA-165]"
+```
+
+```bash
+git add eval/results.md CLAUDE.md GIT_COMMANDS.md
+git commit -m "docs(eval): record v7 at 51.5% and the guardrail behind it [BA-166]"
+```
+
