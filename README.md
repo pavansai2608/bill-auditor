@@ -293,6 +293,13 @@ baseline is the `ci-baseline-v7-quick` row in
 points, so 0.52 sits just under three lines below it: ordinary drift passes, a
 real regression does not. **It moves only when a new recorded row justifies it.**
 
+Each bill's result is cached against a fingerprint of the audit code, so a
+commit that changes `core/` recomputes rather than replaying — without that, a
+warm CI workspace let a damaging commit pass the gate in one second. The
+asymmetry is deliberate: **breaking accuracy costs a full re-run (1s to 64s on
+the ten-bill subset), and reverting is free**, because the pre-break checkpoints
+are still filed under their own fingerprint.
+
 **It used to be 0.65, and that number was wrong for a reason worth stating.** It
 was set against v5's 68.3%, a quick-subset run measured on a clause index that
 was later found to contain corrupted tables - a merged cell read as belonging

@@ -623,3 +623,29 @@ Lines that went past attempt 1: 35
 > data that was wrong**, so the threshold derived from it was never a threshold
 > against correct behaviour. It is replaced, not lowered: this baseline is the
 > first quick figure recorded on a corrected index, and the gate is set from it.
+
+> **The code that produced this row: fingerprint `4fe75042e0fc`.**
+>
+> Rows record the backend so a number cannot silently mix two models. From this
+> row on they record a code fingerprint for the same reason one level down: a
+> sha256 over every file in `core/`, the clause index, and the `--agent` /
+> `--second-pass` switches. It is stored in each checkpoint and printed in the
+> row.
+>
+> **Why it was added.** Jenkins keeps its workspace, so per-bill checkpoints
+> survive between builds. A checkpoint was invalidated when the bill or the
+> answer key changed, but **not when the audit code changed** - so builds #7 and
+> #8 finished the Eval stage in one second by replaying the previous build's
+> reports. A commit that damaged the auditor would have passed the gate. That is
+> the gate failing at exactly the job it exists to do.
+>
+> The 56.1% above was re-measured from cold after the fix and is unchanged, so
+> the fingerprint plumbing moved no result: the same 46 of 82 lines, in 272
+> seconds rather than one.
+>
+> **Checkpoints are now filed under the fingerprint**, so two builds' results
+> sit side by side instead of overwriting each other. Measured on this row's
+> ten bills: a warm re-run is **1s**; breaking `QUERY_ANGLES` invalidates every
+> checkpoint and costs **64s**, landing at 48.8% and failing the gate; reverting
+> is **1s** again, because the pre-break checkpoints were never overwritten.
+> Damage costs a full re-run, repair is free. That is the right way round.

@@ -226,7 +226,25 @@ Every build, on every branch, archives `eval/results.md` — it appears as
 
 ## 8. Break the accuracy on purpose and watch the build go red
 
-This is the demonstration. It takes about ten minutes end to end.
+This is the demonstration. It takes about five minutes end to end.
+
+**Know the timings before you start, because they are the surprising part.**
+The Eval stage caches each bill's result, keyed on a fingerprint of the audit
+code. Measured on the ten quick bills:
+
+| Run | Time | Why |
+|---|---|---|
+| Normal build, nothing changed | **1s** | every bill replayed from its checkpoint |
+| The build with the break in it | **64s** | the fingerprint changed, so all ten recompute |
+| The build after you revert | **1s** | the pre-break checkpoints were never overwritten |
+
+**Breaking accuracy costs a full re-run; reverting is free.** Checkpoints are
+filed under the fingerprint of the code that produced them, so the damaged
+build's results sit beside the good ones rather than replacing them. Expect the
+red build to be the slow one and do not read that as a hang.
+
+On a Jenkins workspace that has never run the eval, the first build is slower
+again - about **4m30s** - because the model-call cache is cold too.
 
 It breaks **the retrieval queries**, not the answer key and not the threshold.
 That distinction is the whole point: the pipeline is not checking that a number
@@ -311,7 +329,9 @@ lowering the threshold is how a project stops noticing that it is getting worse.
 git revert --no-edit HEAD
 ```
 
-Or undo the edit by hand — put the original dictionary back exactly:
+Or undo the edit by hand. The Eval stage will be back to about a second,
+because reverting restores the fingerprint the old checkpoints were filed
+under. Put the original dictionary back exactly:
 
 ```python
 QUERY_ANGLES: dict[RuleType, list[str]] = {
