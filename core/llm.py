@@ -22,6 +22,7 @@ silently, and with no way to tell from the report.
 
 import hashlib
 import json
+import os
 import threading
 import time
 from pathlib import Path
@@ -252,11 +253,46 @@ def cache_put(key: str, response: Any, meta: dict[str, Any]) -> None:
         **meta,
         "response": response,
     }
-    tmp = _cache_path(key).with_suffix(".tmp")
-    with tmp.open("w", encoding="utf-8") as fh:
-        json.dump(entry, fh, ensure_ascii=False, indent=2, default=str)
-    tmp.replace(_cache_path(key))
+    # The temp name carries the writer's identity. It used to be one shared
+    # "<key>.tmp": two audit workers judging identical lines write it at the
+    # same time, the first replace() consumes it, and the second raises
+    # FileNotFoundError out of cache_put and takes the line down with it. Six
+    # threads on one key fail 153 times in 240 writes. Whichever writer lands
+    # last wins, which is fine - every writer is storing the same answer.
+    path = _cache_path(key)
+    tmp = path.with_name(f"{path.name}.{os.getpid()}.{threading.get_ident():x}.tmp")
+    try:
+        with tmp.open("w", encoding="utf-8") as fh:
+            json.dump(entry, fh, ensure_ascii=False, indent=2, default=str)
+        tmp.replace(path)
+    except BaseException:
+        tmp.unlink(missing_ok=True)
+        raise
     CACHE_STATS["writes"] += 1
+
+
+def cache_health() -> dict[str, Any]:
+    """What the cache is doing, resolved in this process rather than read off disk.
+
+    `BA_LLM_CACHE_ENABLED` exists so one bill can be timed honestly, and
+    docker-compose takes it from the shell, where `environment:` beats
+    `env_file:`. Left exported from an earlier measurement it turns every
+    repeat audit back into a cold one, and nothing says so: the page is simply
+    slow again. Reading the .env cannot settle it, because the process may not
+    have used that .env. This can.
+    """
+    directory = settings.llm_cache_dir
+    try:
+        entries = sum(1 for _ in directory.glob("*.json"))
+    except OSError:
+        entries = -1
+    return {
+        "enabled": settings.llm_cache_enabled,
+        "dir": str(directory),
+        "writable": directory.exists() and os.access(directory, os.W_OK),
+        "entries": entries,
+        **CACHE_STATS,
+    }
 
 
 def clear_cache() -> int:
