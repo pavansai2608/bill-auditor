@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Current state (update this at the end of every phase)
 
-**Last updated: 2026-09-01, end of Phase 11. Every phase in `PHASES.md` is built. v5 remains the recorded eval at 68.3%.**
+**Last updated: 2026-09-02. Every phase in `PHASES.md` is built. The recorded eval is `v7` at 51.5% line accuracy over all 44 bills, on a corrected clause index.**
 
 Built and passing:
 
@@ -35,7 +35,12 @@ Built and passing:
 - The eval harness: **44 bills** in `eval/bills/`, an answer key derived
   straight from the PDFs by `eval/derive_key.py`, and `eval/evaluate.py`
   (`--agent` scores the loop, without it scores naive v0).
-- 233 PyUnit tests, all passing (231 unit plus 2 Selenium end-to-end).
+  `eval/make_text_bills.py` writes each bill out as pasteable text under
+  `eval/bills/text/` with an `INDEX.md` of the form inputs, and checks the
+  `bill_text` and the `lines` array of every bill against each other — the two
+  halves of a fixture can drift and nothing else compares them. `--llm` runs
+  the same check through `core.bill.parse_bill` instead of the regex.
+- 259 PyUnit tests, all passing, `unittest discover -s tests` in 59s.
 
 Not built yet — do not assume these exist:
 
@@ -45,27 +50,62 @@ Not built yet — do not assume these exist:
   `audit.py`, **7** (PII) in `core/masking.py`. There is no central module and
   not all 8 are implemented.
 - Nothing from `PHASES.md` is unbuilt. What is *unverified* is in
-  `BLOCKED.md`: minikube is not installed here, the Docker daemon was not
-  available to build images, and no Jenkins server has ever run this pipeline.
+  `BLOCKED.md`: minikube is not installed here and no Jenkins server has ever
+  run this pipeline. **Docker is no longer unverified** — as of 2026-09-01 all
+  five images build, all six containers report healthy and B01 was audited end
+  to end through the gateway. Running it found four defects that syntax
+  checking could not: the four Python images could not build at all (`-e .` in
+  `requirements.txt` with no `src/` in the builder stage), ingestion had no
+  Ollama URL so all 402 clauses were labelled `other`, the frontend
+  healthcheck probed `localhost` against an IPv4-only nginx, and `qwen3:8b`
+  was OOM-killed in a 7.7 GB VM. See B-02.
 
-Last recorded eval: **v5, line accuracy 68.3%** — v0 24.4% → v2 51.2% → v3
-54.9% → v4 59.8% → v5 68.3%. Citation accuracy 56.8%, fabricated clauses 0,
-abstention recall 100%, false answers 0, dodges 21 (`eval/results.md`, 10
-bills, 82 lines).
+Last recorded eval: **`v7`, line accuracy 51.5% over 44 bills / 328 lines.**
+Citation accuracy 44.4%, payout error 63.8%, abstention recall 90.0%, false
+answers 3, dodges 131, **fabricated clauses 0**. Backend ollama (qwen3:8b),
+retrieval on cpu.
+
+**v7 adds one guardrail and nothing else.** A per-day limit cited from a clause
+that governs the room entitlement may only be applied to a room-rent line;
+anywhere else the verdict is rejected and the loop retries, then abstains. The
+second pass already refused to let anything but room rent drive a proportionate
+deduction - the judge had no equivalent, so a room cap could be applied
+directly. It fired on 19 line-attempts across 11 bills and moved
+`room_rent_over` from 32.5% to 37.3%. `core.room_limit.governs_room_rent`
+decides from the clause, never the line.
+
+**The version ladder is a different denominator and must not be joined to it:**
+v0 24.4% → v4 59.8% → v5 68.3% are ten bills / 82 lines, held constant so
+versions compare. `eval/results.md` holds no row for v2 or v3, so the 51.2% and
+54.9% quoted in `PHASES.md` and `PROGRESS.md` are not reproducible from it.
+
+**The number fell from v5-full's 59.5% and the cause is established.** The PDF
+table extraction was reading a horizontally merged cell as belonging only to its
+first column, and the forward-fill then carried column headings down into data
+rows. Fixing that removed corrupted text from 11 of 402 clauses, 5 of them
+star_health. Cleaner text means a different embedding, so those clauses rank
+differently, and the judge - given a different top three - answered differently
+on 45 star_health lines, all of which went from answered to abstained. Ruled out
+along the way: `core/room_limit.py`, which resolves all nine star_health sums
+insured correctly and is now pinned by `tests/test_room_limit_golden.py`; and the
+retrieval device, since `v6-cpu` reproduces `v6` on every accuracy metric.
+**Part of the old 59.5% was luck on corrupted data**; 50.0% on a correct index is
+the honest figure. The full write-up is under the `v6-cpu` row.
 
 **Where the remaining errors are:**
 
-- `sub_limit` is **0.0%**, dodging all 6 lines, and is the largest block left.
-  The cause is written up in `KNOWN_LIMITATIONS.md`: the loop can find a limit
-  or fail to find one, but has no way to conclude "nothing limits this line, so
-  pay it in full". Fixing it changes the judge contract and risks turning safe
-  abstentions into confident overpayments, so it needs its own eval slice.
-- `waiting_period` went 0.0% → **100%** at v5 and `clean` sits at 73.3%.
-- **Payout error rose 38.1% → 44.0% at v5, deliberately.** The waiting
-  guardrail turns B03's wrongly-excluded cataract line (the judge zeroed a
-  61-month-old policy under a 24-month exclusion) into an abstention. The line
-  was wrong before and is still not right, but it is now honest about it -
-  abstentions count as zero in the payout total.
+- `room_rent_over` is **32.5%** over 83 lines with 28 dodges, and is now the
+  largest block. The judge stops returning a limit for associated lines and
+  falls through to II.1's "specified in your Policy Schedule" wording.
+- `clean` fell to **38.5%** with 38 dodges - the same mechanism.
+- ~~The judge will apply a room per-day cap to a line the cap does not reach.~~
+  **Fixed in v7** by the guardrail above. B01's medicines line went from Rs 5,000
+  under II.1 to the full Rs 38,000 under II.7.
+- `sub_limit` is **34.6%** with 16 dodges. The cause is in
+  `KNOWN_LIMITATIONS.md`: the loop can find a limit or fail to find one, but has
+  no way to conclude "nothing limits this line, so pay it in full".
+- **Payout error is 65.6%**, up from 41.1%, because an abstention counts as zero
+  in the payout total and there are now 126 of them.
 - **Three eval rows were withdrawn and re-run, with the reasons recorded in
   `eval/results.md` rather than deleted.** The first v2 counted 18 correct
   `IRDAI-List-I` citations as fabrications (scorer bug); the first v3 took its
@@ -106,6 +146,12 @@ Agentic RAG that audits Indian health insurance claim bills. A bill line is chec
 
 - **The LLM never does arithmetic.** `JudgeOutput` deliberately has no `allowed` field — the model returns a limit plus a `clause_id`, and Python multiplies/subtracts. 8B models are unreliable at maths, and a wrong total is invisible.
 - **Every verdict must cite a `clause_id` present in `data/clauses.json`.** An ID not in the index means reject the verdict and retry. A fabricated citation is the worst failure this system can produce; the eval tracks it as a metric that must stay at 0.
+- **Which clause to cite: the one that authorises *that line's* treatment.** Not the one that happens to be nearby, and not whichever scores best.
+  - the room-rent line itself → the clause that sets the room limit (`star_health II.1`, `hdfc_ergo B.1.1`)
+  - a line the second pass rescales, or one it leaves alone because the line falls outside the definition → the clause defining associated medical expenses (`star_health I.Def45`, `hdfc_ergo A.1.2.Def5`)
+  - where one clause states both the scope and the formula (`niva_bupa 6.2.4`) → that clause
+  
+  `II.1` caps room rent and says nothing about a surgeon's fee. What authorises reducing the surgeon's fee is the definition of associated medical expenses, not the cap. **Citing the cap on a line the cap does not reach is the wrong citation even though it scores** - it scored 51.9% against v5-full's output and the correct rule scores 43.2% on the same output, because the system had learned to cite the cap too. Recorded as decision D-12; applied to the answer key across 85 lines.
 - **`core/` imports no web framework.** Pure Python logic; `api/` calls into it.
 - **`num_ctx=8192` on every Ollama call.** The default is 2048 and truncates retrieved clauses silently — no error, just confident nonsense. Set in `core/config.py`, applied in `core/llm.py`.
 - **Every LLM call is cached to disk by prompt hash.** The eval is re-run 50+ times.
@@ -274,7 +320,7 @@ Per request, each bill line runs through a LangGraph loop: non-payable fast path
 
 GitFlow: `main` (tagged releases only) ← `release/vX` ← `develop` ← `feature/short-name`. Commits are Conventional Commits: `feat(agent): add retry loop with query rewriting`. The `.githooks/commit-msg` hook enforces the format and a 72-character subject limit; `.githooks/pre-commit` runs ruff. Install with `git config core.hooksPath .githooks`.
 
-**No issue tracker.** This is a solo project, so the `[BA-XX]` ticket IDs the original spec called for have been dropped. Commits before `262e6eb` still carry them — that history is not rewritten. Do not add ticket IDs to new commits.
+**Every commit carries a `[BA-XX]` ticket**, at the end of the subject, enforced by `.githooks/commit-msg` — install it with `git config core.hooksPath .githooks` or it does nothing. Numbering is continuous across the whole history; find the next free number with `git log --all --format=%s | grep -o '\[BA-[0-9]*\]'`. See D-01.
 
 **Always branch from `develop`.** Running `git checkout -b feature/next` while still standing on the previous feature branch stacks them, and `develop` then holds none of the work — which has already happened once here. `git checkout develop` first, every time.
 

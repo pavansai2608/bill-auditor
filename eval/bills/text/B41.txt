@@ -1,0 +1,22 @@
+GREENFIELD HOSPITAL & RESEARCH CENTRE
+Hyderabad - 500 081
+
+Patient Name: Nikhil Raghavan
+UHID: B411000
+Phone: 9880011223
+Admission: 2026-05-04    Discharge: 2026-05-09
+
+--------------------------------------------------------------
+DESCRIPTION                                   QTY       AMOUNT
+--------------------------------------------------------------
+Room Rent (Deluxe) 11,000 x 5 days              5    55,000.00
+ICU Charges 16,000 x 2 days                     2    32,000.00
+Surgeon Fee                                     1   120,000.00
+Anaesthetist Charges                            1    26,000.00
+Medicines and Drugs                             1    44,000.00
+Operation Theatre Charges                       1    32,000.00
+Investigations - CT and Labs                    1    17,000.00
+Gloves                                         25     1,500.00
+--------------------------------------------------------------
+GRAND TOTAL                                         327,500.00
+--------------------------------------------------------------

@@ -1,0 +1,19 @@
+MATRUCHHAYA HOSPITAL
+Indore - 452 010
+
+Patient Name: Lakshmi Narayanan
+UHID: B381000
+Phone: 9840112233
+Admission: 2026-04-01    Discharge: 2026-04-02
+
+--------------------------------------------------------------
+DESCRIPTION                                   QTY       AMOUNT
+--------------------------------------------------------------
+Room Rent (Shared) 3,500 x 1 day                1     3,500.00
+Stem Cell Therapy for Bone Marrow Transplant    1   240,000.00
+Surgeon Fee                                     1    60,000.00
+Medicines and Drugs                             1    22,000.00
+Investigations - Pre-procedure Panel            1     8,500.00
+--------------------------------------------------------------
+GRAND TOTAL                                         334,000.00
+--------------------------------------------------------------

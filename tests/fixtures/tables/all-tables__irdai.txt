@@ -1,0 +1,37 @@
+=== page 1 table 0 ===
+[table] HNLIPS2U60R4A6VN09C25E2 P6LAN
+[table] SI.No. - ITEM - SI.No. - ITEM
+[table] 1 - Baby Food - 35 - Oxygen Cylinder (for Usage Outside The Hospital)
+[table] 2 - Baby Utilities Charges - 36 - Spacer
+[table] 3 - Beauty Services - 37 - Spirometre
+[table] 4 - Belts / Braces - 38 - Nebulizer Kit
+[table] 5 - Buds - 39 - Steam Inhaler
+[table] 6 - Cold Pack / Hot Pack - 40 - Armsling
+[table] 7 - Carry Bags - 41 - Thermometer
+[table] 8 - Email / Internet Charges - 42 - Cervical Collar
+[table] 9 - Food Charges (other than patient’s diet provided by hospital) - 43 - Splint
+[table] 10 - Leggings - 44 - Diabetic Foot Wear
+[table] 11 - Laundry Charges - 45 - Knee Braces (long / Short / Hinged)
+[table] 12 - Mineral Water - 46 - Knee Immobilizer / Shoulder Immobilizer
+[table] 13 - Sanitary Pad - 47 - Lumbo Sacral Belt
+[table] 14 - Telephone Charges - 48 - Nimbus Bed Or Water Or Air Bed Charges
+[table] 15 - Guest Services - 49 - Ambulance Collar
+[table] 16 - Crepe Bandage - 50 - Ambulance Equipment
+[table] 17 - Diaper of Any Type - 51 - Abdominal Binder
+[table] 18 - Eyelet Collar - 52 - Private Nurses Charges - Special Nursing Charges
+[table] 19 - Slings - 53 - Sugar Free Tablets
+[table] 20 - Blood Grouping and Cross Matching of Donors Samples - 54 - Creams Powders Lotions (toiletries are not payable, only prescribed medical pharmaceuticals payable)
+[table] 21 - Service Charges where Nursing Charge also Charged - 55 - Ecg Electrodes
+[table] 22 - Television Charges - 56 - Gloves
+[table] 23 - Surcharges - 57 - Nebulisation Kit
+[table] 24 - Attendant Charges - 58 - Any Kit With No Details Mentioned [delivery Kit, Orthokit, Recovery Kit, etc]
+[table] 25 - Extra Diet Of Patient (other than that which forms part of bed charge) - 59 - Kidney Tray
+[table] 26 - Birth Certificate - 60 - Mask
+[table] 27 - Certificate Charges - 61 - Ounce Glass
+[table] 28 - Courier Charges - 62 - Oxygen Mask
+[table] 29 - Conveyance Charges - 63 - Pelvic Traction Belt
+[table] 30 - Medical Certificate - 64 - Pan Can
+[table] 31 - Medical Records - 65 - Trolly Cover
+[table] 32 - Photocopies Charges - 66 - Urometer, Urine Jug
+[table] 33 - Mortuary Charges - 67 - Ambulance
+[table] 34 - Walking Aids Charges - 68 - Vasofix Safety

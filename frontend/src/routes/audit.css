@@ -1,0 +1,527 @@
+/* The audit screen.
+ *
+ * Same tokens as the landing page, deliberately: warm paper ground, serif
+ * headings, one accent, depth from layered surfaces and hairline borders
+ * rather than drop shadows. This is one product, not two that resemble each
+ * other, so there are no new values invented here - everything resolves to
+ * design/tokens.json.
+ *
+ * The screen is built for a 1440px laptop in Chrome. Two columns, the bill
+ * wider than the policy, because the bill is what the person came to have
+ * read and the policy fields are the questions that make that possible. Below
+ * 900px it stacks and stops; the phone is a fallback, not the target.
+ *
+ * Loaded by AuditPage rather than the global stylesheet, so a visitor who only
+ * sees the landing page never downloads it.
+ */
+
+.audit-shell {
+  --audit-max: 1360px;
+  max-width: var(--audit-max);
+  margin: 0 auto;
+  padding: 0 var(--space-6) var(--space-8);
+}
+
+/* The ground is the page, not a box on it - the same rule the landing uses. */
+body:has(.audit-shell) {
+  background: var(--colour-paper);
+}
+
+/* --- masthead ---------------------------------------------------------- */
+
+.audit-masthead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-5) 0;
+  border-bottom: 1px solid var(--colour-hairline);
+  margin-bottom: var(--space-7);
+}
+
+.audit-home {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  text-decoration: none;
+  color: var(--colour-ink);
+  border-radius: var(--radius-sm);
+  /* 44px of target on a link that is only 20px of text. */
+  padding: var(--space-3) var(--space-2);
+  margin: calc(var(--space-3) * -1) calc(var(--space-2) * -1);
+}
+
+.audit-home .mark {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--colour-accent);
+  transition: transform var(--motion-fast);
+}
+
+.audit-home:hover .mark {
+  transform: rotate(45deg);
+}
+
+.audit-wordmark {
+  font-size: var(--text-body);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.02em;
+}
+
+.audit-back {
+  font-size: var(--text-small);
+  color: var(--colour-ink-muted);
+  text-decoration: none;
+  padding: var(--space-3) var(--space-2);
+  border-radius: var(--radius-sm);
+}
+
+.audit-back:hover {
+  color: var(--colour-accent);
+}
+
+/* --- page head --------------------------------------------------------- */
+
+.audit-head {
+  margin-bottom: var(--space-7);
+  max-width: 46ch;
+}
+
+.audit-head h1 {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3.4vw, 3rem);
+  line-height: 1.05;
+  font-weight: var(--weight-regular);
+  letter-spacing: -0.02em;
+  color: var(--colour-ink);
+}
+
+.audit-head p {
+  margin: 0;
+  font-size: var(--text-lead);
+  line-height: var(--leading-loose);
+  color: var(--colour-ink-muted);
+  text-wrap: pretty;
+}
+
+/* --- the two columns --------------------------------------------------- */
+
+/* 55/45, the bill wider. The old single column left two thirds of a laptop
+   screen as margin and made a ten-field form scroll for no reason. */
+.audit-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 55fr) minmax(0, 45fr);
+  gap: var(--space-7);
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .audit-columns {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-6);
+  }
+
+  .audit-shell {
+    padding: 0 var(--space-4) var(--space-7);
+  }
+}
+
+/* --- the bill: the hero of this screen --------------------------------- */
+
+.bill-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.bill-panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.bill-panel-head h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-title);
+  font-weight: var(--weight-regular);
+  letter-spacing: -0.01em;
+  color: var(--colour-ink);
+}
+
+/* The document.
+ *
+ * A tinted card with a ruled interior and a lifted edge, so the box looks like
+ * the piece of paper the person is holding rather than a form control. The
+ * rules are a repeating gradient locked to the same line-height as the text
+ * inside it, which is what makes them read as a ledger instead of a texture. */
+.bill-doc {
+  --rule: 24px;
+  position: relative;
+  border: 1px solid var(--colour-hairline-strong);
+  border-radius: var(--radius-md);
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent calc(var(--rule) - 1px),
+      var(--colour-hairline) calc(var(--rule) - 1px),
+      var(--colour-hairline) var(--rule)
+    ),
+    var(--colour-paper-sunken);
+  transition:
+    border-color var(--motion-normal),
+    background-color var(--motion-normal);
+}
+
+/* The lifted edge: a second sheet just behind the first. Layered surface, not
+   a drop shadow. */
+.bill-doc::after {
+  content: "";
+  position: absolute;
+  inset: auto 6px -5px 6px;
+  height: 5px;
+  border: 1px solid var(--colour-hairline);
+  border-top: 0;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  background: var(--colour-paper-raised);
+  pointer-events: none;
+}
+
+/* A real ring on the container, because the textarea inside has no border of
+   its own to carry one. Tinting the border alone is not a focus indicator:
+   the audit probe found no indicator at all on the most important control on
+   the page. */
+.bill-doc:focus-within {
+  border-color: var(--colour-accent);
+  outline: 2px solid var(--colour-focus);
+  outline-offset: 2px;
+}
+
+.bill-doc.is-over {
+  border-color: var(--colour-accent);
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent calc(var(--rule) - 1px),
+      var(--colour-hairline) calc(var(--rule) - 1px),
+      var(--colour-hairline) var(--rule)
+    ),
+    var(--colour-accent-soft);
+}
+
+.bill-doc textarea {
+  display: block;
+  width: 100%;
+  /* Tall on purpose. A bill is 20-odd lines and the point of this screen is
+     to show it whole. */
+  height: 27rem;
+  padding: var(--space-4) var(--space-5);
+  border: 0;
+  background: transparent;
+  resize: vertical;
+  font-family: var(--font-mono);
+  font-size: var(--text-small);
+  /* Locked to --rule so the text sits on the ruled lines rather than across
+     them. */
+  line-height: var(--rule);
+  color: var(--colour-ink);
+  font-variant-numeric: tabular-nums;
+  tab-size: 4;
+}
+
+.bill-doc textarea:focus {
+  outline: none;
+}
+
+.bill-doc textarea::placeholder {
+  color: var(--colour-ink-muted);
+}
+
+/* --- under the document ------------------------------------------------ */
+
+.bill-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  /* Clears the lifted edge below the document. */
+  margin-top: var(--space-2);
+}
+
+/* "10 items, Rs 2,36,000" - the system saying it understood, immediately. */
+.bill-count {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  font-size: var(--text-small);
+  color: var(--colour-ink-muted);
+}
+
+.bill-count strong {
+  font-weight: var(--weight-semibold);
+  color: var(--colour-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.bill-count-empty {
+  font-size: var(--text-small);
+  color: var(--colour-ink-faint);
+}
+
+/* The count landing when it changes. One property, one moment. */
+@keyframes count-settle {
+  from {
+    transform: translateY(-2px);
+    opacity: 0.4;
+  }
+}
+
+.bill-count.is-changing strong {
+  animation: count-settle 220ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* The example. The most valuable control on the page for a first-time
+   visitor, so it is a filled button rather than a link in the corner. */
+.bill-example {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: 0 var(--space-5);
+  border: 1px solid var(--colour-accent);
+  border-radius: var(--radius-sm);
+  background: var(--colour-accent-soft);
+  color: var(--colour-accent-hover);
+  font: inherit;
+  font-size: var(--text-small);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  transition:
+    background-color var(--motion-fast),
+    border-color var(--motion-fast);
+}
+
+.bill-example:hover {
+  background: var(--colour-accent);
+  color: var(--colour-accent-ink);
+}
+
+.bill-choose {
+  font-size: var(--text-small);
+  color: var(--colour-ink-muted);
+}
+
+/* The file picker, as a word rather than a native control. The native input
+   is a small grey button that says "No file chosen" beside itself forever. */
+.bill-file-label {
+  color: var(--colour-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-1);
+}
+
+.bill-file-label:hover {
+  color: var(--colour-accent-hover);
+}
+
+/* The input is 1x1 and invisible, so its own focus ring would be too. The
+   label is what a keyboard user can see, so the label wears it. */
+.bill-file-label:has(input:focus-visible) {
+  outline: 2px solid var(--colour-focus);
+  outline-offset: 2px;
+}
+
+.bill-file-label input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* --- the policy column ------------------------------------------------- */
+
+.policy-panel {
+  border: 1px solid var(--colour-hairline);
+  border-radius: var(--radius-lg);
+  background: var(--colour-paper-raised);
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.policy-panel > h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-heading);
+  font-weight: var(--weight-regular);
+  color: var(--colour-ink);
+}
+
+/* A numbered step. The sequence is the information - this is the order the
+   questions get answered in - so the numerals earn their place. */
+.step {
+  display: grid;
+  grid-template-columns: 1.75rem minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.step-n {
+  font-family: var(--font-display);
+  font-size: var(--text-heading);
+  line-height: 1;
+  color: var(--colour-accent);
+  font-variant-numeric: lining-nums;
+  /* Optically aligned with the label's cap height rather than its box. */
+  padding-top: 1px;
+}
+
+.step-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.step-body > h3 {
+  margin: 0;
+  font-size: var(--text-body);
+  font-weight: var(--weight-semibold);
+  color: var(--colour-ink);
+}
+
+/* Why the fields below are being asked for, before they are asked. */
+.step-why {
+  margin: 0;
+  font-size: var(--text-small);
+  color: var(--colour-ink-muted);
+}
+
+.step-pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-4);
+}
+
+@media (max-width: 480px) {
+  .step-pair {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* --- the sticky submit ------------------------------------------------- */
+
+.policy-submit {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-top: var(--space-5);
+  margin: 0 calc(var(--space-6) * -1) calc(var(--space-6) * -1);
+  padding: var(--space-5) var(--space-6) var(--space-6);
+  border-top: 1px solid var(--colour-hairline);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  background: var(--colour-paper-raised);
+}
+
+.policy-submit button[type="submit"] {
+  width: 100%;
+  min-height: var(--cta-height);
+  border: 1px solid var(--colour-accent);
+  border-radius: var(--radius-sm);
+  background: var(--colour-accent);
+  color: var(--colour-accent-ink);
+  font: inherit;
+  font-size: var(--text-body);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  transition:
+    background-color var(--motion-fast),
+    border-color var(--motion-fast);
+}
+
+.policy-submit button[type="submit"]:hover:not(:disabled) {
+  background: var(--colour-accent-hover);
+  border-color: var(--colour-accent-hover);
+}
+
+.policy-submit button[type="submit"]:disabled {
+  background: var(--colour-paper-sunken);
+  border-color: var(--colour-hairline-strong);
+  color: var(--colour-ink-muted);
+  cursor: not-allowed;
+}
+
+/* What is still missing, updating as they fill it in. A dead button that does
+   not say why is the commonest way a form wastes someone's time. */
+.policy-submit .actions-note {
+  margin: 0;
+  font-size: var(--text-small);
+  color: var(--colour-ink-muted);
+  text-align: center;
+}
+
+/* --- reveal ------------------------------------------------------------ */
+
+/* Sections rise as the page settles. Armed only once the hook runs, so the
+   content is never withheld pending JavaScript. */
+.audit-reveal.is-armed {
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 400ms cubic-bezier(0.22, 0.61, 0.36, 1) var(--reveal-delay, 0ms),
+    transform 400ms cubic-bezier(0.22, 0.61, 0.36, 1) var(--reveal-delay, 0ms);
+}
+
+.audit-reveal.is-armed.is-shown {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .audit-reveal,
+  .audit-reveal.is-armed {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .bill-count.is-changing strong {
+    animation: none;
+  }
+}
+
+/* --- the "why?" disclosure --------------------------------------------- */
+
+/* 32x16 as a bare <summary>, which is under the 24px minimum for a pointer
+   target. Padding rather than a min-height, so the hit area grows around the
+   text instead of leaving it floating in a tall box. */
+.policy-panel .why > summary {
+  display: inline-block;
+  padding: var(--space-2) var(--space-1);
+  margin: calc(var(--space-2) * -1) calc(var(--space-1) * -1);
+  border-radius: var(--radius-sm);
+  color: var(--colour-accent);
+  cursor: pointer;
+}
+
+.policy-panel .why > summary:hover {
+  color: var(--colour-accent-hover);
+}
+
+.policy-panel .why > p {
+  margin: var(--space-2) 0 0;
+  color: var(--colour-ink-muted);
+}

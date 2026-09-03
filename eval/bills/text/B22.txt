@@ -1,0 +1,21 @@
+MATRUCHHAYA HOSPITAL
+Indore - 452 010
+
+Patient Name: Sunita Devi
+UHID: B222500
+Phone: 9812345678
+Admission: 2026-03-18    Discharge: 2026-03-21
+
+--------------------------------------------------------------
+DESCRIPTION                                   QTY       AMOUNT
+--------------------------------------------------------------
+Room Rent (Single A/C) 9,500 x 3 days           3    28,500.00
+Surgeon Fee                                     1   155,000.00
+Anaesthetist Charges                            1    32,000.00
+Operation Theatre Charges                       1    48,000.00
+Medicines and Drugs                             1    44,000.00
+Investigations - Angiography                    1    28,000.00
+Consultant Visit Charges                        3     7,500.00
+--------------------------------------------------------------
+GRAND TOTAL                                         343,000.00
+--------------------------------------------------------------

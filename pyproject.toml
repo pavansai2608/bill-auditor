@@ -7,26 +7,65 @@ authors = [
     { name = "pavansai2608", email = "golipavansaikrishna2608@gmail.com" }
 ]
 requires-python = ">=3.14"
+# What every service needs: the web layer, the settings, and the Ollama client,
+# which `core.llm` imports at module level and so reaches everything.
+#
+# The heavy half is in the extras below. Installing all of it in all four
+# service images cost 8.82 GB each - the same torch, the same CUDA wheels, four
+# times over, for two services that never embed anything.
 dependencies = [
-    "chromadb>=1.5.9",
     "fastapi>=0.141.1",
     "httpx>=0.28.1",
-    "langchain>=1.3.18",
-    "langchain-chroma>=1.1.0",
-    "langchain-community>=0.4.2",
+    "langchain-groq>=0.3.0",
     "langchain-ollama>=1.1.0",
-    "langgraph>=1.2.11",
-    "pdfplumber>=0.11.10",
     "pydantic-settings>=2.15.0",
     "python-dotenv>=1.2.3",
     "python-multipart>=0.0.32",
+    "uvicorn>=0.52.4",
+]
+
+[project.optional-dependencies]
+# The agent loop. Audit only.
+agent = [
+    "langgraph>=1.2.11",
+]
+# Embeddings, the vector store, the lexical index and the cross-encoder. This
+# is the expensive one: sentence-transformers pulls torch and, on linux, the
+# nvidia CUDA wheels with it.
+retrieval = [
+    "chromadb>=1.5.9",
+    "langchain>=1.3.18",
+    "langchain-chroma>=1.1.0",
+    "langchain-classic>=1.0.8",
+    "langchain-community>=0.4.2",
     "rank-bm25>=0.2.2",
     "sentence-transformers>=6.0.1",
-    "uvicorn>=0.52.4",
+    # Named directly so [tool.uv.sources] can pin it to the CPU wheel index.
+    # A source only applies to a direct dependency, and torch would otherwise
+    # arrive through sentence-transformers with the CUDA build attached.
+    "torch>=2.13.0",
+]
+# Reading the policy PDFs. Ingestion also embeds, so it takes `retrieval` too.
+ingestion = [
+    "pdfplumber>=0.11.10",
 ]
 
 [project.scripts]
 bill-auditor = "bill_auditor:main"
+
+# torch from the CPU wheel index, not PyPI.
+#
+# PyPI's linux torch is the CUDA build: it drags nvidia-* (2.9 GB) and triton
+# (650 MB) into an image whose only job is to run a 400 MB embedding model on a
+# CPU. Nothing here has, or can reach, a GPU - Docker Desktop on macOS has no
+# passthrough and the k8s manifests request no device.
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
 
 [build-system]
 requires = ["uv_build>=0.12.0,<0.13.0"]
@@ -36,6 +75,10 @@ build-backend = "uv_build"
 dev = [
     "coverage>=7.16.0",
     "flake8>=7.3.0",
+    # `pyb --no-venvs` installs its plugin packages into the active virtualenv
+    # using pip, and uv does not create one with pip in it. Without this the
+    # Jenkins Unit stage fails on "No module named 'pip'".
+    "pip>=25.0",
     "httpx>=0.28.1",
     "pybuilder>=0.13.21",
     "pytest>=9.1.1",

@@ -1,0 +1,20 @@
+RELIANCE PARK HOSPITAL
+Nashik - 422 005
+
+Patient Name: Anjali Verma
+UHID: B40300
+Phone: 9718002233
+Admission: 2026-04-22    Discharge: 2026-04-24
+
+--------------------------------------------------------------
+DESCRIPTION                                   QTY       AMOUNT
+--------------------------------------------------------------
+Room Rent (Shared) 2,800 x 2 days               2     5,600.00
+Piles / Fistula Surgery - Surgeon Fee           1    46,000.00
+Anaesthetist Charges                            1     9,000.00
+Operation Theatre Charges                       1    13,000.00
+Medicines and Drugs                             1     7,200.00
+Investigations - Basic Panel                    1     2,800.00
+--------------------------------------------------------------
+GRAND TOTAL                                          83,600.00
+--------------------------------------------------------------

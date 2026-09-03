@@ -1,0 +1,24 @@
+CITY CARE MULTISPECIALITY HOSPITAL
+Chennai - 600 034
+
+Patient Name: Rakesh Patel
+UHID: B09500
+Phone: 9925001122
+Admission: 2026-03-20    Discharge: 2026-03-24
+
+--------------------------------------------------------------
+DESCRIPTION                                   QTY       AMOUNT
+--------------------------------------------------------------
+Room Rent (Single A/C) 4,500 x 4 days           4    18,000.00
+Surgeon Fee                                     1    62,000.00
+Medicines and Drugs                             1    23,000.00
+Gloves                                         25     1,500.00
+Crepe Bandage                                   4       600.00
+Cold Pack / Hot Pack                            2       400.00
+Walking Aids Charges                            1     2,200.00
+Mineral Water                                   1       180.00
+Telephone Charges                               1       120.00
+Investigations - Labs                           1     6,300.00
+--------------------------------------------------------------
+GRAND TOTAL                                         114,300.00
+--------------------------------------------------------------

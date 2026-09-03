@@ -1,0 +1,21 @@
+ASHIRVAD SUPER SPECIALITY HOSPITAL
+Ahmedabad - 380 015
+
+Patient Name: Priya Deshmukh
+UHID: B421000
+Phone: 9825443322
+Admission: 2026-05-12    Discharge: 2026-05-16
+
+--------------------------------------------------------------
+DESCRIPTION                                   QTY       AMOUNT
+--------------------------------------------------------------
+Room Rent (Deluxe) 9,800 x 4 days               4    39,200.00
+Surgeon Fee                                     1    88,000.00
+Anaesthetist Charges                            1    19,000.00
+Operation Theatre Charges                       1    26,000.00
+Medicines and Drugs                             1    31,000.00
+Investigations - MRI and Labs                   1    14,500.00
+Consultant Visit Charges                        4     4,800.00
+--------------------------------------------------------------
+GRAND TOTAL                                         222,500.00
+--------------------------------------------------------------

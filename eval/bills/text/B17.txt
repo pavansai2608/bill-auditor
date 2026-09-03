@@ -1,0 +1,23 @@
+CITY CARE MULTISPECIALITY HOSPITAL
+Chennai - 600 034
+
+Patient Name: Joseph Mathew
+UHID: B17300
+Phone: 9847001234
+Admission: 2026-02-11    Discharge: 2026-02-13
+
+--------------------------------------------------------------
+DESCRIPTION                                   QTY       AMOUNT
+--------------------------------------------------------------
+Room Rent (Shared) 2,500 x 2 days               2     5,000.00
+Surgeon Fee                                     1    38,000.00
+Medicines and Drugs                             1    12,000.00
+Gloves                                         12       750.00
+Mask                                           20       300.00
+Thermometer                                     1       250.00
+Spirometre                                      1     1,800.00
+Steam Inhaler                                   1       900.00
+Investigations - Labs                           1     4,100.00
+--------------------------------------------------------------
+GRAND TOTAL                                          63,100.00
+--------------------------------------------------------------

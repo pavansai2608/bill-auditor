@@ -26,9 +26,16 @@ from datetime import date
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from checkpoint import Checkpoint, digest, fingerprint, load, save
+from checkpoint import clear as clear_checkpoints
+
+from core import llm
 from core.agent import IRDAI_CITATION
 from core.assumptions import Assumptions
+from core.backends import BackendError
+from core.config import settings
 from core.ingest import load_clauses, load_non_payable
 from core.logging_conf import setup_logging
 from core.models import BillLine, PolicySchedule
@@ -164,24 +171,15 @@ def is_filled(entry: dict) -> bool:
     return entry.get("allowed") is not None or entry.get("needs_human") is not None
 
 
-def score_bill(
-    bill_id: str,
-    expected: dict,
-    valid_ids: set[str],
-    run: Run,
-    use_agent: bool = False,
-    second_pass: bool = False,
-) -> dict | None:
-    from core.audit import audit_lines
+def audit_one(bill_id: str, expected: dict, use_agent: bool, second_pass: bool) -> Checkpoint:
+    """Run one bill and return everything needed to score it, or to score it
+    again tomorrow without re-running it.
 
-    filled = [line for line in expected["lines"] if is_filled(line)]
-    if not filled:
-        run.bills_unfilled += 1
-        # Still count the lines, so progress through the key is visible.
-        category = expected.get("category", "uncategorised")
-        for bucket in (run.overall, run.by_category[category]):
-            bucket.lines_skipped += len(expected["lines"])
-        return None
+    This is the expensive half - forty minutes of a 44-bill run lives here -
+    and it is deliberately separate from the tallying below, so a replayed
+    checkpoint goes through exactly the same folding as a fresh result.
+    """
+    from core.audit import audit_lines
 
     lines = [
         BillLine(item=line["item"], amount=line["charged"], qty=line["qty"])
@@ -206,10 +204,48 @@ def score_bill(
         )
     finally:
         restore()
-    elapsed = time.perf_counter() - started
+
+    backend = llm.active_backend()
+    return Checkpoint(
+        bill_id=bill_id,
+        report=report,
+        elapsed=time.perf_counter() - started,
+        tool_calls=tally["search"] + tally["judge"],
+        backend=backend,
+        model=settings.groq_model if backend == "groq" else settings.ollama_model,
+        bill_hash="",
+        key_hash="",
+    )
+
+
+def score_bill(
+    bill_id: str,
+    expected: dict,
+    valid_ids: set[str],
+    run: Run,
+    use_agent: bool = False,
+    second_pass: bool = False,
+    done: Checkpoint | None = None,
+) -> Checkpoint | None:
+    """Fold one bill's result into the run.
+
+    `done` is a checkpoint from an earlier run of the same inputs. When it is
+    given nothing is audited and the stored report is folded in instead.
+    """
+    filled = [line for line in expected["lines"] if is_filled(line)]
+    if not filled:
+        run.bills_unfilled += 1
+        # Still count the lines, so progress through the key is visible.
+        category = expected.get("category", "uncategorised")
+        for bucket in (run.overall, run.by_category[category]):
+            bucket.lines_skipped += len(expected["lines"])
+        return None
+
+    result = done or audit_one(bill_id, expected, use_agent, second_pass)
+    report, elapsed = result.report, result.elapsed
 
     run.latencies.append(elapsed)
-    run.tool_calls.append(tally["search"] + tally["judge"])
+    run.tool_calls.append(result.tool_calls)
     run.bills_run += 1
 
     for entry in report.trace:
@@ -277,14 +313,26 @@ def score_bill(
                 if got.clause_id == want_clause:
                     bucket.citation_right += 1
 
-    return {"bill_id": bill_id, "elapsed": elapsed, "calls": tally["search"] + tally["judge"]}
+    return result
+
+
+def backend_label() -> str:
+    """The backend and model in force, named the way a reader needs it.
+
+    "ollama" alone does not identify a run - the model behind it is what
+    produced the numbers, and it can change without the backend changing.
+    """
+    backend = llm.active_backend()
+    model = settings.groq_model if backend == "groq" else settings.ollama_model
+    device = settings.torch_device or "mps"
+    return f"{backend} ({model}), retrieval on {device}"
 
 
 def pct(value: float | None) -> str:
     return "n/a" if value is None else f"{value * 100:.1f}%"
 
 
-def render(run: Run, version: str) -> str:
+def render(run: Run, version: str, *, scope: str = "", code: str = "") -> str:
     o = run.overall
     p95 = (
         statistics.quantiles(run.latencies, n=20)[-1]
@@ -296,12 +344,27 @@ def render(run: Run, version: str) -> str:
     rows = [
         f"### {version} - {date.today().isoformat()}",
         "",
+    ]
+    # A narrowed run says so in its first line, in bold, before any figure. The
+    # numbers below it are real but they are not a claim about the whole set,
+    # and a reader skimming for a headline must not be able to miss which it is.
+    if scope:
+        rows += [f"**{scope}**", ""]
+    rows += [
         f"Bills run: {run.bills_run}   ",
         f"Bills with no answers filled in yet: {run.bills_unfilled}   ",
         f"Lines scored: {o.lines_scored}   Lines skipped (key not filled): {o.lines_skipped}",
         "",
         "| metric | value |",
         "|---|---|",
+        # Which model produced these numbers. Recorded, not inferred: rows v0
+        # to v5 predate core/backends.py and had to be reasoned about after the
+        # fact, which is exactly the ambiguity this line removes.
+        f"| Backend | {backend_label()} |",
+        # Which code produced this. Recorded for the same reason the backend
+        # is: a number in this file should say what made it, and "the audit
+        # changed" is as much a reason for a row to move as "the model did".
+        *([f"| Code fingerprint | `{code[:12]}` |"] if code else []),
         f"| Line accuracy (allowed within Rs {AMOUNT_TOLERANCE:.0f}) | {pct(o.line_accuracy)} |",
         f"| Citation accuracy | {pct(o.citation_accuracy)} |",
         f"| Payout error | {pct(o.payout_error)} |",
@@ -352,11 +415,25 @@ def write_results(text: str) -> None:
     if not existing.startswith("# Evaluation results"):
         existing = header + existing
     RESULTS_PATH.write_text(existing.rstrip() + "\n\n" + text, encoding="utf-8")
+    # Printed here, by the function that actually writes. It used to be printed
+    # by the caller, so a test that mocks this out still announced "appended
+    # to eval/results.md" - which read, in a Jenkins log, exactly like the test
+    # suite scribbling on the committed results file. It never did.
+    print(f"appended to {RESULTS_PATH}")
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Score the auditor against the answer key")
     parser.add_argument("--quick", action="store_true", help=f"first {QUICK_BILLS} bills only")
+    parser.add_argument(
+        "--backend",
+        choices=["ollama", "groq"],
+        help=(
+            "which LLM answers. Defaults to ollama here: a 44-bill run is about "
+            "400 calls, which would spend Groq's whole daily allowance and then "
+            "crawl under the token cap."
+        ),
+    )
     parser.add_argument(
         "--threshold",
         type=float,
@@ -366,6 +443,11 @@ def main() -> int:
     parser.add_argument("--version", default="v0", help="label for the results row")
     parser.add_argument("--write", action="store_true", help="append the row to eval/results.md")
     parser.add_argument("--bills", nargs="*", help="run only these bill ids")
+    parser.add_argument(
+        "--fresh",
+        action="store_true",
+        help="ignore any checkpoints for this version and audit every bill again",
+    )
     parser.add_argument("--key", type=Path, default=KEY_PATH, help="answer key to score against")
     parser.add_argument(
         "--agent", action="store_true", help="score the retry loop (v2), not the naive path (v0)"
@@ -376,6 +458,9 @@ def main() -> int:
         help="apply the proportionate-deduction second pass (v3)",
     )
     args = parser.parse_args()
+    # One place decides, and an explicit --backend beats the context
+    # default of 'eval' from core.config.
+    llm.use_backend(args.backend or settings.backend_for("eval"))
 
     setup_logging("WARNING")
 
@@ -395,20 +480,115 @@ def main() -> int:
         policy: citable_ids(policy, clauses) for policy in {c.policy for c in clauses}
     }
 
+    if args.fresh:
+        dropped = clear_checkpoints(args.version)
+        if dropped:
+            print(f"--fresh: discarded {dropped} checkpoint(s) for {args.version}")
+
+    # The backend every bill in this row must have used. A row whose numbers
+    # come from two models describes neither of them.
+    started_on = llm.active_backend()
+
+    bills_path = ROOT / "eval" / "bills"
+
+    def hashes(bill_id: str, expected: dict) -> tuple[str, str]:
+        """What this bill's checkpoint is only valid for."""
+        bill_file = bills_path / f"{bill_id}.json"
+        bill = json.loads(bill_file.read_text(encoding="utf-8")) if bill_file.exists() else None
+        return digest(bill), digest(expected)
+
+    # Read every usable checkpoint before auditing anything, so the run can say
+    # up front how much of it is already done.
+    # One fingerprint for the whole run: the audit code, the clause index and
+    # the switches that change what a bill scores.
+    run_fingerprint = fingerprint(use_agent=args.agent, second_pass=args.second_pass)
+
+    finished: dict[str, Checkpoint] = {}
+    if not args.fresh:
+        for bill_id in wanted:
+            bill_hash, key_hash = hashes(bill_id, key[bill_id])
+            done = load(
+                args.version,
+                bill_id,
+                bill_hash=bill_hash,
+                key_hash=key_hash,
+                fingerprint=run_fingerprint,
+            )
+            # A checkpoint from another model is not this row's evidence.
+            if done is not None and done.backend == started_on:
+                finished[bill_id] = done
+        if finished:
+            print(f"resuming: {len(finished)} of {len(wanted)} already done")
+
     run = Run()
+    last_done: str | None = None
     for position, bill_id in enumerate(wanted, start=1):
         expected = key[bill_id]
-        print(f"[{position}/{len(wanted)}] {bill_id} ({expected['policy']})", flush=True)
-        score_bill(
-            bill_id,
-            expected,
-            valid_by_policy.get(expected["policy"], set()),
-            run,
-            args.agent,
-            args.second_pass,
-        )
+        done = finished.get(bill_id)
+        suffix = " - from checkpoint" if done else ""
+        print(f"[{position}/{len(wanted)}] {bill_id} ({expected['policy']}){suffix}", flush=True)
 
-    report = render(run, args.version)
+        try:
+            result = score_bill(
+                bill_id,
+                expected,
+                valid_by_policy.get(expected["policy"], set()),
+                run,
+                args.agent,
+                args.second_pass,
+                done=done,
+            )
+        except (llm.LLMError, BackendError) as exc:
+            # The backend is gone and would not come back inside its recovery
+            # window. Everything up to here is on disk, so say where to resume
+            # from and stop - rather than dying with a traceback and leaving
+            # the reader to work out how much survived.
+            print(
+                f"\n{bill_id} could not be audited: {exc}\n"
+                f"last completed bill: {last_done or 'none'}\n"
+                f"{len(finished) + run.bills_run} of {len(wanted)} bills are checkpointed. "
+                f"Re-run the same command to carry on from there.",
+                file=sys.stderr,
+            )
+            return 5
+
+        # Written the moment the bill finishes, not at the end of the run. That
+        # is the whole point: a crash on the next bill must not cost this one.
+        # A bill with nothing filled in the key has no result worth keeping.
+        if done is None and result is not None:
+            result.bill_hash, result.key_hash = hashes(bill_id, expected)
+            result.fingerprint = run_fingerprint
+            save(args.version, result)
+        last_done = bill_id
+
+        if llm.active_backend() != started_on:
+            print(
+                f"backend changed mid-run: started on {started_on}, now on "
+                f"{llm.active_backend()}. Stopping after {bill_id} rather than "
+                "mixing two models into one row.",
+                file=sys.stderr,
+            )
+            return 3
+
+    # A row is a claim, and it must say what it is a claim about. A run that
+    # deliberately narrows the set - `--quick` for the CI gate, `--bills` for a
+    # single case - is complete for its scope and may be recorded, provided the
+    # row states the scope. A run that did not finish what it selected may not
+    # be recorded at all: that is the crashed-run case, and it is checked below.
+    scope = ""
+    if len(wanted) < len(key):
+        how = "--quick subset" if args.quick else "--bills selection"
+        scope = f"Scope: {len(wanted)} of {len(key)} bills ({how}). Not a whole-set number."
+    report = render(run, args.version, scope=scope, code=run_fingerprint)
+
+    if args.write and run.bills_run < len(wanted):
+        print(
+            f"not writing a row: {run.bills_run} of {len(wanted)} bills produced a "
+            "result. Re-run to finish; completed bills are checkpointed.",
+            file=sys.stderr,
+        )
+        return 4
+
     print()
     print(report)
 
@@ -419,7 +599,6 @@ def main() -> int:
 
     if args.write:
         write_results(report)
-        print(f"appended to {RESULTS_PATH}")
 
     if args.threshold is not None:
         accuracy = run.overall.line_accuracy or 0.0

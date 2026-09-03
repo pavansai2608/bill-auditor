@@ -12,10 +12,14 @@ the worst output this system can produce.
 """
 
 import re
+import threading
 from collections.abc import Callable
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import Any
 
-from core import waiting
+from core import llm, waiting
 from core.assumptions import Assumptions
+from core.config import settings
 from core.ingest import load_clauses
 from core.llm import LLMError, complete_structured
 from core.logging_conf import get_logger
@@ -227,6 +231,104 @@ def audit_line(
     )
 
 
+def worker_count() -> int:
+    """How many lines to judge at once. Two, unless told otherwise.
+
+    Two is measured, not chosen. B01 through the gateway on Groq, cache off,
+    idle machine: 222.6s at one worker, 175.1s at two, 170.6s at four. The
+    second worker buys 1.27x; the third and fourth buy 2.6%, which is noise,
+    and start the token bucket sleeping (0.0s at two workers, 37.3s at four).
+
+    It is only 1.27x because the model was never the bottleneck - it is 6-8%
+    of the wall clock at every width. The rest is retrieval, and one search
+    already saturates all ten cores, so extra workers queue for something that
+    was never idle. Concurrency cannot speed up a saturated resource; the
+    reranker would have to get cheaper first.
+    """
+    if settings.audit_workers > 0:
+        return settings.audit_workers
+    return 2
+
+
+def _warm_retrieval(policy: str, *, use_agent: bool) -> None:
+    """Build the lazy singletons on this thread, before any worker starts.
+
+    The embedding model, the cross-encoder, the Chroma client and the BM25
+    index are all built on first use. Building them in two threads at once is
+    not a race that merely wastes memory - on macOS it is a SIGSEGV, exit 139,
+    and it killed the eval on bill one every single run.
+
+    The services never saw it because warm-up builds everything
+    single-threaded before traffic arrives. The eval and the CLI have no
+    warm-up, so the first search landed inside the pool.
+
+    Judging line one synchronously does not fix this: B01's first line is a
+    non-payable item that settles on the fast path without searching at all.
+    The warm has to be explicit.
+
+    It deliberately calls whatever `search` the judge will call, rather than
+    reaching for `core.retrieve` directly. audit-service patches
+    `core.agent.search` to go over HTTP and has no torch in its image, so
+    loading a model here would break the one service that cannot.
+    """
+    try:
+        if use_agent:
+            from core import agent
+
+            agent.search("warm up", policy)
+        else:
+            search("warm up", policy)
+    except Exception as exc:  # a failed warm-up must not fail the audit
+        log.warning("retrieval warm-up failed, carrying on: %s", exc)
+
+
+def _judge_every_line(
+    lines: list[BillLine],
+    judge: Callable[[BillLine], Any],
+    workers: int,
+    on_progress: Callable[[int, int], None] | None,
+) -> list[Any]:
+    """Judge the lines, in parallel, and return the results in bill order.
+
+    First-pass lines are independent - nothing in the surgeon's fee judgement
+    reads the room rent verdict - so they can run at once. The dependency that
+    does exist is the second pass, and that runs after every line is in, which
+    is why it is outside this function rather than inside it.
+
+    Two properties this has to hold, both of which a naive `pool.map` loses:
+
+    - **Order.** Results are placed by index, never appended in completion
+      order. A report whose rows reshuffle between runs makes the eval flaky
+      and a diff of two audits unreadable.
+    - **An honest counter.** Progress counts completions, not dispatches. With
+      four workers, submitting is instant, so counting submissions would show
+      "checked 10 of 10" a second in and then sit there for a minute.
+    """
+    total = len(lines)
+    results: list[Any] = [None] * total
+    if workers <= 1 or total <= 1:
+        for index, line in enumerate(lines):
+            results[index] = judge(line)
+            if on_progress is not None:
+                on_progress(index + 1, total)
+        return results
+
+    log.info("judging %d lines with %d workers", total, workers)
+    done = 0
+    counter = threading.Lock()
+    with ThreadPoolExecutor(max_workers=min(workers, total), thread_name_prefix="line") as pool:
+        pending = {pool.submit(judge, line): index for index, line in enumerate(lines)}
+        for future in as_completed(pending):
+            # .result() re-raises in this thread, exactly as the sequential
+            # path did. A line that cannot be judged is still a failed audit.
+            results[pending[future]] = future.result()
+            with counter:
+                done += 1
+                if on_progress is not None:
+                    on_progress(done, total)
+    return results
+
+
 def audit_lines(
     lines: list[BillLine],
     policy: str,
@@ -300,22 +402,30 @@ def audit_lines(
             policy=policy,
             trace=trace,
         )
+    workers = worker_count()
+    if workers > 1:
+        _warm_retrieval(policy, use_agent=use_agent)
     if use_agent:
         from core.agent import audit_line as agent_audit_line
 
-        verdicts = []
-        for line in lines:
-            verdict, line_trace = agent_audit_line(line, policy, sum_insured, valid_ids, schedule)
-            verdicts.append(verdict)
+        judged = _judge_every_line(
+            lines,
+            lambda line: agent_audit_line(line, policy, sum_insured, valid_ids, schedule),
+            workers,
+            on_progress,
+        )
+        verdicts = [verdict for verdict, _ in judged]
+        # Extended in line order, not completion order, so two runs of the same
+        # bill produce byte-identical traces.
+        for _, line_trace in judged:
             trace.extend(line_trace)
-            if on_progress is not None:
-                on_progress(len(verdicts), len(lines))
     else:
-        verdicts = []
-        for line in lines:
-            verdicts.append(audit_line(line, policy, sum_insured, valid_ids, schedule))
-            if on_progress is not None:
-                on_progress(len(verdicts), len(lines))
+        verdicts = _judge_every_line(
+            lines,
+            lambda line: audit_line(line, policy, sum_insured, valid_ids, schedule),
+            workers,
+            on_progress,
+        )
 
     # A waiting period that has demonstrably expired cannot exclude anything.
     # On B03 the judge zeroed a cataract line under niva_bupa 5.1.2, a 24-month
@@ -330,6 +440,12 @@ def audit_lines(
 
         verdicts, second_pass_trace = second_pass_module.apply(lines, verdicts, policy, assumptions)
         trace.extend(second_pass_trace)
+
+    # Recorded at the end because it can happen at any line: the hosted quota
+    # runs out mid-audit and the rest is decided locally. A report that changed
+    # model half way through has to say so.
+    if llm.FELL_BACK["happened"]:
+        trace.append(assumptions.note_llm_fallback(llm.FELL_BACK["reason"]).to_dict())
 
     return AuditReport(
         lines=verdicts,
@@ -438,6 +554,11 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Audit a bill against one policy (naive v0)")
     parser.add_argument("bill", type=Path, help="path to a bill text file")
     parser.add_argument("--policy", default="star_health")
+    parser.add_argument(
+        "--backend",
+        choices=["ollama", "groq"],
+        help="which LLM answers. Defaults to ollama on the command line.",
+    )
     parser.add_argument("--sum-insured", type=float, default=500000)
     parser.add_argument("--agent", action="store_true", help="use the retry loop, not naive v0")
     parser.add_argument(
@@ -451,6 +572,9 @@ def main() -> None:
         help="the hospital does not bill differentially, so no proportionate deduction",
     )
     args = parser.parse_args()
+    # One place decides, and an explicit --backend beats the context
+    # default of 'cli' from core.config.
+    llm.use_backend(args.backend or settings.backend_for("cli"))
 
     setup_logging()
     report = audit_bill(

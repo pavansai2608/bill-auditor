@@ -1,0 +1,23 @@
+SANJEEVANI HEALTHCARE
+Kochi - 682 016
+
+Patient Name: Vikram Singh
+UHID: B15500
+Phone: 9823001122
+Admission: 2026-01-19    Discharge: 2026-01-26
+
+--------------------------------------------------------------
+DESCRIPTION                                   QTY       AMOUNT
+--------------------------------------------------------------
+Room Rent (Deluxe) 12,000 x 7 days              7    84,000.00
+ICU Charges 18,000 x 3 days                     3    54,000.00
+Surgeon Fee                                     1   110,000.00
+Anaesthetist Charges                            1    24,000.00
+Medicines and Drugs                             1    61,000.00
+Operation Theatre Charges                       1    38,000.00
+Ventilator Charges                              2    22,000.00
+Investigations - CT, Labs                       1    26,000.00
+Gloves                                         30     1,800.00
+--------------------------------------------------------------
+GRAND TOTAL                                         420,800.00
+--------------------------------------------------------------

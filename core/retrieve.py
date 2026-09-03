@@ -21,25 +21,44 @@ Everything is filtered to a single policy: auditing a Star Health bill against
 an HDFC clause would be a fabricated citation of the worst kind.
 """
 
-import re
-from functools import lru_cache
-from typing import Any
+from __future__ import annotations
 
-from langchain_classic.retrievers import ContextualCompressionRetriever, EnsembleRetriever
-from langchain_classic.retrievers.document_compressors import DocumentCompressorPipeline
-from langchain_community.cross_encoders import HuggingFaceCrossEncoder
+import re
+import threading
+from collections import OrderedDict
+from functools import lru_cache
+from typing import TYPE_CHECKING, Any
+
 from langchain_core.callbacks import Callbacks
 from langchain_core.documents import BaseDocumentTransformer, Document
 from langchain_core.documents.compressor import BaseDocumentCompressor
 from pydantic import Field
 
 from core.config import settings
-from core.embeddings import get_embeddings
+from core.embeddings import INFERENCE_LOCK, get_embeddings
 from core.ingest import COLLECTION, build_bm25, load_clauses
 from core.logging_conf import get_logger
 from core.models import Clause
 
+if TYPE_CHECKING:  # each of these reaches chromadb, torch or both
+    from langchain_classic.retrievers import ContextualCompressionRetriever, EnsembleRetriever
+    from langchain_community.cross_encoders import HuggingFaceCrossEncoder
+
 log = get_logger(__name__)
+
+# One lock over every lazily built singleton below.
+#
+# `lru_cache` is not atomic: two threads that miss together both run the body.
+# For an embedding model that wastes memory; for Chroma it is a hard failure -
+# two PersistentClients opening the same directory at once produce
+# "'RustBindingsAPI' object has no attribute 'bindings'" and then "Could not
+# connect to tenant default_tenant", as a 500 from /search. Harmless while
+# lines were judged one at a time, and reproducible on the first audit once
+# four of them ran at once.
+#
+# Taken on every call, not just the first: after the cache is warm this costs a
+# lock acquire against a search that costs seconds.
+_build_lock = threading.RLock()
 
 # Clauses longer than this are scored as sentence windows instead of whole.
 SUB_CHUNK_THRESHOLD = 1500
@@ -125,9 +144,20 @@ class ClauseSubChunker(BaseDocumentTransformer):
 
 
 @lru_cache(maxsize=1)
-def get_cross_encoder() -> HuggingFaceCrossEncoder:
+def _build_cross_encoder() -> HuggingFaceCrossEncoder:
+    from langchain_community.cross_encoders import HuggingFaceCrossEncoder
+
     log.info("loading reranker %s", settings.reranker_model)
-    return HuggingFaceCrossEncoder(model_name=settings.reranker_model)
+    # model_kwargs reaches sentence_transformers.CrossEncoder, which takes the
+    # device the same way the embedder does. Both have to move together: half
+    # the retrieval stack on the GPU is still contending for it.
+    kwargs = {"device": settings.torch_device} if settings.torch_device else {}
+    return HuggingFaceCrossEncoder(model_name=settings.reranker_model, model_kwargs=kwargs)
+
+
+def get_cross_encoder() -> HuggingFaceCrossEncoder:
+    with _build_lock:
+        return _build_cross_encoder()
 
 
 class ClauseReranker(BaseDocumentCompressor):
@@ -150,7 +180,11 @@ class ClauseReranker(BaseDocumentCompressor):
         if not documents:
             return []
 
-        scores = get_cross_encoder().score([(query, d.page_content) for d in documents])
+        # Under the same lock as the embedder: on a Mac both models sit on the
+        # MPS device and share one Metal command queue, which aborts the
+        # process if two threads touch it at once. See core/embeddings.py.
+        with INFERENCE_LOCK:
+            scores = get_cross_encoder().score([(query, d.page_content) for d in documents])
 
         best: dict[str, tuple[float, Document]] = {}
         for document, score in zip(documents, scores, strict=True):
@@ -176,7 +210,7 @@ class ClauseReranker(BaseDocumentCompressor):
 
 
 @lru_cache(maxsize=1)
-def get_vector_store():
+def _build_vector_store():
     from langchain_chroma import Chroma
 
     return Chroma(
@@ -187,18 +221,25 @@ def get_vector_store():
     )
 
 
+def get_vector_store():
+    with _build_lock:
+        return _build_vector_store()
+
+
 @lru_cache(maxsize=4)
 def _clauses_for(policy: str) -> tuple[Clause, ...]:
     return tuple(c for c in load_clauses() if c.policy == policy)
 
 
 @lru_cache(maxsize=4)
-def get_hybrid_retriever(policy: str) -> EnsembleRetriever:
+def _build_hybrid_retriever(policy: str) -> EnsembleRetriever:
     """Dense + BM25 over one policy, fused by reciprocal rank.
 
     Weighted 0.6 dense / 0.4 lexical: semantic match carries most queries, but
     the exact-term channel is what rescues codes and proper nouns.
     """
+    from langchain_classic.retrievers import EnsembleRetriever
+
     clauses = _clauses_for(policy)
     if not clauses:
         raise ValueError(f"no clauses indexed for policy {policy!r}")
@@ -215,14 +256,27 @@ def get_hybrid_retriever(policy: str) -> EnsembleRetriever:
     )
 
 
+def get_hybrid_retriever(policy: str) -> EnsembleRetriever:
+    with _build_lock:
+        return _build_hybrid_retriever(policy)
+
+
 @lru_cache(maxsize=4)
-def get_retriever(policy: str) -> ContextualCompressionRetriever:
+def _build_retriever(policy: str) -> ContextualCompressionRetriever:
     """The full stack: hybrid retrieve, sub-chunk, rerank to the top few."""
+    from langchain_classic.retrievers import ContextualCompressionRetriever
+    from langchain_classic.retrievers.document_compressors import DocumentCompressorPipeline
+
     pipeline = DocumentCompressorPipeline(transformers=[ClauseSubChunker(), ClauseReranker()])
     return ContextualCompressionRetriever(
         base_compressor=pipeline,
         base_retriever=get_hybrid_retriever(policy),
     )
+
+
+def get_retriever(policy: str) -> ContextualCompressionRetriever:
+    with _build_lock:
+        return _build_retriever(policy)
 
 
 # --------------------------------------------------------------------------
@@ -293,12 +347,87 @@ def with_references(
     return results + extra
 
 
+# --------------------------------------------------------------------------
+# the search cache
+# --------------------------------------------------------------------------
+
+# (policy, query) -> the reranked documents, most recent last.
+_search_cache: OrderedDict[tuple[str, str], list] = OrderedDict()
+_search_cache_lock = threading.Lock()
+_search_cache_stamp: float = 0.0
+SEARCH_CACHE_STATS: dict[str, int] = {"hits": 0, "misses": 0}
+
+
+def _index_stamp() -> float:
+    """When the clause index last changed.
+
+    The cache holds results computed against one index. Ingestion can rewrite
+    that index while retrieval-service keeps running, and a cached hit would
+    then cite clauses that no longer exist - the one failure this project
+    cannot ship. Cheaper to stat one file per search than to reason about it.
+    """
+    try:
+        return settings.clauses_path.stat().st_mtime
+    except OSError:
+        return 0.0
+
+
+def clear_search_cache() -> None:
+    with _search_cache_lock:
+        _search_cache.clear()
+        SEARCH_CACHE_STATS["hits"] = 0
+        SEARCH_CACHE_STATS["misses"] = 0
+
+
+def _retrieve_documents(query: str, policy: str) -> list:
+    """The expensive half of a search, memoised on (query, policy).
+
+    Only this part is cached. Everything after it - resolving clause ids,
+    slicing to `top_n`, following references - is cheap and depends on
+    arguments the cache is deliberately not keyed on, so two callers wanting
+    different depths of the same search still share the one retrieval.
+    """
+    global _search_cache_stamp
+
+    if settings.retrieval_cache_size <= 0:
+        return get_retriever(policy).invoke(query)
+
+    key = (policy, query)
+    stamp = _index_stamp()
+    with _search_cache_lock:
+        if stamp != _search_cache_stamp:
+            # The index was rewritten under us. Everything remembered was
+            # computed against the old one.
+            if _search_cache:
+                log.info("clause index changed, dropping %d cached searches", len(_search_cache))
+            _search_cache.clear()
+            _search_cache_stamp = stamp
+        hit = _search_cache.get(key)
+        if hit is not None:
+            _search_cache.move_to_end(key)
+            SEARCH_CACHE_STATS["hits"] += 1
+            return hit
+
+    # Deliberately outside the lock: a search takes seconds, and holding the
+    # lock across it would serialise the very workers this is meant to help.
+    # Two threads racing the same new query both compute it and the second
+    # simply overwrites an identical value.
+    documents = get_retriever(policy).invoke(query)
+
+    with _search_cache_lock:
+        SEARCH_CACHE_STATS["misses"] += 1
+        _search_cache[key] = documents
+        _search_cache.move_to_end(key)
+        while len(_search_cache) > settings.retrieval_cache_size:
+            _search_cache.popitem(last=False)
+    return documents
+
+
 def search(
     query: str, policy: str, *, top_n: int | None = None, follow_refs: bool = True
 ) -> list[RetrievedClause]:
     """Find the clauses most likely to decide this query, best first."""
-    retriever = get_retriever(policy)
-    documents = retriever.invoke(query)
+    documents = _retrieve_documents(query, policy)
 
     index = {c.clause_id: c for c in _clauses_for(policy)}
     results: list[RetrievedClause] = []

@@ -1,0 +1,21 @@
+NEW LIFE MEDICAL CENTRE
+Bengaluru - 560 078
+
+Patient Name: Vikram Singh
+UHID: B051000
+Phone: 9823001122
+Admission: 2026-02-20    Discharge: 2026-02-23
+
+--------------------------------------------------------------
+DESCRIPTION                                   QTY       AMOUNT
+--------------------------------------------------------------
+Room Rent (Shared) 4,000 x 3 days               3    12,000.00
+Surgeon Fee                                     1    55,000.00
+Anaesthetist Charges                            1    12,000.00
+Operation Theatre Charges                       1    18,000.00
+Medicines and Drugs                             1    21,000.00
+Investigations - Ultrasound and Labs            1     7,500.00
+Consultant Visit Charges                        3     4,500.00
+--------------------------------------------------------------
+GRAND TOTAL                                         130,000.00
+--------------------------------------------------------------

@@ -24,22 +24,39 @@ kubectl get pods -w
 
 ---
 
-## B-02 — the Docker daemon was not available to build images
+## B-02 — RESOLVED. All five images build and the stack runs
 
-**What is affected.** Dockerfiles and `docker-compose.yml` are written and their
-syntax is checked, but no image was built here, so build times and layer sizes
-are estimates.
+Cleared on 2026-09-01. `docker compose build` produces all five images, all six
+containers report healthy, and bill B01 was audited end to end through the
+gateway: room rent capped at Rs 5,000/day and the proportionate deduction
+applied to the associated medical expenses by the audit service, with the
+clause index served from the shared volume by the retrieval service.
 
-**What I need from you.** Start Docker Desktop, then:
+Four defects were found by actually running it, none of which syntax checking
+could have caught:
 
-```bash
-docker compose build
-docker compose up -d
-docker compose ps
-```
+- **Every Python image failed to build.** Line 3 of the generated
+  `requirements.txt` is `-e .`, so the install builds this project too, but the
+  builder stage copied only the metadata files. The four Dockerfiles now copy
+  `src/` and `README.md` as well.
+- **All 402 clauses were labelled `other`.** `BA_OLLAMA_BASE_URL` was set on
+  `audit-service` only, so ingestion fell back to `localhost:11434` inside its
+  own container and every labelling call was refused. Costly to spot because
+  ingestion logs a warning and carries on by design. The k8s ConfigMap already
+  supplied it to every pod, so this was compose-only.
+- **The frontend was permanently `unhealthy` while serving pages correctly.**
+  nginx listens on IPv4 only; busybox `wget` resolves `localhost` to `::1`
+  first and is refused. The healthcheck now probes `127.0.0.1`.
+- **The first audit died with `llama-server ... signal: killed`.** The Docker VM
+  has 7.7 GB and another project's cluster was holding 2.5 GB of it, so
+  `qwen3:8b` was OOM-killed. Not a code defect. Worked around locally with a
+  gitignored `docker-compose.override.yml` pointing the audit service at the
+  Mac's native Ollama; the committed stack stays self-contained and needs about
+  12 GB given to Docker Desktop.
 
-Note `docker-compose` (the old standalone binary) is not on this machine;
-`docker compose` (the v2 plugin) is what the commands use.
+What has still not been measured here: build times and layer sizes under a cold
+cache, and inference speed inside the container, since the audit that ran used
+the host's Ollama.
 
 ---
 

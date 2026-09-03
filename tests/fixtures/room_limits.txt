@@ -1,0 +1,20 @@
+star_health: 9 sums insured
+     100,000  per_day=2,000 [II.1] decided=True
+     200,000  per_day=2,000 [II.1] decided=True
+     300,000  per_day=5,000 [II.1] decided=True
+     400,000  per_day=5,000 [II.1] decided=True
+     500,000  category=Single Standard A/C Room [II.1] decided=True
+   1,000,000  category=Single Standard A/C Room [II.1] decided=True
+   1,500,000  category=Single Standard A/C Room [II.1] decided=True
+   2,000,000  category=Single Standard A/C Room [II.1] decided=True
+   2,500,000  category=Single Standard A/C Room [II.1] decided=True
+hdfc_ergo: 4 sums insured
+     300,000  at_actuals [B.1.1] decided=True
+     500,000  at_actuals [B.1.1] decided=True
+   1,000,000  at_actuals [B.1.1] decided=True
+   2,500,000  at_actuals [B.1.1] decided=True
+niva_bupa: 4 sums insured
+     300,000  defers_to_schedule [6.2.4] decided=False
+     500,000  defers_to_schedule [6.2.4] decided=False
+   1,000,000  defers_to_schedule [6.2.4] decided=False
+   2,500,000  defers_to_schedule [6.2.4] decided=False

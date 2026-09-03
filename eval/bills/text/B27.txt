@@ -1,0 +1,21 @@
+GREENFIELD HOSPITAL & RESEARCH CENTRE
+Hyderabad - 500 081
+
+Patient Name: Joseph Mathew
+UHID: B27500
+Phone: 9847001234
+Admission: 2026-02-19    Discharge: 2026-02-22
+
+--------------------------------------------------------------
+DESCRIPTION                                   QTY       AMOUNT
+--------------------------------------------------------------
+Room Rent (Shared) 3,500 x 3 days               3    10,500.00
+Total Knee Replacement - Surgeon Fee            1   145,000.00
+Knee Implant                                    1    95,000.00
+Anaesthetist Charges                            1    22,000.00
+Operation Theatre Charges                       1    34,000.00
+Medicines and Drugs                             1    26,000.00
+Physiotherapy Sessions                          5     7,000.00
+--------------------------------------------------------------
+GRAND TOTAL                                         339,500.00
+--------------------------------------------------------------

@@ -1,0 +1,21 @@
+GREENFIELD HOSPITAL & RESEARCH CENTRE
+Hyderabad - 500 081
+
+Patient Name: Ramesh Kumar
+UHID: B11300
+Phone: 9876543210
+Admission: 2026-04-11    Discharge: 2026-04-17
+
+--------------------------------------------------------------
+DESCRIPTION                                   QTY       AMOUNT
+--------------------------------------------------------------
+Room Rent (Single Private) 11,000 x 6 days      6    66,000.00
+Nursing Charges                                 6    12,000.00
+Surgeon Fee                                     1    88,000.00
+Medicines and Drugs                             1    34,000.00
+Operation Theatre Charges                       1    26,000.00
+Investigations - MRI and Labs                   1    18,000.00
+Physiotherapy Sessions                          3     5,000.00
+--------------------------------------------------------------
+GRAND TOTAL                                         249,000.00
+--------------------------------------------------------------

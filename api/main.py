@@ -26,6 +26,7 @@ from api.shared import (
     policy_rows,
     report_payload,
 )
+from core import llm
 from core.assumptions import Assumptions
 from core.audit import audit_lines
 from core.config import settings
@@ -35,6 +36,10 @@ from core.models import AuditReport
 
 log = get_logger(__name__)
 setup_logging()
+# Somebody is waiting on the other end of this, so the hosted model is
+# the default here. BA_LLM_BACKEND overrides it, which is how docker
+# and k8s choose without a code change.
+llm.use_backend(settings.backend_for("api"))
 
 app = FastAPI(
     title="Bill Auditor",

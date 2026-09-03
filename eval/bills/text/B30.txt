@@ -1,0 +1,23 @@
+MATRUCHHAYA HOSPITAL
+Indore - 452 010
+
+Patient Name: Anjali Verma
+UHID: B30500
+Phone: 9718002233
+Admission: 2026-02-04    Discharge: 2026-02-08
+
+--------------------------------------------------------------
+DESCRIPTION                                   QTY       AMOUNT
+--------------------------------------------------------------
+Room Rent (Shared) 3,200 x 4 days               4    12,800.00
+Surgeon Fee                                     1    54,000.00
+Medicines and Drugs                             1    19,800.00
+Gloves                                         22     1,300.00
+Mask                                           30       500.00
+Belts / Braces                                  1     2,400.00
+Knee Immobilizer / Shoulder Immobilizer         1     2,800.00
+Sugar Free Tablets                              1       320.00
+Investigations - X-Ray and Labs                 1     5,900.00
+--------------------------------------------------------------
+GRAND TOTAL                                          99,820.00
+--------------------------------------------------------------

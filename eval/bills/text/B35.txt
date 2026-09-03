@@ -1,0 +1,24 @@
+GREENFIELD HOSPITAL & RESEARCH CENTRE
+Hyderabad - 500 081
+
+Patient Name: Vikram Singh
+UHID: B35500
+Phone: 9823001122
+Admission: 2026-02-16    Discharge: 2026-02-19
+
+--------------------------------------------------------------
+DESCRIPTION                                   QTY       AMOUNT
+--------------------------------------------------------------
+Room Rent (Shared) 3,000 x 3 days               3     9,000.00
+Surgeon Fee                                     1    50,000.00
+Medicines and Drugs                             1    17,500.00
+Gloves                                         20     1,100.00
+Ecg Electrodes                                  8       700.00
+Oxygen Mask                                     2       600.00
+Television Charges                              3       450.00
+Conveyance Charges                              1       800.00
+Medical Records                                 1       350.00
+Investigations - Labs                           1     5,100.00
+--------------------------------------------------------------
+GRAND TOTAL                                          85,600.00
+--------------------------------------------------------------

@@ -1,0 +1,22 @@
+NEW LIFE MEDICAL CENTRE
+Bengaluru - 560 078
+
+Patient Name: Joseph Mathew
+UHID: B37500
+Phone: 9847001234
+Admission: 2026-01-25    Discharge: 2026-01-30
+
+--------------------------------------------------------------
+DESCRIPTION                                   QTY       AMOUNT
+--------------------------------------------------------------
+Room Rent (Single Private) 10,500 x 5 days      5    52,500.00
+Nursing Charges                                 5    11,000.00
+Surgeon Fee                                     1    92,000.00
+Anaesthetist Charges                            1    20,000.00
+Medicines and Drugs                             1    37,000.00
+Operation Theatre Charges                       1    28,000.00
+Investigations - CT and Labs                    1    16,500.00
+Gloves                                         24     1,400.00
+--------------------------------------------------------------
+GRAND TOTAL                                         258,400.00
+--------------------------------------------------------------

@@ -28,13 +28,26 @@ services:
     build:
       context: .
       dockerfile: services/ingestion/Dockerfile
+    # BA_GROQ_API_KEY comes from .env, which is gitignored and never baked into
+    # an image. `environment:` below still wins over `env_file:`, so a local
+    # .env pointing BA_OLLAMA_BASE_URL at localhost cannot break the container.
+    env_file:
+      - .env
     environment:
+      # Ingestion labels every clause with its rule_type through the model, so
+      # it needs Ollama just as much as the audit service does. Without this it
+      # falls back to localhost, every call is refused, and all 402 clauses come
+      # out as "other" - which degrades rule_type routing with no hard failure.
+      BA_OLLAMA_BASE_URL: http://ollama:11434
       BA_LOG_LEVEL: INFO
     volumes:
       # The clause index and the embeddings are shared state, written here and
       # read by retrieval.
       - clause-data:/app/data/db
       - ./data/policies:/app/data/policies:ro
+    depends_on:
+      ollama:
+        condition: service_started
     restart: unless-stopped
 
   retrieval-service:
@@ -54,10 +67,19 @@ services:
     build:
       context: .
       dockerfile: services/audit/Dockerfile
+    env_file:
+      - .env
     environment:
       BA_OLLAMA_BASE_URL: http://ollama:11434
       BA_RETRIEVAL_URL: http://retrieval-service:8000
       BA_NUM_CTX: "8192"
+      # 0 asks the backend: 4 workers on Groq, 2 on Ollama. Overridable from
+      # the shell so one bill can be timed at 1, 2 and 4 without an edit:
+      #   BA_AUDIT_WORKERS=1 docker compose up -d --force-recreate audit-service
+      BA_AUDIT_WORKERS: "${BA_AUDIT_WORKERS:-0}"
+      # Timing a bill twice is meaningless with the cache on - the second run
+      # is disk reads. Off for measurement only; the default stays on.
+      BA_LLM_CACHE_ENABLED: "${BA_LLM_CACHE_ENABLED:-true}"
       BA_LOG_LEVEL: INFO
     volumes:
       # The model cache survives restarts, which is what makes a re-run fast.

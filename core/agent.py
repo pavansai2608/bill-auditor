@@ -26,6 +26,7 @@ from typing import Any, TypedDict
 
 from langgraph.graph import END, START, StateGraph
 
+from core import llm
 from core.config import settings
 from core.ingest import load_non_payable
 from core.llm import LLMError, complete_structured
@@ -40,8 +41,9 @@ from core.models import (
 )
 from core.money import allowed_for_line, per_day_limit
 from core.retrieve import RetrievedClause, search
+from core.room_limit import governs_room_rent, room_rank
 from core.room_limit import lookup as room_lookup
-from core.room_limit import room_rank
+from core.second_pass import ROOM_RE
 
 log = get_logger(__name__)
 
@@ -366,6 +368,28 @@ def judge(state: AgentState) -> AgentState:
     return state
 
 
+def _room_cap_on_a_non_room_line(
+    output: JudgeOutput, line: BillLine, candidates: list[RetrievedClause]
+) -> bool:
+    """A per-day limit read out of the room clause, offered for something else.
+
+    Both halves are decided from the documents rather than from the model's
+    prose: the limit's `basis` is what the judge reported, the clause is looked
+    up in the candidates it was given, and `governs_room_rent` asks whether the
+    entitlement is actually stated there. The line is a room line by the same
+    test the second pass uses to pick the line that drives a deduction.
+    """
+    if not any(limit.basis == "per_day" for limit in output.limits):
+        return False
+    if ROOM_RE.search(line.item):
+        return False
+    cited = next(
+        (c.clause for c in candidates if c.clause.clause_id == output.clause_id),
+        None,
+    )
+    return cited is not None and governs_room_rent(cited)
+
+
 def grade(state: AgentState) -> AgentState:
     """Accept, retry from a different angle, or abstain. Nothing else."""
     output = state.pop("judge_output", None)
@@ -394,6 +418,32 @@ def grade(state: AgentState) -> AgentState:
             "grade",
             decision="abstain",
             why="fabricated citation",
+            clause_id=output.clause_id,
+        )
+        return state
+
+    # Guardrail: a room-rent cap may only reduce a room-rent line.
+    #
+    # The second pass already refuses to let anything but room rent drive a
+    # proportionate deduction. The judge had no equivalent, so a per-day room
+    # cap could be applied directly as though it governed the line: on B01 it
+    # returned II.1, the Rs 5,000/day room limit, for "Medicines and Drugs" and
+    # allowed 5,000 of a 38,000 charge. A room cap does not govern medicines.
+    #
+    # Rejection goes down the ordinary path - rewrite the query, retry, abstain
+    # on the third attempt. Substituting some other clause here would be the
+    # system inventing a verdict the model never gave.
+    if _room_cap_on_a_non_room_line(output, line, state["candidates"]):
+        state["attempts"] = state.get("attempts", 0) + 1
+        state["reason"] = (
+            f"clause {output.clause_id} states a per-day room rent limit, which does "
+            f"not govern {line.item!r}"
+        )
+        _note(
+            state,
+            "grade",
+            decision="rewrite",
+            why="room cap offered for a non-room line",
             clause_id=output.clause_id,
         )
         return state
@@ -592,6 +642,12 @@ def audit_line(
         "tool_calls": final.get("tool_calls", 0),
         "resolved_on_attempt": resolved_on,
         "retry_changed_answer": bool(resolved_on and resolved_on > 1),
+        # Which backend judged this line, recorded per line rather than per
+        # run. A Groq quota that runs out mid-audit moves the process to
+        # Ollama permanently, so lines before and after cost 6.1s and 29.5s
+        # respectively - and without this the report cannot say which was
+        # which, only that a fallback happened somewhere.
+        "backend": llm.active_backend() if judge_calls else "none",
         "fast_path": judge_calls == 0 and final.get("verdict") is not None,
         "abstained": bool(final.get("verdict") and final["verdict"].needs_human),
     }

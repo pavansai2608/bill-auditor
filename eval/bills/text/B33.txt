@@ -1,0 +1,22 @@
+CITY CARE MULTISPECIALITY HOSPITAL
+Chennai - 600 034
+
+Patient Name: Arun Prakash
+UHID: B332500
+Phone: 9900112233
+Admission: 2026-03-02    Discharge: 2026-03-08
+
+--------------------------------------------------------------
+DESCRIPTION                                   QTY       AMOUNT
+--------------------------------------------------------------
+Room Rent (Suite) 18,000 x 6 days               6   108,000.00
+ICU Charges 24,000 x 2 days                     2    48,000.00
+Surgeon Fee                                     1   195,000.00
+Anaesthetist Charges                            1    40,000.00
+Medicines and Drugs                             1    86,000.00
+Operation Theatre Charges                       1    58,000.00
+Investigations - CT, MRI, Labs                  1    38,000.00
+Physiotherapy Sessions                          5     9,000.00
+--------------------------------------------------------------
+GRAND TOTAL                                         582,000.00
+--------------------------------------------------------------

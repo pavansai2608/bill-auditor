@@ -146,6 +146,11 @@ def _cell_text(words: list[dict], cell) -> str:
 
 
 def table_rows(page, table) -> list[list[str]]:
+    """The cell text of a table, row by row. See `_resolve_table`."""
+    return _resolve_table(page, table)[0]
+
+
+def _resolve_table(page, table) -> tuple[list[list[str]], list[list[tuple | None]]]:
     """Read a table by cell geometry, not by flattened text.
 
     `extract_text` reads straight across a table and interleaves the columns:
@@ -154,40 +159,57 @@ def table_rows(page, table) -> list[list[str]]:
     that actually belongs to 3L and 4L. A judge reading that picks the wrong
     row, confidently.
 
-    A vertically merged cell is one tall cell covering several rows, so each
-    row takes the cell whose span contains that row's midpoint. Anything still
-    blank is filled from the row above, which is what a merged cell means.
+    A merged cell is one cell covering several rows, several columns, or both,
+    so a cell is looked up by *containment on both axes*: the column's centre
+    has to fall inside the cell's width and the row's midpoint inside its
+    height. Matching a column by the x it starts at instead finds only the
+    first column of a horizontally merged cell and leaves the rest blank -
+    which is how star_health II.5 lost the limit for two of its six modern
+    treatments. "Up to Sum Insured" is one cell 219pt wide spanning Bronchical
+    Thermoplasty, Vaporisation of the prostate and IONM; read by starting x it
+    belongs to Bronchical Thermoplasty alone.
+
+    A column covered by a wide cell therefore repeats that cell's text. That is
+    the point: the limit really does apply to each of those treatments, and a
+    reader of the rendered row must not have to infer it.
     """
     cells = [c for c in table.cells if c]
     if not cells:
-        return []
+        return [], []
 
     words = page.extract_words()
-    columns: dict[float, list] = {}
-    for cell in cells:
-        columns.setdefault(round(cell[0], 1), []).append(cell)
-    xs = sorted(columns)
+    xs = sorted({round(cell[0], 1) for cell in cells})
+    # Column centres, so a cell spanning several columns is found by every one
+    # of them. The last column runs to the right-most edge in the table.
+    edges = [*xs, max(cell[2] for cell in cells)]
+    centres = [(edges[i] + edges[i + 1]) / 2 for i in range(len(xs))]
 
     rows: list[list[str]] = []
-    for row_cell in sorted(columns[xs[0]], key=lambda c: c[1]):
+    sources: list[list[tuple | None]] = []
+    left_column = sorted((c for c in cells if round(c[0], 1) == xs[0]), key=lambda c: c[1])
+    for row_cell in left_column:
         midpoint = (row_cell[1] + row_cell[3]) / 2
-        rows.append(
-            [
-                _cell_text(
-                    words,
-                    next((c for c in columns[x] if c[1] <= midpoint <= c[3]), None),
-                )
-                for x in xs
-            ]
-        )
-    return rows
+        found = [
+            next(
+                (c for c in cells if c[0] <= centre <= c[2] and c[1] <= midpoint <= c[3]),
+                None,
+            )
+            for centre in centres
+        ]
+        rows.append([_cell_text(words, cell) for cell in found])
+        sources.append(found)
+    return rows, sources
 
 
-def _band_above(page, table) -> tuple[list[str], list[str]]:
+def _band_above(page, table, others=None) -> tuple[list[str], list[str]]:
     """Column headers and any data row stranded above the ruled box.
 
     Star Health rules its room rent table from the second row down, so the
     header and the 1,00,000 row fall outside the detected table entirely.
+
+    The band stops at whatever table sits above this one. Two grids 16pt apart
+    - II.5 has exactly that - otherwise let the lower one read the upper one's
+    last row as its own first row, cropped mid-figure into "00,000/- 6,0".
     """
     cells = [c for c in table.cells if c]
     xs = sorted({round(c[0], 1) for c in cells})
@@ -196,11 +218,16 @@ def _band_above(page, table) -> tuple[list[str], list[str]]:
     if top <= 1:
         return [], []
 
+    lift = TABLE_BAND_LIFT
+    for other in others or []:
+        if other is not table and other.bbox[3] <= top:
+            lift = min(lift, top - other.bbox[3])
+
     headers: list[str] = []
     orphan: list[str] = []
     for x in xs:
         try:
-            band = page.crop((x, max(0, top - TABLE_BAND_LIFT), widths[x], top))
+            band = page.crop((x, max(0, top - lift), widths[x], top))
             lines = [ln["text"].strip() for ln in band.extract_text_lines() if ln["text"].strip()]
         except ValueError:
             lines = []
@@ -221,6 +248,16 @@ def _band_above(page, table) -> tuple[list[str], list[str]]:
     return headers, orphan
 
 
+def _is_data_row(row: list[str]) -> bool:
+    """A row whose left-hand cell carries a figure, i.e. a row key rather than a label.
+
+    Every rule-bearing grid in these documents is keyed on a number in its first
+    column - a sum insured, a plan year, an age band - so this is what separates
+    the heading block at the top from the data underneath it.
+    """
+    return bool(row) and bool(re.search(r"\d", row[0]))
+
+
 def is_data_table(rows: list[list[str]]) -> bool:
     """Distinguish a real data table from a layout box full of prose."""
     if len(rows) < MIN_TABLE_ROWS or max((len(r) for r in rows), default=0) < MIN_TABLE_COLS:
@@ -232,28 +269,57 @@ def is_data_table(rows: list[list[str]]) -> bool:
     return prose / len(cells) <= MAX_PROSE_CELL_RATIO
 
 
-def render_table(page, table) -> str:
+def render_table(page, table, others=None) -> str:
     """One line per row, each cell labelled with its column header.
 
     "Sum Insured (Rs.) 3,00,000/- - Limit (Rs.) Up to 5,000/- per day" cannot
     be misread the way a flattened row can.
     """
-    rows = table_rows(page, table)
+    rows, sources = _resolve_table(page, table)
     if not is_data_table(rows):
         return ""
+    # A cell that covers every column of its row is a caption, a spanning
+    # sub-heading or a footnote - one statement about the table, not a value per
+    # column - so it is written once. A cell covering only *some* columns is a
+    # value that genuinely applies to each of them and is repeated, which is
+    # what keeps "Up to Sum Insured" aligned with all three treatments it
+    # covers rather than only the left-most.
+    # Every column has to be *covered* by that one cell, not merely fail to
+    # find one of its own. A row whose other cells are missing - the room rent
+    # table's 2,00,000 row, blank because it is merged upward with 1,00,000 -
+    # also has a single distinct source, and treating it as a caption drops the
+    # limit that belongs to it.
+    spanning = {
+        index
+        for index, row in enumerate(sources)
+        if len(row) > 1
+        and all(cell is not None for cell in row)
+        and len({id(cell) for cell in row}) == 1
+    }
 
-    headers, orphan = _band_above(page, table)
+    headers, orphan = _band_above(page, table, others)
     # A "header" longer than a label is the paragraph above the table, not a
     # column name.
     if any(len(h) > MAX_HEADER_CHARS for h in headers):
         headers = [""] * len(headers)
     if any(orphan) and all(len(o) <= MAX_DATA_CELL_CHARS for o in orphan):
         rows.insert(0, orphan)
+        spanning = {index + 1 for index in spanning}
 
-    # A blank under a merged cell means "same as above".
+    # A blank under a merged cell means "same as above" - but only within the
+    # data. Carried across the header the same rule copies a *column label*
+    # into every row beneath it, which reads like a value and is not one: II.5
+    # showed "Vaporisation of the prostate" as the limit for nine sum insureds.
+    # So the fill restarts at the first data row, and a data row can only
+    # inherit from another data row.
+    width = max(len(r) for r in rows)
+    first_data = next((i for i, row in enumerate(rows) if _is_data_row(row)), len(rows))
+
     filled: list[list[str]] = []
-    previous: list[str] = [""] * max(len(r) for r in rows)
-    for row in rows:
+    previous: list[str] = [""] * width
+    for index, row in enumerate(rows):
+        if index == first_data:
+            previous = [""] * width
         current = [
             cell.strip() or (previous[i] if i < len(previous) else "") for i, cell in enumerate(row)
         ]
@@ -261,7 +327,12 @@ def render_table(page, table) -> str:
         previous = current
 
     out: list[str] = []
-    for row in filled:
+    for row_index, row in enumerate(filled):
+        if row_index in spanning:
+            single = next((c for c in row if c.strip()), "")
+            if single:
+                out.append(f"{TABLE_MARKER} {single}")
+            continue
         parts = []
         for index, cell in enumerate(row):
             if not cell:
@@ -270,7 +341,16 @@ def render_table(page, table) -> str:
             parts.append(f"{label} {cell}".strip())
         if parts:
             out.append(f"{TABLE_MARKER} " + " - ".join(parts))
-    return "\n".join(out)
+
+    rendered = "\n".join(out)
+    # The ombudsman annexures are ruled grids of postal addresses. Reading
+    # merged cells properly fills enough of them that they now clear the
+    # data-table guard, and they carry no policy rule - two pages of "Tel.:"
+    # and "Email:" would be pure noise in the index. Same test the splitter
+    # already uses to drop those pages as prose.
+    if len(NOISE_RE.findall(rendered)) >= NOISE_HITS:
+        return ""
+    return rendered
 
 
 @dataclass
@@ -338,7 +418,7 @@ def _region_text(page, tables, bbox) -> str:
         and top <= (table.bbox[1] + table.bbox[3]) / 2 <= bottom
     ]
 
-    here = [table for table in here if render_table(page, table)]
+    here = [table for table in here if render_table(page, table, tables)]
 
     def inside_a_table(line) -> bool:
         # A clause heading that happens to sit inside a detected table region
@@ -365,7 +445,7 @@ def _region_text(page, tables, bbox) -> str:
         return region.extract_text() or ""
 
     for table in here:
-        rendered = render_table(page, table)
+        rendered = render_table(page, table, tables)
         if rendered:
             items.append((table.bbox[1] - TABLE_BAND_LIFT, rendered))
 

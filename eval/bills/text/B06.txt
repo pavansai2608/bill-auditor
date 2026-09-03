@@ -1,0 +1,24 @@
+MATRUCHHAYA HOSPITAL
+Indore - 452 010
+
+Patient Name: Fatima Sheikh
+UHID: B061000
+Phone: 9701234567
+Admission: 2026-03-01    Discharge: 2026-03-06
+
+--------------------------------------------------------------
+DESCRIPTION                                   QTY       AMOUNT
+--------------------------------------------------------------
+Room Rent (Single Private) 6,000 x 5 days       5    30,000.00
+Surgeon Fee                                     1    70,000.00
+Medicines and Drugs                             1    26,000.00
+Nebulisation Kit                                2     1,400.00
+Oxygen Mask                                     2       700.00
+Kidney Tray                                     3       300.00
+Ecg Electrodes                                 10       850.00
+Diaper of Any Type                              1     1,100.00
+Sanitary Pad                                    1       250.00
+Investigations - Chest X-Ray                    2     1,800.00
+--------------------------------------------------------------
+GRAND TOTAL                                         132,400.00
+--------------------------------------------------------------

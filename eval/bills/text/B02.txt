@@ -1,0 +1,23 @@
+SUNRISE INSTITUTE OF MEDICAL SCIENCES
+Pune - 411 001
+
+Patient Name: Sunita Devi
+UHID: B021000
+Phone: 9812345678
+Admission: 2026-02-08    Discharge: 2026-02-11
+
+--------------------------------------------------------------
+DESCRIPTION                                   QTY       AMOUNT
+--------------------------------------------------------------
+Room Rent (Shared) 3,000 x 3 days               3     9,000.00
+Consultant Visit Charges                        3     6,000.00
+Medicines and Drugs                             1    18,500.00
+Gloves                                         15       900.00
+Mask                                           30       450.00
+Attendant Charges                               3     1,800.00
+Television Charges                              3       600.00
+Laundry Charges                                 1       350.00
+Investigations - Blood Panel                    1     5,200.00
+--------------------------------------------------------------
+GRAND TOTAL                                          42,800.00
+--------------------------------------------------------------

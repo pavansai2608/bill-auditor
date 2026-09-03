@@ -7,11 +7,14 @@ gateway masks before anything crosses a network boundary, and that the
 gateway's health tells the truth about its dependencies.
 """
 
+import pathlib
+import re
 import unittest
 from unittest import mock
 
 from fastapi.testclient import TestClient
 
+from core.config import settings
 from core.models import Clause
 from core.retrieve import RetrievedClause
 from services.audit import remote_retrieval
@@ -221,3 +224,155 @@ class IngestionServiceTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class CompareProgressTest(unittest.TestCase):
+    """What a compare job's `total` counts, pinned.
+
+    A compare audits every line against every policy, so its total is line
+    checks, not line items: a ten-line bill across three policies is 30. The UI
+    once rendered that as "checked 0 of 30 lines" against a bill with ten
+    items, which reads as a parser fault and is not one. The number is right;
+    anything showing it has to say what it counts.
+    """
+
+    def test_the_total_is_lines_times_policies(self):
+        from core.models import AuditReport, BillLine
+        from services.audit import main as audit_main
+
+        lines = [BillLine(item=f"item {n}", amount=1000.0) for n in range(10)]
+        report = AuditReport(
+            lines=[], total_charged=0.0, total_allowed=0.0, flagged_count=0, policy="star_health"
+        )
+        recorded: list[tuple[int, int | None]] = []
+
+        with (
+            mock.patch.object(audit_main, "known_policies", return_value=["a", "b", "c"]),
+            mock.patch("core.bill.parse_bill", return_value=lines),
+            mock.patch.object(audit_main, "audit_lines", return_value=report),
+            mock.patch.object(audit_main.jobs, "start"),
+            mock.patch.object(audit_main.jobs, "finish"),
+            mock.patch.object(
+                audit_main.jobs,
+                "progress",
+                side_effect=lambda _job, done, total=None: recorded.append((done, total)),
+            ),
+        ):
+            audit_main.run_compare("job", audit_main.AuditRequest(bill_text="x", sum_insured=3e5))
+
+        self.assertEqual(recorded[0], (0, 30))
+
+
+class WarmUpGatesReadinessTest(unittest.TestCase):
+    """A pod must not take traffic before its models are loaded.
+
+    Measured cold on a laptop, loading bge-base and the cross-encoder takes
+    44-74s. /health passes the moment uvicorn binds, so pointing a readiness
+    probe at it routes the first real request into a minute of model loading -
+    a production bug that looks like a slow bill.
+    """
+
+    def setUp(self):
+        from services import common
+
+        common._warm.update({"ready": False, "error": "", "seconds": 0.0})
+
+    def test_ready_is_503_until_the_models_are_loaded(self):
+        from services.retrieval.main import app
+
+        client = TestClient(app)
+        response = client.get("/ready")
+        self.assertEqual(response.status_code, 503)
+        self.assertFalse(response.json()["ready"])
+
+    def test_ready_is_200_once_warm(self):
+        from services import common
+        from services.retrieval.main import app
+
+        common._warm.update({"ready": True, "seconds": 51.3})
+        response = TestClient(app).get("/ready")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["warm_seconds"], 51.3)
+
+    def test_liveness_stays_green_while_warming(self):
+        """Otherwise Kubernetes restarts the pod it is waiting for."""
+        from services.retrieval.main import app
+
+        self.assertEqual(TestClient(app).get("/health").status_code, 200)
+
+    def test_a_failed_warm_up_is_reported_not_hidden(self):
+        from services import common
+        from services.retrieval.main import app
+
+        common._warm.update({"ready": False, "error": "OSError: no such model"})
+        body = TestClient(app).get("/ready").json()
+        self.assertIn("no such model", body["error"])
+
+    def test_warm_up_loads_the_reranker_only_where_it_is_used(self):
+        """Ingestion embeds but never reranks, so it must not load one."""
+        from services import common
+
+        with (
+            mock.patch("core.embeddings.get_embeddings") as embeddings,
+            mock.patch("core.retrieve.get_cross_encoder") as reranker,
+        ):
+            common.warm_up(reranker=False)
+            embeddings.assert_called_once()
+            reranker.assert_not_called()
+
+            common.warm_up(reranker=True)
+            reranker.assert_called_once()
+
+
+class BakedModelsMatchSettingsTest(unittest.TestCase):
+    """The Dockerfiles name the model weights they download; config names the
+    weights the code loads. They are two files and they can drift.
+
+    Drift is silent in the worst way: the image would ship one model, the
+    service would ask for another, and HF_HUB_OFFLINE=1 turns that into a
+    container that will not start rather than a slow one. This is the check
+    that makes it a test failure instead.
+
+    The names are duplicated on purpose - copying core/ into the builder stage
+    would make a one-character edit to any core module re-download 1.6 GB.
+    """
+
+    ROOT = pathlib.Path(__file__).resolve().parents[1]
+
+    def _args(self, service: str) -> dict[str, str]:
+        text = (self.ROOT / "services" / service / "Dockerfile").read_text()
+        return dict(re.findall(r"^ARG (\w+)=(\S+)$", text, re.MULTILINE))
+
+    def test_retrieval_bakes_both_models(self):
+        args = self._args("retrieval")
+        self.assertEqual(args.get("EMBEDDING_MODEL"), settings.embedding_model)
+        self.assertEqual(args.get("RERANKER_MODEL"), settings.reranker_model)
+
+    def test_ingestion_bakes_the_embedder_only(self):
+        args = self._args("ingestion")
+        self.assertEqual(args.get("EMBEDDING_MODEL"), settings.embedding_model)
+        # Ingestion writes the index and never ranks a result. Baking the
+        # cross-encoder here would be 550 MB this service cannot reach.
+        self.assertNotIn("RERANKER_MODEL", args)
+
+    def test_the_weights_are_never_fetched_at_runtime(self):
+        """HF_HUB_OFFLINE is what makes the bake a guarantee.
+
+        Without it a missing file degrades to a download - which is exactly the
+        behaviour this change removed, and it would come back unnoticed because
+        a warm developer machine has the cache and would never see it.
+        """
+        for service in ("retrieval", "ingestion"):
+            text = (self.ROOT / "services" / service / "Dockerfile").read_text()
+            with self.subTest(service=service):
+                self.assertIn("HF_HUB_OFFLINE=1", text)
+                self.assertIn("HF_HOME=/opt/hf", text)
+
+    def test_the_start_period_no_longer_covers_a_download(self):
+        """900s was sized for a cold download. A load from disk is ~60s."""
+        for service in ("retrieval", "ingestion"):
+            text = (self.ROOT / "services" / service / "Dockerfile").read_text()
+            found = re.search(r"--start-period=(\d+)s", text)
+            with self.subTest(service=service):
+                self.assertIsNotNone(found)
+                self.assertLessEqual(int(found.group(1)), 300)

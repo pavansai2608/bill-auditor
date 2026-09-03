@@ -39,7 +39,7 @@
           "charged": 24000.0,
           "qty": 2,
           "allowed": 24000.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; ICU is outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -48,7 +48,7 @@
           "charged": 80000.0,
           "qty": 1,
           "allowed": 50000.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "II.1: room rent 8,000/day exceeds the eligible 5,000/day, so associated medical expenses are reduced in the same proportion: 5,000/8,000 = 0.6250; I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; 80,000 x 0.6250 = 50,000.00"
         },
@@ -57,7 +57,7 @@
           "charged": 15000.0,
           "qty": 1,
           "allowed": 9375.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "II.1: room rent 8,000/day exceeds the eligible 5,000/day, so associated medical expenses are reduced in the same proportion: 5,000/8,000 = 0.6250; I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; 15,000 x 0.6250 = 9,375.00"
         },
@@ -66,7 +66,7 @@
           "charged": 38000.0,
           "qty": 1,
           "allowed": 38000.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -75,7 +75,7 @@
           "charged": 22000.0,
           "qty": 1,
           "allowed": 13750.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "II.1: room rent 8,000/day exceeds the eligible 5,000/day, so associated medical expenses are reduced in the same proportion: 5,000/8,000 = 0.6250; I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; 22,000 x 0.6250 = 13,750.00"
         },
@@ -84,7 +84,7 @@
           "charged": 14000.0,
           "qty": 1,
           "allowed": 14000.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -150,7 +150,7 @@
           "charged": 18500.0,
           "qty": 1,
           "allowed": 18500.0,
-          "clause_id": "B.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -204,7 +204,7 @@
           "charged": 5200.0,
           "qty": 1,
           "allowed": 5200.0,
-          "clause_id": "B.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         }
@@ -218,15 +218,15 @@
       "category": "sub_limit",
       "policy_schedule": null,
       "total_charged": 116500.0,
-      "expected_total_allowed": 116500.0,
+      "expected_total_allowed": 114000.0,
       "lines": [
         {
           "item": "Room Rent (Shared) 2,500 x 1 day",
           "charged": 2500.0,
           "qty": 1,
-          "allowed": 2500.0,
+          "allowed": null,
           "clause_id": "6.2.4",
-          "needs_human": false,
+          "needs_human": true,
           "derivation": "6.2.4 p26: pro-rata applies to a room \"higher than the eligible room category as specified in your Policy Schedule\" - no schedule supplied and no default stated; a shared room is the lowest category and cannot exceed any entitlement; charge is within entitlement -> paid in full"
         },
         {
@@ -303,7 +303,7 @@
           "charged": 14000.0,
           "qty": 7,
           "allowed": 7368.42,
-          "clause_id": "B.1.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "B.1.1.1: room rent 9,500/day exceeds the eligible 5,000/day, so associated medical expenses are reduced in the same proportion: 5,000/9,500 = 0.5263; A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; 14,000 x 0.5263 = 7,368.42"
         },
@@ -312,7 +312,7 @@
           "charged": 95000.0,
           "qty": 1,
           "allowed": 50000.0,
-          "clause_id": "B.1.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "B.1.1.1: room rent 9,500/day exceeds the eligible 5,000/day, so associated medical expenses are reduced in the same proportion: 5,000/9,500 = 0.5263; A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; 95,000 x 0.5263 = 50,000.00"
         },
@@ -321,7 +321,7 @@
           "charged": 25000.0,
           "qty": 1,
           "allowed": 13157.89,
-          "clause_id": "B.1.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "B.1.1.1: room rent 9,500/day exceeds the eligible 5,000/day, so associated medical expenses are reduced in the same proportion: 5,000/9,500 = 0.5263; A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; 25,000 x 0.5263 = 13,157.89"
         },
@@ -330,7 +330,7 @@
           "charged": 42000.0,
           "qty": 1,
           "allowed": 42000.0,
-          "clause_id": "B.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -339,7 +339,7 @@
           "charged": 30000.0,
           "qty": 1,
           "allowed": 15789.47,
-          "clause_id": "B.1.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "B.1.1.1: room rent 9,500/day exceeds the eligible 5,000/day, so associated medical expenses are reduced in the same proportion: 5,000/9,500 = 0.5263; A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; 30,000 x 0.5263 = 15,789.47"
         },
@@ -357,7 +357,7 @@
           "charged": 12000.0,
           "qty": 1,
           "allowed": 12000.0,
-          "clause_id": "B.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         }
@@ -414,7 +414,7 @@
           "charged": 21000.0,
           "qty": 1,
           "allowed": 21000.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -423,7 +423,7 @@
           "charged": 7500.0,
           "qty": 1,
           "allowed": 7500.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -564,7 +564,7 @@
           "charged": 10000.0,
           "qty": 1,
           "allowed": 10000.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; ICU is outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -573,7 +573,7 @@
           "charged": 48000.0,
           "qty": 1,
           "allowed": 32000.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "II.1: room rent 7,500/day exceeds the eligible 5,000/day, so associated medical expenses are reduced in the same proportion: 5,000/7,500 = 0.6667; I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; 48,000 x 0.6667 = 32,000.00"
         },
@@ -582,7 +582,7 @@
           "charged": 19500.0,
           "qty": 1,
           "allowed": 19500.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -591,7 +591,7 @@
           "charged": 15000.0,
           "qty": 1,
           "allowed": 10000.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "II.1: room rent 7,500/day exceeds the eligible 5,000/day, so associated medical expenses are reduced in the same proportion: 5,000/7,500 = 0.6667; I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; 15,000 x 0.6667 = 10,000.00"
         },
@@ -600,7 +600,7 @@
           "charged": 8500.0,
           "qty": 1,
           "allowed": 8500.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -609,7 +609,7 @@
           "charged": 3600.0,
           "qty": 3,
           "allowed": 2400.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "II.1: room rent 7,500/day exceeds the eligible 5,000/day, so associated medical expenses are reduced in the same proportion: 5,000/7,500 = 0.6667; I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; 3,600 x 0.6667 = 2,400.00"
         }
@@ -723,7 +723,7 @@
           "charged": 23000.0,
           "qty": 1,
           "allowed": 23000.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -786,7 +786,7 @@
           "charged": 6300.0,
           "qty": 1,
           "allowed": 6300.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         }
@@ -996,7 +996,7 @@
           "charged": 9800.0,
           "qty": 1,
           "allowed": 9800.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -1005,7 +1005,7 @@
           "charged": 5400.0,
           "qty": 1,
           "allowed": 5400.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         }
@@ -1044,7 +1044,7 @@
           "charged": 21500.0,
           "qty": 1,
           "allowed": 21500.0,
-          "clause_id": "B.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -1098,7 +1098,7 @@
           "charged": 5800.0,
           "qty": 1,
           "allowed": 5800.0,
-          "clause_id": "B.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         }
@@ -1155,7 +1155,7 @@
           "charged": 28000.0,
           "qty": 1,
           "allowed": 28000.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -1164,7 +1164,7 @@
           "charged": 11000.0,
           "qty": 1,
           "allowed": 11000.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         }
@@ -1197,7 +1197,7 @@
           "charged": 54000.0,
           "qty": 3,
           "allowed": 54000.0,
-          "clause_id": "B.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; ICU is outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -1206,7 +1206,7 @@
           "charged": 110000.0,
           "qty": 1,
           "allowed": 55000.0,
-          "clause_id": "B.1.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "B.1.1.1: room rent 12,000/day exceeds the eligible 6,000/day, so associated medical expenses are reduced in the same proportion: 6,000/12,000 = 0.5000; A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; 110,000 x 0.5000 = 55,000.00"
         },
@@ -1215,7 +1215,7 @@
           "charged": 24000.0,
           "qty": 1,
           "allowed": 12000.0,
-          "clause_id": "B.1.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "B.1.1.1: room rent 12,000/day exceeds the eligible 6,000/day, so associated medical expenses are reduced in the same proportion: 6,000/12,000 = 0.5000; A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; 24,000 x 0.5000 = 12,000.00"
         },
@@ -1224,7 +1224,7 @@
           "charged": 61000.0,
           "qty": 1,
           "allowed": 61000.0,
-          "clause_id": "B.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -1233,7 +1233,7 @@
           "charged": 38000.0,
           "qty": 1,
           "allowed": 19000.0,
-          "clause_id": "B.1.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "B.1.1.1: room rent 12,000/day exceeds the eligible 6,000/day, so associated medical expenses are reduced in the same proportion: 6,000/12,000 = 0.5000; A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; 38,000 x 0.5000 = 19,000.00"
         },
@@ -1242,7 +1242,7 @@
           "charged": 22000.0,
           "qty": 2,
           "allowed": 22000.0,
-          "clause_id": "B.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; ICU is outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -1251,7 +1251,7 @@
           "charged": 26000.0,
           "qty": 1,
           "allowed": 26000.0,
-          "clause_id": "B.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -1365,7 +1365,7 @@
           "charged": 12000.0,
           "qty": 1,
           "allowed": 12000.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -1419,7 +1419,7 @@
           "charged": 4100.0,
           "qty": 1,
           "allowed": 4100.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         }
@@ -1506,7 +1506,7 @@
           "charged": 40000.0,
           "qty": 2,
           "allowed": 40000.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; ICU is outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -1515,7 +1515,7 @@
           "charged": 165000.0,
           "qty": 1,
           "allowed": 55000.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "II.1: room rent 15,000/day exceeds the eligible 5,000/day, so associated medical expenses are reduced in the same proportion: 5,000/15,000 = 0.3333; I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; 165,000 x 0.3333 = 55,000.00"
         },
@@ -1524,7 +1524,7 @@
           "charged": 35000.0,
           "qty": 1,
           "allowed": 11666.67,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "II.1: room rent 15,000/day exceeds the eligible 5,000/day, so associated medical expenses are reduced in the same proportion: 5,000/15,000 = 0.3333; I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; 35,000 x 0.3333 = 11,666.67"
         },
@@ -1533,7 +1533,7 @@
           "charged": 78000.0,
           "qty": 1,
           "allowed": 78000.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -1542,7 +1542,7 @@
           "charged": 52000.0,
           "qty": 1,
           "allowed": 17333.33,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "II.1: room rent 15,000/day exceeds the eligible 5,000/day, so associated medical expenses are reduced in the same proportion: 5,000/15,000 = 0.3333; I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; 52,000 x 0.3333 = 17,333.33"
         },
@@ -1551,7 +1551,7 @@
           "charged": 34000.0,
           "qty": 1,
           "allowed": 34000.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -1626,7 +1626,7 @@
           "charged": 31000.0,
           "qty": 1,
           "allowed": 31000.0,
-          "clause_id": "B.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -1635,7 +1635,7 @@
           "charged": 15000.0,
           "qty": 1,
           "allowed": 15000.0,
-          "clause_id": "B.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -1683,7 +1683,7 @@
           "charged": 16000.0,
           "qty": 1,
           "allowed": 16000.0,
-          "clause_id": "B.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -1730,7 +1730,7 @@
           "allowed": 1800.0,
           "clause_id": "B.1.1",
           "needs_human": false,
-          "derivation": "no specific limit found for this item; covered as a hospitalization expense -> paid in full"
+          "derivation": "B.1.1 p11: \"The Company shall indemnify Medical Expenses necessarily incurred by the Insured Person for Hospitalization of the Insured Person during the Policy Year due to Illness or Injury, up to the Sum Insured specified in the Policy Schedule\"; the only limits B.1.1 states are \"At Actuals\" for room rent and for ICU, and no schedule narrows either; At Actuals is a stated limit, an unbounded one, and B.1.1 sets no sub-limit reaching this item -> paid in full"
         },
         {
           "item": "Food Charges (other than patient's diet provided by hospital)",
@@ -1746,7 +1746,7 @@
           "charged": 4600.0,
           "qty": 1,
           "allowed": 4600.0,
-          "clause_id": "B.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         }
@@ -1803,7 +1803,7 @@
           "charged": 44000.0,
           "qty": 1,
           "allowed": 44000.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -1812,7 +1812,7 @@
           "charged": 28000.0,
           "qty": 1,
           "allowed": 28000.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -1956,7 +1956,7 @@
           "charged": 11000.0,
           "qty": 1,
           "allowed": 11000.0,
-          "clause_id": "B.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -1965,7 +1965,7 @@
           "charged": 2600.0,
           "qty": 1,
           "allowed": 2600.0,
-          "clause_id": "B.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         }
@@ -2070,7 +2070,7 @@
           "charged": 41000.0,
           "qty": 1,
           "allowed": 41000.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -2133,7 +2133,7 @@
           "charged": 13500.0,
           "qty": 1,
           "allowed": 13500.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         }
@@ -2241,7 +2241,7 @@
           "charged": 84000.0,
           "qty": 3,
           "allowed": 84000.0,
-          "clause_id": "B.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; ICU is outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -2250,7 +2250,7 @@
           "charged": 240000.0,
           "qty": 1,
           "allowed": 109090.91,
-          "clause_id": "B.1.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "B.1.1.1: room rent 22,000/day exceeds the eligible 10,000/day, so associated medical expenses are reduced in the same proportion: 10,000/22,000 = 0.4545; A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; 240,000 x 0.4545 = 109,090.91"
         },
@@ -2259,7 +2259,7 @@
           "charged": 48000.0,
           "qty": 1,
           "allowed": 21818.18,
-          "clause_id": "B.1.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "B.1.1.1: room rent 22,000/day exceeds the eligible 10,000/day, so associated medical expenses are reduced in the same proportion: 10,000/22,000 = 0.4545; A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; 48,000 x 0.4545 = 21,818.18"
         },
@@ -2268,7 +2268,7 @@
           "charged": 112000.0,
           "qty": 1,
           "allowed": 112000.0,
-          "clause_id": "B.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -2277,7 +2277,7 @@
           "charged": 72000.0,
           "qty": 1,
           "allowed": 32727.27,
-          "clause_id": "B.1.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "B.1.1.1: room rent 22,000/day exceeds the eligible 10,000/day, so associated medical expenses are reduced in the same proportion: 10,000/22,000 = 0.4545; A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; 72,000 x 0.4545 = 32,727.27"
         },
@@ -2286,7 +2286,7 @@
           "charged": 46000.0,
           "qty": 1,
           "allowed": 46000.0,
-          "clause_id": "B.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -2295,7 +2295,7 @@
           "charged": 36000.0,
           "qty": 3,
           "allowed": 36000.0,
-          "clause_id": "B.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; ICU is outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -2361,7 +2361,7 @@
           "charged": 14000.0,
           "qty": 1,
           "allowed": 14000.0,
-          "clause_id": "B.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -2370,7 +2370,7 @@
           "charged": 4800.0,
           "qty": 1,
           "allowed": 4800.0,
-          "clause_id": "B.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         }
@@ -2477,15 +2477,15 @@
       "category": "sub_limit",
       "policy_schedule": null,
       "total_charged": 103300.0,
-      "expected_total_allowed": 103300.0,
+      "expected_total_allowed": 100800.0,
       "lines": [
         {
           "item": "Room Rent (Shared) 2,500 x 1 day",
           "charged": 2500.0,
           "qty": 1,
-          "allowed": 2500.0,
+          "allowed": null,
           "clause_id": "6.2.4",
-          "needs_human": false,
+          "needs_human": true,
           "derivation": "6.2.4 p26: pro-rata applies to a room \"higher than the eligible room category as specified in your Policy Schedule\" - no schedule supplied and no default stated; a shared room is the lowest category and cannot exceed any entitlement; charge is within entitlement -> paid in full"
         },
         {
@@ -2577,7 +2577,7 @@
           "charged": 15500.0,
           "qty": 1,
           "allowed": 15500.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -2586,7 +2586,7 @@
           "charged": 5200.0,
           "qty": 1,
           "allowed": 5200.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         }
@@ -2616,7 +2616,7 @@
           "charged": 48000.0,
           "qty": 2,
           "allowed": 48000.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; ICU is outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -2625,7 +2625,7 @@
           "charged": 195000.0,
           "qty": 1,
           "allowed": 54166.67,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "II.1: room rent 18,000/day exceeds the eligible 5,000/day, so associated medical expenses are reduced in the same proportion: 5,000/18,000 = 0.2778; I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; 195,000 x 0.2778 = 54,166.67"
         },
@@ -2634,7 +2634,7 @@
           "charged": 40000.0,
           "qty": 1,
           "allowed": 11111.11,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "II.1: room rent 18,000/day exceeds the eligible 5,000/day, so associated medical expenses are reduced in the same proportion: 5,000/18,000 = 0.2778; I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; 40,000 x 0.2778 = 11,111.11"
         },
@@ -2643,7 +2643,7 @@
           "charged": 86000.0,
           "qty": 1,
           "allowed": 86000.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -2652,7 +2652,7 @@
           "charged": 58000.0,
           "qty": 1,
           "allowed": 16111.11,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "II.1: room rent 18,000/day exceeds the eligible 5,000/day, so associated medical expenses are reduced in the same proportion: 5,000/18,000 = 0.2778; I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; 58,000 x 0.2778 = 16,111.11"
         },
@@ -2661,7 +2661,7 @@
           "charged": 38000.0,
           "qty": 1,
           "allowed": 38000.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -2775,7 +2775,7 @@
           "charged": 17500.0,
           "qty": 1,
           "allowed": 17500.0,
-          "clause_id": "B.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -2838,7 +2838,7 @@
           "charged": 5100.0,
           "qty": 1,
           "allowed": 5100.0,
-          "clause_id": "B.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         }
@@ -2886,7 +2886,7 @@
           "charged": 9800.0,
           "qty": 1,
           "allowed": 9800.0,
-          "clause_id": "B.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -2895,7 +2895,7 @@
           "charged": 3100.0,
           "qty": 1,
           "allowed": 3100.0,
-          "clause_id": "B.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -3039,7 +3039,7 @@
           "charged": 22000.0,
           "qty": 1,
           "allowed": 22000.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -3048,7 +3048,7 @@
           "charged": 8500.0,
           "qty": 1,
           "allowed": 8500.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         }
@@ -3237,7 +3237,7 @@
           "charged": 32000.0,
           "qty": 2,
           "allowed": 32000.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; ICU is outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -3264,7 +3264,7 @@
           "charged": 44000.0,
           "qty": 1,
           "allowed": 44000.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -3282,7 +3282,7 @@
           "charged": 17000.0,
           "qty": 1,
           "allowed": 17000.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -3348,7 +3348,7 @@
           "charged": 31000.0,
           "qty": 1,
           "allowed": 31000.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -3357,7 +3357,7 @@
           "charged": 14500.0,
           "qty": 1,
           "allowed": 14500.0,
-          "clause_id": "II.1",
+          "clause_id": "I.Def45",
           "needs_human": false,
           "derivation": "I.Def45 p8: \"Associated Medical Expenses means expenses that shall include the applicable nursing charges, Operation theatre charges, Professional fees of Medical Practitioner including Surgeon/anaesthetist/Physician/Specialist ... does not include cost of pharmacy and consumables, cost of implants and medical devices and cost of diagnostics, ICU charges\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -3414,7 +3414,7 @@
           "charged": 14500.0,
           "qty": 1,
           "allowed": 14500.0,
-          "clause_id": "B.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },
@@ -3423,7 +3423,7 @@
           "charged": 3800.0,
           "qty": 1,
           "allowed": 3800.0,
-          "clause_id": "B.1.1",
+          "clause_id": "A.1.2.Def5",
           "needs_human": false,
           "derivation": "A.1.2.Def5 p8: \"Associated Medical Expenses means Consultation fees, charges on Operation theatre, surgical appliances & nursing, and expenses on Anesthesia, blood, oxygen ... do not include Cost of pharmacy and consumables, Cost of implants and medical devices and Cost of diagnostics. Proportionate deduction shall not be applicable to 'ICU charges'\"; pharmacy, consumables, implants and diagnostics are outside associated medical expenses, so no proportionate deduction -> paid in full"
         },

@@ -1,6 +1,10 @@
-"""Ollama access, with a disk cache in front of it.
+"""LLM access for both backends, with a disk cache in front of them.
 
-Two things matter here.
+`core.backends` owns the difference between Ollama and Groq - the limits, the
+backoff, the fallback. This module owns what is the same for both: building
+messages, the cache, structured output, and the retry on invalid output.
+
+Three things matter here.
 
 `num_ctx=8192`: Ollama's default context is 2048 tokens. Retrieved clauses get
 silently truncated at that size and the model answers confidently from half a
@@ -9,19 +13,25 @@ clause. There is no error and no warning, so it must be set explicitly.
 The cache: evaluation re-runs the same 40 bills dozens of times. Every call is
 keyed by a sha256 of the model settings plus the exact messages, and the
 response is stored as JSON under `data/llm_cache/`. A repeated prompt is
-answered from disk and never reaches Ollama.
+answered from disk and never reaches the model.
+
+The cache key includes the backend and the model. Without that, a Qwen answer
+cached this morning would be served this afternoon as if Llama had said it -
+silently, and with no way to tell from the report.
 """
 
 import hashlib
 import json
+import threading
 import time
 from pathlib import Path
 from typing import Any
 
 from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
-from langchain_ollama import ChatOllama
 from pydantic import BaseModel, ValidationError
 
+from core import backends
+from core.backends import GROQ, OLLAMA, QuotaExhausted, Unreachable
 from core.config import settings
 from core.logging_conf import get_logger
 
@@ -39,36 +49,141 @@ class LLMError(RuntimeError):
 # client
 # --------------------------------------------------------------------------
 
-_client: ChatOllama | None = None
+# The backend in force for this process. Set once, at the edge that knows the
+# context: the API sets "api", the eval sets "eval", everything else gets the
+# CLI default. Nothing decides this per call.
+_backend: str | None = None
+
+# Set when a Groq call has fallen back to Ollama, so the report can say so.
+# A user should never be shown a half-finished audit because a free tier ran
+# out at line seven, and should never be shown a complete one that quietly
+# changed model half way either.
+FELL_BACK: dict[str, Any] = {"happened": False, "reason": ""}
+
+# When Groq refused a call, the moment it is worth trying again.
+#
+# This used to be `use_backend(OLLAMA)` - a module-level mutation - so a single
+# transient failure moved the whole process to the local model permanently.
+# Every later line in that audit, and every later audit in that container, ran
+# at 29.5s instead of 6.1s, and nothing said so: /health reported the
+# configured backend rather than the live one. A seven-minute audit looked like
+# a slow model.
+#
+# The fallback is per call now. This timestamp only avoids paying a failed
+# round trip on every line while a quota window is still shut, and it expires,
+# so the process comes back by itself.
+_groq_down_until: float = 0.0
+_fallback_lock = threading.Lock()
 
 
-def get_llm() -> ChatOllama:
-    """The one configured Ollama client. Built once, kept warm."""
-    global _client
-    if _client is None:
-        log.info(
-            "connecting to ollama model=%s num_ctx=%d url=%s",
-            settings.ollama_model,
-            settings.num_ctx,
-            settings.ollama_base_url,
-        )
-        _client = ChatOllama(
-            model=settings.ollama_model,
-            base_url=settings.ollama_base_url,
-            num_ctx=settings.num_ctx,  # CRITICAL - default 2048 truncates silently
-            temperature=settings.temperature,
-            keep_alive=settings.keep_alive,
-            reasoning=settings.llm_reasoning,
-            num_predict=settings.llm_num_predict,
-            client_kwargs={"timeout": settings.llm_timeout_s},
-        )
-    return _client
+def use_backend(name: str) -> str:
+    """Fix the backend for this process. Returns what was chosen."""
+    global _backend
+    if name not in backends.BACKENDS:
+        raise backends.BackendError(f"unknown backend {name!r}")
+    _backend = name
+    log.info("llm backend is %s", name)
+    return name
+
+
+def active_backend() -> str:
+    """The backend in force, defaulting to the CLI context."""
+    return _backend or settings.backend_for("cli")
+
+
+def get_llm():
+    """The configured client for the active backend."""
+    return backends.client(active_backend())
 
 
 def reset_client() -> None:
-    """Drop the cached client so changed settings take effect. Tests use this."""
-    global _client
-    _client = None
+    """Drop the cached clients so changed settings take effect. Tests use this."""
+    global _backend, _groq_down_until
+    _backend = None
+    _groq_down_until = 0.0
+    FELL_BACK["happened"] = False
+    FELL_BACK["reason"] = ""
+    backends.reset_clients()
+
+
+def groq_is_down() -> bool:
+    """True while a refused Groq call is still inside its cooldown."""
+    with _fallback_lock:
+        return time.monotonic() < _groq_down_until
+
+
+def _note_groq_refused(problem: Exception) -> None:
+    global _groq_down_until
+    with _fallback_lock:
+        _groq_down_until = time.monotonic() + settings.groq_cooldown_s
+    FELL_BACK["happened"] = True
+    FELL_BACK["reason"] = str(problem)
+
+
+def _invoke_resilient(messages: list[BaseMessage], structured: Any = None) -> Any:
+    """One call, surviving the server going away underneath it.
+
+    A connection-level failure is not a bad answer, it is no answer: the model
+    server is down, restarting, or has dropped the socket mid-stream. Those are
+    the three shapes seen when a 44-bill eval died at bill 38 - "timed out",
+    "peer closed connection without sending complete message body", then
+    "[Errno 61] Connection refused" - and none of them gets better by asking
+    again half a second later, which is exactly what the structured-output
+    retry did before giving up and taking the run with it.
+
+    So they are handled separately from a malformed response: back off, re-probe
+    the backend, and try the same call again until `backend_recovery_s` is spent.
+    A response that arrives and is merely wrong still costs a structured retry,
+    which is the right budget for it.
+
+    The backend never changes here. A row's numbers have to come from one model.
+    """
+    deadline = time.monotonic() + settings.backend_recovery_s
+    while True:
+        try:
+            return _invoke(messages, structured=structured)
+        except backends.BackendError:
+            raise
+        except Exception as exc:
+            if not backends.is_unreachable(exc) or time.monotonic() >= deadline:
+                raise
+            log.warning("backend unreachable (%s); waiting for it to come back", exc)
+            if not backends.wait_until_healthy(active_backend(), deadline):
+                raise
+            log.info("%s is answering again, retrying the call", active_backend())
+
+
+def _invoke(messages: list[BaseMessage], structured: Any = None) -> Any:
+    """One call on the active backend, falling back when the day runs out.
+
+    The fallback is the whole reason this is not just `client().invoke(...)`.
+    Groq's free tier ends abruptly, and it can end mid-audit; carrying on with
+    Ollama is slower but finishes, which is what the person waiting wants.
+
+    It is per call. The previous version answered the same need by calling
+    `use_backend(OLLAMA)`, which is a module-level mutation: one transient
+    failure and the process never went back, for the life of the container.
+    See the note on `_groq_down_until`.
+    """
+    backend = active_backend()
+    if backend == GROQ and groq_is_down():
+        # Still inside the cooldown from an earlier refusal. Going straight to
+        # Ollama, rather than spending a round trip to be told no again.
+        return backends.invoke(OLLAMA, messages, structured=structured)
+    try:
+        return backends.invoke(backend, messages, structured=structured)
+    except (QuotaExhausted, Unreachable) as problem:
+        if backend != GROQ:
+            raise
+        _note_groq_refused(problem)
+        why = "quota exhausted" if isinstance(problem, QuotaExhausted) else "unreachable"
+        log.warning(
+            "groq %s, this call falls back to ollama; retrying groq in %.0fs: %s",
+            why,
+            settings.groq_cooldown_s,
+            problem,
+        )
+        return backends.invoke(OLLAMA, messages, structured=structured)
 
 
 # --------------------------------------------------------------------------
@@ -82,8 +197,12 @@ def _messages_payload(messages: list[BaseMessage]) -> list[dict[str, str]]:
 
 def cache_key(messages: list[BaseMessage], schema_name: str | None) -> str:
     """sha256 over everything that could change the answer."""
+    backend = active_backend()
     payload = {
-        "model": settings.ollama_model,
+        # Both, and always. A key without the backend would serve a Qwen answer
+        # as a Llama one after a switch, with nothing in the report to show it.
+        "backend": backend,
+        "model": settings.groq_model if backend == GROQ else settings.ollama_model,
         "num_ctx": settings.num_ctx,
         "temperature": settings.temperature,
         "reasoning": settings.llm_reasoning,
@@ -126,7 +245,8 @@ def cache_put(key: str, response: Any, meta: dict[str, Any]) -> None:
     settings.llm_cache_dir.mkdir(parents=True, exist_ok=True)
     entry = {
         "key": key,
-        "model": settings.ollama_model,
+        "backend": active_backend(),
+        "model": settings.groq_model if active_backend() == GROQ else settings.ollama_model,
         "num_ctx": settings.num_ctx,
         "created_at": time.time(),
         **meta,
@@ -171,7 +291,7 @@ def complete(prompt: str, *, system: str | None = None) -> str:
         return str(cached)
 
     started = time.perf_counter()
-    response = get_llm().invoke(messages)
+    response = _invoke(messages)
     text = str(response.content)
     log.debug("llm call took %.2fs", time.perf_counter() - started)
 
@@ -204,13 +324,24 @@ def complete_structured[TModel: BaseModel](
             _cache_path(key).unlink(missing_ok=True)
 
     attempts = (retries if retries is not None else settings.structured_output_retries) + 1
-    structured = get_llm().with_structured_output(schema)
+    # Same structured-output path on both backends, so JudgeOutput parses
+    # identically whichever answered.
     last_error: Exception | None = None
 
     for attempt in range(1, attempts + 1):
         try:
-            result = structured.invoke(messages)
-        except Exception as exc:  # ollama down, malformed JSON, schema mismatch
+            result = _invoke_resilient(messages, schema)
+        except backends.BackendError:
+            # A missing key, or text that still has an identifier in it. Neither
+            # gets better on the second try, and retrying buries the reason.
+            raise
+        except Exception as exc:  # malformed JSON, schema mismatch, a dead server
+            if backends.is_unreachable(exc):
+                # `_invoke_resilient` already spent the whole recovery budget
+                # waiting for this backend. Spending it twice more here turns a
+                # three-minute wait into a nine-minute one and still fails.
+                raise
+
             last_error = exc
             log.warning(
                 "structured call failed (%d/%d) for %s: %s",

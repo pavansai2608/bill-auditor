@@ -1,0 +1,20 @@
+NEW LIFE MEDICAL CENTRE
+Bengaluru - 560 078
+
+Patient Name: Rakesh Patel
+UHID: B29500
+Phone: 9925001122
+Admission: 2026-03-23    Discharge: 2026-03-25
+
+--------------------------------------------------------------
+DESCRIPTION                                   QTY       AMOUNT
+--------------------------------------------------------------
+Room Rent (Shared) 3,000 x 2 days               2     6,000.00
+Surgeon Fee                                     1    46,000.00
+Anaesthetist Charges                            1    10,000.00
+Operation Theatre Charges                       1    15,000.00
+Medicines and Drugs                             1    14,000.00
+Investigations - Labs                           1     4,800.00
+--------------------------------------------------------------
+GRAND TOTAL                                          95,800.00
+--------------------------------------------------------------
