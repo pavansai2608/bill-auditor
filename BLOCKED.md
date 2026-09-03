@@ -4,23 +4,46 @@ Things that need you. Everything else was built and verified.
 
 ---
 
-## B-01 — minikube is not installed on this machine
+## B-01 — RESOLVED. The stack runs on minikube
 
-**What is affected.** `k8s/` was written and every manifest is validated with
-`kubectl apply --dry-run=client`, but nothing was actually deployed. The
-Definition of Done item "`kubectl apply -f k8s/` deploys on minikube" is
-therefore unverified.
+Cleared on 2026-09-03. `kubectl apply -f k8s/` deploys and every pod reaches
+`1/1 Running`: ollama, ingestion-service, retrieval-service, audit-service,
+gateway x2, frontend x2. `kubectl -n bill-auditor rollout status deploy/gateway`
+exits 0, the gateway answers `/health` with 200, and the frontend answers 200
+from inside the cluster. That is the Definition of Done item met.
 
-**What I need from you.**
+Three things were wrong and all three are fixed:
+
+- **The gateway image was built under the wrong name.** The Jenkins Docker stage
+  looped over service directories and appended `-service` to each, producing
+  `bill-auditor/gateway-service` while `k8s/50-gateway.yaml` asks for
+  `bill-auditor/gateway`. The loop now lists image names explicitly.
+- **minikube could not see any image.** It runs its own Docker daemon, separate
+  from Docker Desktop where the images are built, and the manifests are
+  `imagePullPolicy: IfNotPresent` - so every pod sat in `ImagePullBackOff`
+  trying Docker Hub. The five images are now loaded with `minikube image load`.
+- **The node ran out of memory.** ollama alone reserves 6Gi of ~12Gi
+  allocatable, so `audit-service` and `retrieval-service` at two replicas each
+  pushed the node to 99% and the frontend could never be scheduled. Both are now
+  one replica, with the reason recorded in the manifests.
+
+**The one caveat.** minikube here uses the **docker driver**, so the node IP
+(192.168.49.2) is on a Docker network macOS cannot route to - the NodePorts are
+not reachable from the host directly. Open the app through the tunnel instead:
 
 ```bash
-brew install minikube
-minikube start --memory=8192 --cpus=4
-kubectl apply -f k8s/
-kubectl get pods -w
+minikube service frontend -n bill-auditor
+minikube service gateway  -n bill-auditor --url
 ```
 
-`kubectl` itself is installed (v1.36.3), so only minikube is missing.
+Rebuilding images requires loading them again, because the Jenkins Docker stage
+builds into Docker Desktop:
+
+```bash
+for i in frontend gateway audit-service ingestion-service retrieval-service; do
+  minikube image load "bill-auditor/${i}:latest"
+done
+```
 
 ---
 

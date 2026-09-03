@@ -170,12 +170,22 @@ pipeline {
             // is what k8s/ pins, and every manifest is imagePullPolicy
             // IfNotPresent, so without it Deploy would roll out an image this
             // build never produced.
+            // The image name is listed, not derived. A loop that appended
+            // "-service" to every directory built bill-auditor/gateway-service,
+            // while k8s/50-gateway.yaml asks for bill-auditor/gateway - so
+            // Deploy pulled a name nothing had built. The manifests are the
+            // authority for these names; keep the two lists in step.
             sh '''
               set -e
-              for svc in ingestion retrieval audit gateway; do
-                docker build -t bill-auditor/${svc}-service:${BUILD_NUMBER} \
-                             -t bill-auditor/${svc}-service:latest \
-                             -f services/${svc}/Dockerfile .
+              for pair in \
+                "ingestion-service:services/ingestion/Dockerfile" \
+                "retrieval-service:services/retrieval/Dockerfile" \
+                "audit-service:services/audit/Dockerfile" \
+                "gateway:services/gateway/Dockerfile"; do
+                name="${pair%%:*}"
+                file="${pair#*:}"
+                docker build -t bill-auditor/${name}:${BUILD_NUMBER} \
+                             -t bill-auditor/${name}:latest -f "$file" .
               done
               docker build -t bill-auditor/frontend:${BUILD_NUMBER} \
                            -t bill-auditor/frontend:latest ./frontend

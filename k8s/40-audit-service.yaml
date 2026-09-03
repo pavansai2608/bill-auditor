@@ -4,7 +4,14 @@ metadata:
   name: audit-service
   namespace: bill-auditor
 spec:
-  replicas: 2
+  # One, not two, and the reason is arithmetic rather than design. This service
+  # asks for 2Gi - the largest request here - and a single-node minikube has
+  # about 12Gi allocatable, of which ollama alone reserves 6Gi. At two replicas
+  # the totals come to ~13.6Gi and the scheduler leaves pods Pending forever,
+  # which is what "0/1 nodes are available: 1 Insufficient memory" meant.
+  # A second replica on a one-node cluster buys no availability anyway: it lands
+  # on the same node. Raise this on a real multi-node cluster.
+  replicas: 1
   selector:
     matchLabels: { app: audit-service }
   template:

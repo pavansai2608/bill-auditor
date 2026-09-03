@@ -4,7 +4,12 @@ metadata:
   name: retrieval-service
   namespace: bill-auditor
 spec:
-  replicas: 2
+  # Two replicas is the right shape for this service - it is light, frequent and
+  # stateless, and on a real cluster it is the one worth scaling. On a one-node
+  # minikube it does not fit: ollama reserves 6Gi of ~12Gi allocatable, and the
+  # second 1Gi replica pushed the node to 99% so the frontend could never be
+  # scheduled at all. Both replicas would land on the same node here anyway.
+  replicas: 1
   selector:
     matchLabels: { app: retrieval-service }
   template:
