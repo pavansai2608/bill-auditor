@@ -1,8 +1,11 @@
 // Multibranch pipeline. What runs depends on the branch:
 //
-//   feature/*  Build + Quality
-//   develop    ... plus Eval and E2E
-//   main       ... plus Docker and Deploy
+//   any other branch  Build + Quality
+//   develop           ... plus Eval and E2E
+//   main              ... plus Docker and Deploy
+//
+// The repository has two long-lived branches, main and develop. There is no
+// release/* pattern here because there are no release branches to match.
 //
 // The Eval stage is the point of this pipeline. It fails the build when line
 // accuracy drops below the threshold, so a change that quietly makes the
@@ -104,7 +107,7 @@ pipeline {
     // 0.65, set against v5's 68.3% - a figure measured on a clause index later
     // found to hold corrupted tables. See the note under that row.
     stage('Eval') {
-      when { anyOf { branch 'develop'; branch 'main'; branch pattern: 'release/.*', comparator: 'REGEXP' } }
+      when { anyOf { branch 'develop'; branch 'main' } }
       steps {
         script {
           def ollamaUp = sh(returnStatus: true, script: "curl -sf --max-time 5 ${BA_OLLAMA_BASE_URL}/api/tags >/dev/null") == 0

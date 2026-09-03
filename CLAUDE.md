@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Current state (update this at the end of every phase)
 
-**Last updated: 2026-09-02. Every phase in `PHASES.md` is built. The recorded eval is `v7` at 51.5% line accuracy over all 44 bills, on a corrected clause index.**
+**Last updated: 2026-09-03. Every phase in `PHASES.md` is built, including Jenkins. The recorded eval is `v7` at 51.5% line accuracy over all 44 bills, on a corrected clause index. The CI gate runs the 10-bill subset against a 56.1% baseline at `--threshold 0.52`.**
 
 Built and passing:
 
@@ -113,6 +113,41 @@ the honest figure. The full write-up is under the `v6-cpu` row.
   a surgeon's fee (second-pass bug). Both now have tests:
   `tests/test_eval_scoring.py` and `OnlyRoomRentDrivesTheDeductionTest`. The
   first v3 row was also re-run after the ratio fix.
+
+### CI, and the three things that make it honest
+
+The pipeline is `Jenkinsfile`, multibranch, on the two branches that exist:
+**main** and **develop**. Any other branch gets Build + Quality; `develop` adds
+Eval and E2E; `main` adds Docker and Deploy. Stages needing something a plain
+agent lacks - Ollama, a Docker daemon, a cluster - probe first and go
+`NOT_BUILT` with the reason rather than failing, because a stage that always
+fails teaches people to ignore red.
+
+- **The gate is a quick-subset number and must stay one.** Eval runs `--quick`
+  (10 bills, 82 lines) against the `ci-baseline-v7-quick` row, 56.1%, at
+  `--threshold 0.52` - just under three lines below it. **Never compare it with
+  the 44-bill headline**; the ten are easier than the forty-four. It moves only
+  when a new recorded row justifies it. The previous 0.65 was set against a run
+  on an index later found to hold corrupted tables.
+- **Checkpoints are keyed on a fingerprint of the audit code**, not just the
+  bill and the key: a sha256 over every `core/**/*.py`, the clause index, and
+  the `--agent`/`--second-pass` flags. Without it a warm Jenkins workspace
+  replayed old reports and a damaging commit passed the gate in one second.
+  Checkpoints are filed under the fingerprint, so breaking accuracy costs a full
+  re-run and reverting is free.
+- **Tests must not read the ambient environment.** `ContextDefaultsTest` passed
+  locally and failed in CI because it read `BA_LLM_BACKEND`, which the pipeline
+  pins to `ollama`. Any test whose result depends on a `.env`, an exported
+  variable or a live backend is the same bug. The suite is verified to pass with
+  the environment stripped entirely.
+
+Three defects the first real runs found, all fixed: PyBuilder seeded its own
+venvs in two parallel stages and raced (`pyb --no-venvs`, plus `pip` in the dev
+group, plus Lint moved to ruff so the stages share no state); `run_unit_tests`
+collected the Selenium test because PyBuilder matches on filename only and
+cannot exclude a directory (renamed to `tests/e2e/browser_flow.py`); and
+`services/ingestion/Dockerfile` copied `data/policies/`, which `.gitignore`
+excludes, so it could only ever build on the author's machine.
 
 ### END OF EVERY PHASE — do these three, without being asked
 
