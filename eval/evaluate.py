@@ -332,7 +332,7 @@ def pct(value: float | None) -> str:
     return "n/a" if value is None else f"{value * 100:.1f}%"
 
 
-def render(run: Run, version: str) -> str:
+def render(run: Run, version: str, *, scope: str = "") -> str:
     o = run.overall
     p95 = (
         statistics.quantiles(run.latencies, n=20)[-1]
@@ -344,6 +344,13 @@ def render(run: Run, version: str) -> str:
     rows = [
         f"### {version} - {date.today().isoformat()}",
         "",
+    ]
+    # A narrowed run says so in its first line, in bold, before any figure. The
+    # numbers below it are real but they are not a claim about the whole set,
+    # and a reader skimming for a headline must not be able to miss which it is.
+    if scope:
+        rows += [f"**{scope}**", ""]
+    rows += [
         f"Bills run: {run.bills_run}   ",
         f"Bills with no answers filled in yet: {run.bills_unfilled}   ",
         f"Lines scored: {o.lines_scored}   Lines skipped (key not filled): {o.lines_skipped}",
@@ -543,27 +550,24 @@ def main() -> int:
             )
             return 3
 
-    report = render(run, args.version)
+    # A row is a claim, and it must say what it is a claim about. A run that
+    # deliberately narrows the set - `--quick` for the CI gate, `--bills` for a
+    # single case - is complete for its scope and may be recorded, provided the
+    # row states the scope. A run that did not finish what it selected may not
+    # be recorded at all: that is the crashed-run case, and it is checked below.
+    scope = ""
+    if len(wanted) < len(key):
+        how = "--quick subset" if args.quick else "--bills selection"
+        scope = f"Scope: {len(wanted)} of {len(key)} bills ({how}). Not a whole-set number."
+    report = render(run, args.version, scope=scope)
 
-    # A row is a claim about the whole set. Writing one from a run that covered
-    # part of it - because it crashed, or because --bills or --quick narrowed
-    # it - puts a number in the record no later reader can tell apart from a
-    # complete one. Checked before anything reports success.
-    if args.write:
-        if len(wanted) < len(key):
-            print(
-                f"not writing a row: this run covered {len(wanted)} of {len(key)} bills. "
-                "Only a complete run is recorded.",
-                file=sys.stderr,
-            )
-            return 4
-        if run.bills_run < len(wanted):
-            print(
-                f"not writing a row: {run.bills_run} of {len(wanted)} bills produced a "
-                "result. Re-run to finish; completed bills are checkpointed.",
-                file=sys.stderr,
-            )
-            return 4
+    if args.write and run.bills_run < len(wanted):
+        print(
+            f"not writing a row: {run.bills_run} of {len(wanted)} bills produced a "
+            "result. Re-run to finish; completed bills are checkpointed.",
+            file=sys.stderr,
+        )
+        return 4
 
     print()
     print(report)
