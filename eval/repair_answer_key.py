@@ -40,7 +40,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "eval"))
 
-from build_answer_key_review import derivation_quotes, norm
+from build_answer_key_review import derivation_quotes, longest_supported_prefix, norm
 
 KEY_PATH = ROOT / "eval" / "answer_key.json"
 CLAUSES_PATH = ROOT / "data" / "clauses.json"
@@ -91,6 +91,8 @@ class Finding:
         self.charged = 0.0
         self.page = 0  # the page of the clause currently cited
         self.policy = ""
+        self.prefix: tuple[int, int] | None = None  # (words matched, words quoted)
+        self.stops_at = ""
 
     @property
     def where(self) -> str:
@@ -147,6 +149,17 @@ def examine(bill: str, index: int, line: dict, clauses: list[dict]) -> Finding |
         return finding
 
     if not agreed:
+        # How far the quote gets inside the clause the row cites, before it
+        # stops matching. "0 of 9 words" is a broken clause; "7 of 9" is a
+        # derivation that paraphrased instead of copying, and the two need
+        # completely different things done about them.
+        cited_clause = next((c for c in clauses if c["clause_id"] == cited), None)
+        if cited_clause is not None:
+            longest = max(quotes, key=len)
+            words = longest.split()
+            matched = longest_supported_prefix(longest, norm(cited_clause["text"]))
+            finding.prefix = (matched, len(words))
+            finding.stops_at = " ".join(words[matched : matched + 6])
         found = sorted(set().union(*matches)) if matches else []
         finding.why = (
             f"no clause contains every quote (per-quote matches: {[sorted(m) for m in matches]})"
@@ -343,7 +356,18 @@ def todo(unresolved: list[Finding]) -> str:
                 + ", ".join(f"`{c}`" for c in head.candidates)
             )
         elif head.quotes:
-            out.append("- **No clause of this policy contains it**")
+            out.append("- **No clause of this policy contains it verbatim**")
+        if head.prefix:
+            matched, total = head.prefix
+            out.append(
+                f"- **Inside `{head.cited}` the quote matches {matched} of its {total} words**"
+                + (f", then stops at “{head.stops_at}”" if head.stops_at else "")
+                + (
+                    " — a paraphrase in the derivation, not a wrong clause"
+                    if matched >= total // 2
+                    else " — the clause does not carry this text at all"
+                )
+            )
         if head.elsewhere:
             out.append(
                 "- **It is in another policy's wording**: "

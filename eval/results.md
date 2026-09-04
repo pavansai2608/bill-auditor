@@ -719,3 +719,105 @@ Lines that went past attempt 1: 152
 > measures agreement between two implementations of the same reading of the
 > policies, not correctness against them. `KNOWN_LIMITATIONS.md` section 6 sets
 > out why, and it is the most important thing in that file.
+
+### v9-phantom-spaces - 2026-09-04
+
+Bills run: 44   
+Bills with no answers filled in yet: 0   
+Lines scored: 328   Lines skipped (key not filled): 0
+
+| metric | value |
+|---|---|
+| Backend | ollama (qwen3:8b), retrieval on cpu |
+| Code fingerprint | `569f905d86cf` |
+| Line accuracy (allowed within Rs 1) | 54.0% |
+| Citation accuracy | 44.4% |
+| Payout error | 56.9% |
+| Abstention recall (flagged when it should) | 83.3% |
+| Abstention precision (flagged and was right) | 17.6% |
+| False answers (answered, should have flagged) | 5 |
+| Dodges (flagged, key has an answer) | 117 |
+| **Fabricated clauses** | **0** |
+| p95 latency per bill | 91.3s |
+| Avg tool calls per bill | 17.0 |
+
+| category | lines | line acc | citation acc | dodges | false answers |
+|---|---|---|---|---|---|
+| clean | 65 | 41.5% | 33.8% | 35 | 0 |
+| non_payable | 95 | 74.7% | 70.5% | 23 | 0 |
+| room_category_limit | 15 | 60.0% | 33.3% | 3 | 3 |
+| room_rent_over | 83 | 39.8% | 24.1% | 29 | 0 |
+| schedule_missing | 13 | 61.5% | 41.7% | 4 | 1 |
+| sub_limit | 26 | 42.3% | 28.0% | 14 | 1 |
+| waiting_period | 31 | 58.1% | 58.1% | 9 | 0 |
+
+**Retry loop**  
+Lines settled on the non-payable fast path (no search, no judge call): 125  
+Average attempts per line: 1.86  
+Lines that went past attempt 1: 164  
+...of which a later attempt actually produced an answer: **45** (27%)
+
+
+> **What changed: 79 phantom spaces removed from the extractor.**
+>
+> `star_health.pdf` emits a space glyph at the same cursor position as the first
+> letter after a list marker, so the two overlap. The space paints nothing and
+> the page reads correctly, but pdfplumber sorts by position and the space lands
+> between the letter and the rest of its word. The index carried **"E xpenses
+> related to the treatment"**, `"T eaching hospital"`, `"A utomatic Restoration
+> of Sum Insured"` - 48 of them in clause bodies and 6 more in clause titles.
+> BM25 cannot match a term broken in half.
+>
+> The fix is in `core/splitter.without_phantom_spaces`, applied to the page
+> before any extraction, not to the finished text. The rule: **a space whose box
+> lies entirely inside the box of the character before it, on the same line,
+> where neither neighbour is itself a space.** A real space advances the cursor
+> past the previous glyph, so its box starts at that glyph's right edge; to be
+> caught here the previous glyph would have to cover it completely, which would
+> mean the next word was painted over the last one. Across all four documents:
+> 50,297 spaces, 79 caught, all in star_health.
+>
+> **What moved in the index.** 402 clauses before and after, none added, none
+> removed. 26 clause bodies and 6 titles changed. Total character delta **-50**,
+> and every diff is a deletion of whitespace and nothing else. One `rule_type`
+> changed - `III.23` from `other` to `non_payable`, once its title read
+> "Injury/disease caused by..." instead of "I njury/disease". Two golden table
+> fixtures moved, both the same defect: `i. f or transportation` -> `i. for` in
+> `II.8`, and `C. F or Sl. No.` -> `C. For` on star_health page 34. 47 tables
+> across 4 documents still pinned; `KNOWN_LABEL_LEAKS` did not grow.
+>
+> **Retrieval recall, measured before and after** (`eval/recall_before.md`,
+> `eval/recall_after.md`, 261 lines that retrieval actually decides):
+>
+> | | recall@3 | over 3 angles | candidate set |
+> |---|---|---|---|
+> | before | 36.8% | 52.1% | 72.0% |
+> | after | **34.5%** | 52.5% | **72.4%** |
+>
+> hdfc_ergo and niva_bupa are identical to the decimal, which is the control -
+> neither has a phantom space. All of the movement is star_health, whose
+> candidate-set recall rose 68.9% -> 69.8% while its first-angle recall@3 fell
+> 29.2% -> 23.6%. **More of the right clauses are now retrievable, and the
+> cross-encoder reshuffled the top three.** Cleaner text is a different
+> embedding, so the ranking moves; the same thing happened when the merged table
+> cells were fixed between v5 and v6.
+>
+> **The number went up, and the reason to be careful is elsewhere in the row.**
+> 51.5% -> 54.0%, payout error 63.8% -> 56.9%, dodges 131 -> 117. But
+> **abstention recall fell 90.0% -> 83.3% and false answers went 3 -> 5**: the
+> judge, given readable text, answers two lines it should have flagged. No
+> threshold, tolerance or guardrail was touched to get this - it is a downstream
+> effect of the index - but answering when the key says flag is the failure this
+> project cares about most after a fabricated citation, and it is now worse.
+> Fabricated clauses stayed at **0**.
+>
+> The p95 of 91.3s is a cold run: changing `clauses.json` makes every retrieval
+> cache entry unaddressable by design, so this row re-searched everything.
+>
+> **The 13 rows in `answer_key_todo.md` Q1 are still unresolved, but for a
+> different reason.** Before the fix the key's quote matched **0 of its 9 words**
+> against `III.2`, which read "E xpenses". It now matches **7 of 9**, stopping at
+> "listed conditions" because the clause says "the *following* listed
+> Conditions". The extraction defect is gone; what is left is that the key
+> paraphrased instead of copying. That is a question for the PDF, not for the
+> splitter.

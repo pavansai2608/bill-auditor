@@ -14,14 +14,6 @@ The groups are ordered by how much they decide.
 
 **72 rows, 5 questions.**
 
-Each question is one page of one PDF. Q1 is the only one that needs real
-reading - the others are "does this clause say what 20 rows use it for", and the
-answer is usually visible in a paragraph. Budget **30 to 45 minutes** for all
-five, most of it on Q1.
-
-Answer them in this file, in the row, or tell me the answers and I will apply
-them. Nothing here has been changed on your behalf.
-
 | tier | what it means | rows |
 |---|---|---|
 | 1 | The evidence and the citation disagree | 13 |
@@ -36,7 +28,8 @@ The derivation quotes text that is **not in the clause the row cites**, and in s
 
 - **Open** star_health.pdf at **page 28** (where `III.2` was split from)
 - **The row quotes** “Expenses related to the treatment of the listed conditions”
-- **No clause of this policy contains it**
+- **No clause of this policy contains it verbatim**
+- **Inside `III.2` the quote matches 7 of its 9 words**, then stops at “listed conditions” — a paraphrase in the derivation, not a wrong clause
 - **It is in another policy's wording**: `hdfc_ergo:C.1`, `niva_bupa:5.1.2` — so either the wrong insurer was read, or this policy's clause text is damaged in the index
 - **The question**: does `III.2` in star_health.pdf say what these rows use it for? If not, which clause does?
 
