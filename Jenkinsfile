@@ -45,6 +45,18 @@ pipeline {
 
     // The eval gate. See the block comment on the Eval stage before changing it.
     EVAL_THRESHOLD = '0.52'
+
+    // Ports for the E2E stage's own servers.
+    //
+    // Not the defaults, because on this agent 8000 and 5173 belong to the
+    // docker-compose stack - gateway and frontend - which Docker Desktop
+    // restores whenever it starts. The stage refuses to take a port it does not
+    // own, which is correct and which made main #15 fail on Docker's own
+    // listener. Giving it ports of its own is the intended way through: the
+    // alternative is a pipeline that kills the daemon two stages before it
+    // needs it.
+    BA_E2E_API_PORT = '8111'
+    BA_E2E_WEB_PORT = '5111'
   }
 
   stages {

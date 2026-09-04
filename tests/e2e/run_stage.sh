@@ -61,6 +61,12 @@
 #
 # Usage:  tests/e2e/run_stage.sh
 # Env:    BA_E2E_API_PORT (8000), BA_E2E_WEB_PORT (5173), BA_E2E_SKIP_BUILD
+#
+#         Those two ports are not just where the servers listen. This script
+#         also sets VITE_API_BASE for the build, BA_CORS_ORIGINS for the API
+#         and BA_E2E_API / BA_E2E_APP for the test, because each of those
+#         defaults to 8000/5173 independently and a port setting that only
+#         reached the servers would silently test something else.
 
 set -euo pipefail
 
@@ -76,6 +82,9 @@ LOGS="$ROOT/.e2e-logs"
 # leftovers without guessing from a port number.
 OWNED_PGIDS="$LOGS/owned-pgids"
 STAMP_FILE="$ROOT/frontend/dist/ba-build-stamp.txt"
+# The API base the bundle was built against. Proof 2 checks the bytes are
+# this run's; nothing checked where those bytes point.
+BASE_FILE="$ROOT/frontend/dist/ba-build-base.txt"
 # Long enough for a cold uvicorn and a vite preview, short enough that a hang
 # fails the stage instead of holding the executor for the build timeout.
 READY_TIMEOUT="${BA_E2E_READY_TIMEOUT:-90}"
@@ -159,16 +168,41 @@ free_port "$WEB_PORT" web BA_E2E_WEB_PORT || die "port $WEB_PORT is not this sta
 # --------------------------------------------------------------------------
 
 STAMP="$(date +%s)-$$-$RANDOM"
+API_BASE="http://localhost:$API_PORT"
 
 if [ -n "${BA_E2E_SKIP_BUILD:-}" ]; then
   say "skipping the frontend build (BA_E2E_SKIP_BUILD set)"
   [ -d "$ROOT/frontend/dist" ] || die "no frontend/dist to serve"
+
+  # Proof 3, and the reason the other two do not cover this branch. The stamp
+  # below is written whether or not anything was built, so a skipped build hands
+  # proofs 1 and 2 a bundle this run never made - one with whatever API base the
+  # last real build baked in. On this agent that is 8000, the compose gateway,
+  # so the test would drive our frontend against a different backend and call it
+  # a pass. That is the exact failure this stage exists to stop, so a skipped
+  # build has to prove its own base.
+  [ -f "$BASE_FILE" ] || die "$BASE_FILE is missing, so the API base this dist/ was built against is unknown.
+Rebuild without BA_E2E_SKIP_BUILD."
+  BUILT_BASE="$(tr -d '[:space:]' < "$BASE_FILE")"
+  if [ "$BUILT_BASE" != "$API_BASE" ]; then
+    die "the existing dist/ was built against '$BUILT_BASE', but this run serves the API on '$API_BASE'.
+Rebuild without BA_E2E_SKIP_BUILD."
+  fi
+  say "the existing dist/ was built against $BUILT_BASE, which matches this run"
 else
-  say "building the frontend"
+  say "building the frontend against $API_BASE"
+  # VITE_API_BASE is baked in at build time. Without it the bundle calls
+  # localhost:8000 whatever port the API was started on - and on this machine
+  # 8000 is the docker-compose gateway, so the test would have driven our
+  # frontend against a completely different backend and called it a pass. The
+  # ports are only configurable if everything downstream is told about them.
+  #
   # Not backgrounded: a build failure must fail the stage here, loudly, rather
   # than becoming a server that never starts and a readiness loop that finds
   # somebody else's.
-  ( cd frontend && npm ci && npm run build ) || die "the frontend build failed"
+  ( cd frontend && npm ci && VITE_API_BASE="$API_BASE" npm run build ) \
+    || die "the frontend build failed"
+  echo "$API_BASE" > "$BASE_FILE"
 fi
 
 echo "$STAMP" > "$STAMP_FILE"
@@ -178,7 +212,12 @@ say "build stamp for this run: $STAMP"
 # 3. start both halves as process-group leaders
 # --------------------------------------------------------------------------
 
-say "starting the API on $API_PORT"
+say "starting the API on $API_PORT, accepting the browser on $WEB_PORT"
+# The third thing the ports have to reach. core/config.py allows :3000 and
+# :5173 and nothing else, so on any other port the browser's /policies fetch is
+# blocked by CORS, the policy dropdown never populates, and the test times out
+# on a selector - which looks exactly like a broken frontend and is not one.
+BA_CORS_ORIGINS="[\"http://localhost:$WEB_PORT\",\"http://127.0.0.1:$WEB_PORT\"]" \
 uv run uvicorn api.main:app --port "$API_PORT" > "$LOGS/api.log" 2>&1 &
 API_PGID=$!
 remember_pgid "$API_PGID"
@@ -251,5 +290,10 @@ say "both halves are this run's own: web pgid $WEB_PGID, api pgid $API_PGID, sta
 # 5. the test
 # --------------------------------------------------------------------------
 
-say "running the browser test"
-BA_E2E_STRICT=1 uv run python -m unittest tests.e2e.browser_flow
+say "running the browser test against :$WEB_PORT and :$API_PORT"
+# The test defaults to 8000/5173 too. Telling it which servers this run started
+# is the other half of making the ports configurable.
+BA_E2E_STRICT=1 \
+BA_E2E_API="http://localhost:$API_PORT" \
+BA_E2E_APP="http://localhost:$WEB_PORT" \
+uv run python -m unittest tests.e2e.browser_flow
