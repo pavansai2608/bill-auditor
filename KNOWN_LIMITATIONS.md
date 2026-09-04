@@ -249,3 +249,40 @@ the general case is where false rejections start costing correct answers.
 
 The honest summary: **the citation is verified, the figure is not, and only the
 worst figure is.**
+
+## 8. Until 2026-09-04, Jenkins E2E results did not test the build under test
+
+Every E2E result this project has recorded — **including the green ones** — was
+produced against whatever happened to be listening on port 5173. That was
+usually a `vite preview` orphaned by an earlier build.
+
+The stage started its servers in the background, polled `curl -sf
+http://localhost:5173` until something answered, and killed `$!` afterwards.
+Three things were wrong with that and they compounded:
+
+- `npx vite preview` forks vite as a child, so `kill $!` killed the wrapper and
+  left the server holding the port. Every build donated one orphan to the next.
+- The readiness check asked whether *something* answered, never whether it was
+  ours. An orphan answers in milliseconds, so the check always passed
+  immediately — the faster it passed, the more certainly it was wrong.
+- The preview server ran inside a background subshell, so when it failed to
+  start the failure went nowhere.
+
+`develop #17` failed because Selenium drove a stale bundle that had no
+`[data-testid='bill-text']`. `main #11` passed after its own preview server died
+with "Port 5173 is already in use". Same defect, opposite colours, and neither
+number meant anything.
+
+**What that costs retrospectively.** No E2E run before this fix is evidence of
+anything. A green E2E stage in an old build does not mean the frontend worked
+then; it means something was listening. The four tests are real and they do pass
+against a fresh build — verified 2026-09-04, twice in a row, 4 tests in ~6s —
+but that is a statement about today, not about the build history.
+
+**What is still not covered.** The fix proves the server is this run's process
+*and* serving this run's build stamp, which is as far as process identity can be
+taken. It does not prove the browser reached that server rather than a cached
+response, and on macOS two processes can hold the same port on different address
+families (IPv4 and IPv6) — observed while testing this. The
+every-listener-must-be-ours check catches that case only if the stranger is
+present when the check runs; one that arrives afterwards would not be seen.
