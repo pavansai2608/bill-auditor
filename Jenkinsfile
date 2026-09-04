@@ -132,28 +132,33 @@ pipeline {
             unstable('E2E skipped: needs both a running Ollama and npm on the agent.')
             catchError(buildResult: 'UNSTABLE', stageResult: 'NOT_BUILT') { error('E2E prerequisites missing') }
           } else {
-            // Both halves are started here, so BA_E2E_STRICT makes a missing
-            // service a failure rather than the skip a laptop gets.
-            sh '''
-              set -e
-              uv run uvicorn api.main:app --port 8000 &
-              echo $! > .api.pid
-              ( cd frontend && npm ci && npm run build && npx vite preview --port 5173 ) &
-              echo $! > .web.pid
-              for i in $(seq 1 60); do
-                curl -sf http://localhost:8000/health >/dev/null \
-                  && curl -sf http://localhost:5173 >/dev/null && break
-                sleep 2
-              done
-              BA_E2E_STRICT=1 uv run python -m unittest tests.e2e.browser_flow
-            '''
+            // Everything is in the script, including cleanup, because the
+            // version that lived here did not test the build it was given.
+            //
+            // It started both servers in the background, waited for *something*
+            // to answer port 5173, and then killed a pid that was not the one
+            // holding the port - `npx` forks vite as a child, so the orphan
+            // survived every build and answered the next one's readiness curl
+            // in under a second. develop #17 went red against that stale
+            // frontend; main #11 went green after its own preview server
+            // refused to start at all. Neither result was real.
+            //
+            // run_stage.sh frees the port first and fails if it cannot, starts
+            // each server as a process-group leader, and refuses to run the
+            // test unless the process holding the port is in this run's process
+            // group AND is serving this run's build stamp. See its header for
+            // why neither check alone is enough.
+            sh 'tests/e2e/run_stage.sh'
           }
         }
       }
       post {
         always {
-          sh 'kill $(cat .api.pid) $(cat .web.pid) 2>/dev/null || true'
-          sh 'rm -f .api.pid .web.pid'
+          // Whatever happened above, the next build must not inherit a server.
+          sh 'tests/e2e/free_ports.sh 5173 8000'
+          // The server logs are the evidence when readiness fails, and they are
+          // inside the workspace, so keep a copy on the build.
+          archiveArtifacts artifacts: '.e2e-logs/*.log', allowEmptyArchive: true
         }
       }
     }

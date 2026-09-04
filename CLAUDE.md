@@ -4,7 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Current state (update this at the end of every phase)
 
-**Last updated: 2026-09-03. Every phase in `PHASES.md` is built, including Jenkins. The recorded eval is `v7` at 51.5% line accuracy over all 44 bills, on a corrected clause index. The CI gate runs the 10-bill subset against a 56.1% baseline at `--threshold 0.52`.**
+**Last updated: 2026-09-04. Every phase in `PHASES.md` is built, including Jenkins. The recorded eval is `v11` at 55.2% line accuracy over all 44 bills. The CI gate runs the 10-bill subset against a 56.1% baseline at `--threshold 0.52`. 440 tests.**
+
+**Read `KNOWN_LIMITATIONS.md` sections 6 and 7 before quoting any accuracy
+number.** 6: the answer key's substance came from a model reading the same PDFs
+the judge reads, and the key and `core/` share a taxonomy (`AME_RE`, `ROOM_RE`),
+so a shared misreading scores as *correct*. The number measures agreement
+between two implementations, not correctness against the documents. 7: the
+citation is verified against the index, the *figure* attached to it is not, and
+only the worst figure - zero - is checked at all.
 
 Built and passing:
 
@@ -40,7 +48,7 @@ Built and passing:
   `bill_text` and the `lines` array of every bill against each other — the two
   halves of a fixture can drift and nothing else compares them. `--llm` runs
   the same check through `core.bill.parse_bill` instead of the regex.
-- 259 PyUnit tests, all passing, `unittest discover -s tests` in 59s.
+- 440 PyUnit tests, all passing, `unittest discover -s tests` in ~90s.
 
 Not built yet — do not assume these exist:
 
@@ -66,12 +74,45 @@ Not built yet — do not assume these exist:
   healthcheck probed `localhost` against an IPv4-only nginx, and `qwen3:8b`
   was OOM-killed in a 7.7 GB VM. See B-02.
 
-Last recorded eval: **`v7`, line accuracy 51.5% over 44 bills / 328 lines.**
-Citation accuracy 44.4%, payout error 63.8%, abstention recall 90.0%, false
-answers 3, dodges 131, **fabricated clauses 0**. Backend ollama (qwen3:8b),
-retrieval on cpu.
+Last recorded eval: **`v11`, line accuracy 55.2% over 44 bills / 328 lines.**
+Citation accuracy 43.2%, payout error 56.4%, abstention recall 90.0%, false
+answers 3, dodges 117, **fabricated clauses 0**. Backend ollama (qwen3:8b),
+retrieval on cpu. Retrieval recall@3 is **34.5%** against a candidate-set
+ceiling of 99.2% over the three query angles - see `eval/recall.py` and the
+note under `v10-top5`. The top-3 rerank cut, not retrieval, is where accuracy
+is lost.
 
-**v7 adds one guardrail and nothing else.** A per-day limit cited from a clause
+**What moved since v7**, each its own row in `eval/results.md`:
+
+- **v8** - the answer key was audited by `eval/repair_answer_key.py`, which
+  searches every clause for the text each derivation quotes. **0 of 261 cited
+  lines moved**; the "37 of 93 wrong citations" figure was stale, D-12 having
+  already fixed them. 72 rows in 5 questions remain for a human and a PDF:
+  `eval/answer_key_todo.md`. `eval/derive_key.py --write` is now **refused** -
+  it would revert 87 recorded decisions - and the divergence is pinned by
+  `tests/test_derive_key_divergence.py`.
+- **v9, 51.5% -> 54.0%** - 79 phantom spaces removed from the extractor.
+  star_health.pdf paints a space glyph on top of the first letter after a list
+  marker, so the index carried "E xpenses related to the treatment". Fixed in
+  `core/splitter.without_phantom_spaces`; see below.
+- **v10, REVERTED** - passing 5 clauses to the judge instead of 3. Recall at the
+  cut rose 34.5% -> 44.4% and accuracy *fell* to 47.3% with **12 false
+  answers**. More right clauses in front of the judge did not make the judge
+  more right. `rerank_top_n` stays at 3.
+- **v11, 54.0% -> 55.2%** - guardrail 3, below.
+
+**v11 adds guardrail 3: a limit of zero must be supported by the clause it
+cites.** Guardrail 2 asks whether a cited clause *exists*; nothing asked whether
+it *says* what the verdict claims. B41 and B42 returned a limit of Rs 0 citing
+`star_health II.1` - the in-patient *coverage* clause - for anaesthetist
+charges, and the report told the insured Rs 26,000 was not payable with a real
+clause reference beside it. Measured across the 44 bills: **8 zero limits, every
+one wrong**, 7 landing as a confident Rs 0 on a line the key pays in full.
+`core/exclusion.states_an_exclusion` decides from the clause text; only zero is
+checked, because verifying every rupee figure is a much larger problem with real
+false-rejection risk. It fired on 4 verdicts and all 4 became correct lines.
+
+**v7 added one guardrail and nothing else.** A per-day limit cited from a clause
 that governs the room entitlement may only be applied to a room-rent line;
 anywhere else the verdict is rejected and the loop retries, then abstains. The
 second pass already refused to let anything but room rent drive a proportionate
@@ -119,6 +160,35 @@ the honest figure. The full write-up is under the `v6-cpu` row.
   a surgeon's fee (second-pass bug). Both now have tests:
   `tests/test_eval_scoring.py` and `OnlyRoomRentDrivesTheDeductionTest`. The
   first v3 row was also re-run after the ratio fix.
+
+### The E2E stage never tested the build it was given, until 2026-09-04
+
+`tests/e2e/run_stage.sh` owns the stage now. The version that lived in the
+`Jenkinsfile` started both servers in the background, waited for *something* to
+answer port 5173, and killed a pid that was not the one holding the port - `npx`
+forks vite as a child, so every build donated an orphan to the next.
+
+    develop #17:  16:27:20  + curl -sf http://localhost:5173
+                  16:27:20  + break
+
+One second into the stage, before `npm ci` had finished. Selenium then drove a
+frontend built by some earlier run and timed out on an element that bundle did
+not have. `main #11` shows the same defect **passing**: its own preview server
+died with "Port 5173 is already in use", the failure was swallowed by the
+background subshell, and four tests went green against a build nobody made.
+**Green and red for the same wrong reason. Neither result was real, and that
+includes every green one before it.**
+
+The stage now frees the port and fails if it cannot, starts each server as a
+process-group leader so cleanup can signal the group, and refuses to run the
+test unless **the process holding the port is in this run's process group** and
+**the bytes served carry this run's build stamp**. Neither check alone is
+enough: the stamp cannot catch a survivor, because Jenkins keeps its workspace
+and an orphan serves the same `dist/` this run just rebuilt; the group check
+cannot catch a server that is ours but serving a half-written `dist/`.
+
+Do not replace either with a sleep or a retry. A stale server answers instantly,
+which is precisely why waiting longer never helped.
 
 ### CI, and the three things that make it honest
 

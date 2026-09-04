@@ -20,8 +20,6 @@ cached this morning would be served this afternoon as if Llama had said it -
 silently, and with no way to tell from the report.
 """
 
-import hashlib
-import json
 import threading
 import time
 from pathlib import Path
@@ -30,7 +28,7 @@ from typing import Any
 from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
 from pydantic import BaseModel, ValidationError
 
-from core import backends
+from core import backends, cache
 from core.backends import GROQ, OLLAMA, QuotaExhausted, Unreachable
 from core.config import settings
 from core.logging_conf import get_logger
@@ -210,8 +208,10 @@ def cache_key(messages: list[BaseMessage], schema_name: str | None) -> str:
         "schema": schema_name,
         "messages": _messages_payload(messages),
     }
-    blob = json.dumps(payload, sort_keys=True, ensure_ascii=False)
-    return hashlib.sha256(blob.encode("utf-8")).hexdigest()
+    # `core.cache` owns the serialisation, so the retrieval cache cannot drift
+    # away from it. Every entry already on disk was addressed with this exact
+    # dump; tests/test_llm_cache.py pins the hash it produces.
+    return cache.key_digest(payload)
 
 
 def _cache_path(key: str) -> Path:
@@ -221,17 +221,10 @@ def _cache_path(key: str) -> Path:
 def cache_get(key: str) -> Any | None:
     if not settings.llm_cache_enabled:
         return None
-    path = _cache_path(key)
-    if not path.exists():
-        CACHE_STATS["misses"] += 1
-        return None
-    try:
-        with path.open(encoding="utf-8") as fh:
-            entry = json.load(fh)
-    except json.JSONDecodeError, OSError:
-        # A half-written cache file must never take the system down.
-        log.warning("discarding unreadable cache entry %s", path.name)
-        path.unlink(missing_ok=True)
+    entry = cache.read_json(_cache_path(key))
+    if entry is None:
+        # Missing, or half-written and therefore discarded by read_json. Either
+        # way it is a miss; a half-written file must never take the system down.
         CACHE_STATS["misses"] += 1
         return None
     CACHE_STATS["hits"] += 1
@@ -252,11 +245,14 @@ def cache_put(key: str, response: Any, meta: dict[str, Any]) -> None:
         **meta,
         "response": response,
     }
-    tmp = _cache_path(key).with_suffix(".tmp")
-    with tmp.open("w", encoding="utf-8") as fh:
-        json.dump(entry, fh, ensure_ascii=False, indent=2, default=str)
-    tmp.replace(_cache_path(key))
+    # Atomic, and safe from several audit workers at once. See core.cache.
+    cache.write_json(_cache_path(key), entry)
     CACHE_STATS["writes"] += 1
+
+
+def cache_health() -> dict[str, Any]:
+    """Whether a repeat audit can be answered from disk, asked of the process."""
+    return cache.store_health(settings.llm_cache_dir, settings.llm_cache_enabled, CACHE_STATS)
 
 
 def clear_cache() -> int:

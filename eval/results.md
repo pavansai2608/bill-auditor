@@ -649,3 +649,344 @@ Lines that went past attempt 1: 35
 > checkpoint and costs **64s**, landing at 48.8% and failing the gate; reverting
 > is **1s** again, because the pre-break checkpoints were never overwritten.
 > Damage costs a full re-run, repair is free. That is the right way round.
+
+### v8-key-audit - 2026-09-04
+
+Bills run: 44   
+Bills with no answers filled in yet: 0   
+Lines scored: 328   Lines skipped (key not filled): 0
+
+| metric | value |
+|---|---|
+| Backend | ollama (qwen3:8b), retrieval on cpu |
+| Code fingerprint | `7d56431ca578` |
+| Line accuracy (allowed within Rs 1) | 51.5% |
+| Citation accuracy | 44.4% |
+| Payout error | 63.8% |
+| Abstention recall (flagged when it should) | 90.0% |
+| Abstention precision (flagged and was right) | 17.1% |
+| False answers (answered, should have flagged) | 3 |
+| Dodges (flagged, key has an answer) | 131 |
+| **Fabricated clauses** | **0** |
+| p95 latency per bill | 43.2s |
+| Avg tool calls per bill | 16.5 |
+
+| category | lines | line acc | citation acc | dodges | false answers |
+|---|---|---|---|---|---|
+| clean | 65 | 38.5% | 33.8% | 38 | 0 |
+| non_payable | 95 | 72.6% | 70.5% | 25 | 0 |
+| room_category_limit | 15 | 60.0% | 33.3% | 5 | 1 |
+| room_rent_over | 83 | 37.3% | 24.1% | 32 | 0 |
+| schedule_missing | 13 | 61.5% | 41.7% | 4 | 1 |
+| sub_limit | 26 | 34.6% | 28.0% | 16 | 1 |
+| waiting_period | 31 | 58.1% | 58.1% | 11 | 0 |
+
+**Retry loop**  
+Lines settled on the non-payable fast path (no search, no judge call): 125  
+Average attempts per line: 1.82  
+Lines that went past attempt 1: 152  
+...of which a later attempt actually produced an answer: **34** (22%)
+
+
+> **The key was audited. Nothing in it changed, so nothing here could move.**
+>
+> `eval/repair_answer_key.py` took the text each derivation puts in quotation
+> marks and searched every clause of that policy for it, the rule being: exactly
+> one clause contains every quote -> that is the citation; zero or more than one
+> -> change nothing and hand it to a person. It read no verdict, no report and no
+> checkpoint.
+>
+> **0 of 261 cited lines moved.** 189 already point at a clause containing every
+> quote they use; 59 are table derivations with no quoted text to search; 13
+> quote text that is in no clause of their policy. `answer_key.json` is
+> byte-for-byte what it was, so this row is v7's inputs re-measured, not a new
+> key.
+>
+> The "37 of 93 entries cite a clause that does not contain the text they quote"
+> figure was **stale**. Those were the associated-medical-expense lines citing
+> the room-rent cap, and D-12 had already moved 85 of them by hand to the clause
+> their quotes actually live in. The repair had nothing left to do.
+>
+> **What this row does establish.** The fingerprint is `7d56431ca578` against
+> v7's code, so this is a genuine cold re-run of all 44 bills, not a replay - the
+> disk caches added since v7 (`core/cache.py`, the retrieval cache) touch no
+> verdict. Every metric and every one of the seven category rows is identical to
+> v7 to the decimal. That is the caching work costing nothing in accuracy, which
+> is the only thing it was allowed to do.
+>
+> **What is still unchecked** is in `eval/answer_key_todo.md`: 72 rows in 5
+> questions, each naming a page to open. Until those are answered, this number
+> measures agreement between two implementations of the same reading of the
+> policies, not correctness against them. `KNOWN_LIMITATIONS.md` section 6 sets
+> out why, and it is the most important thing in that file.
+
+### v9-phantom-spaces - 2026-09-04
+
+Bills run: 44   
+Bills with no answers filled in yet: 0   
+Lines scored: 328   Lines skipped (key not filled): 0
+
+| metric | value |
+|---|---|
+| Backend | ollama (qwen3:8b), retrieval on cpu |
+| Code fingerprint | `569f905d86cf` |
+| Line accuracy (allowed within Rs 1) | 54.0% |
+| Citation accuracy | 44.4% |
+| Payout error | 56.9% |
+| Abstention recall (flagged when it should) | 83.3% |
+| Abstention precision (flagged and was right) | 17.6% |
+| False answers (answered, should have flagged) | 5 |
+| Dodges (flagged, key has an answer) | 117 |
+| **Fabricated clauses** | **0** |
+| p95 latency per bill | 91.3s |
+| Avg tool calls per bill | 17.0 |
+
+| category | lines | line acc | citation acc | dodges | false answers |
+|---|---|---|---|---|---|
+| clean | 65 | 41.5% | 33.8% | 35 | 0 |
+| non_payable | 95 | 74.7% | 70.5% | 23 | 0 |
+| room_category_limit | 15 | 60.0% | 33.3% | 3 | 3 |
+| room_rent_over | 83 | 39.8% | 24.1% | 29 | 0 |
+| schedule_missing | 13 | 61.5% | 41.7% | 4 | 1 |
+| sub_limit | 26 | 42.3% | 28.0% | 14 | 1 |
+| waiting_period | 31 | 58.1% | 58.1% | 9 | 0 |
+
+**Retry loop**  
+Lines settled on the non-payable fast path (no search, no judge call): 125  
+Average attempts per line: 1.86  
+Lines that went past attempt 1: 164  
+...of which a later attempt actually produced an answer: **45** (27%)
+
+
+> **What changed: 79 phantom spaces removed from the extractor.**
+>
+> `star_health.pdf` emits a space glyph at the same cursor position as the first
+> letter after a list marker, so the two overlap. The space paints nothing and
+> the page reads correctly, but pdfplumber sorts by position and the space lands
+> between the letter and the rest of its word. The index carried **"E xpenses
+> related to the treatment"**, `"T eaching hospital"`, `"A utomatic Restoration
+> of Sum Insured"` - 48 of them in clause bodies and 6 more in clause titles.
+> BM25 cannot match a term broken in half.
+>
+> The fix is in `core/splitter.without_phantom_spaces`, applied to the page
+> before any extraction, not to the finished text. The rule: **a space whose box
+> lies entirely inside the box of the character before it, on the same line,
+> where neither neighbour is itself a space.** A real space advances the cursor
+> past the previous glyph, so its box starts at that glyph's right edge; to be
+> caught here the previous glyph would have to cover it completely, which would
+> mean the next word was painted over the last one. Across all four documents:
+> 50,297 spaces, 79 caught, all in star_health.
+>
+> **What moved in the index.** 402 clauses before and after, none added, none
+> removed. 26 clause bodies and 6 titles changed. Total character delta **-50**,
+> and every diff is a deletion of whitespace and nothing else. One `rule_type`
+> changed - `III.23` from `other` to `non_payable`, once its title read
+> "Injury/disease caused by..." instead of "I njury/disease". Two golden table
+> fixtures moved, both the same defect: `i. f or transportation` -> `i. for` in
+> `II.8`, and `C. F or Sl. No.` -> `C. For` on star_health page 34. 47 tables
+> across 4 documents still pinned; `KNOWN_LABEL_LEAKS` did not grow.
+>
+> **Retrieval recall, measured before and after** (`eval/recall_before.md`,
+> `eval/recall_after.md`, 261 lines that retrieval actually decides):
+>
+> | | recall@3 | over 3 angles | candidate set |
+> |---|---|---|---|
+> | before | 36.8% | 52.1% | 72.0% |
+> | after | **34.5%** | 52.5% | **72.4%** |
+>
+> hdfc_ergo and niva_bupa are identical to the decimal, which is the control -
+> neither has a phantom space. All of the movement is star_health, whose
+> candidate-set recall rose 68.9% -> 69.8% while its first-angle recall@3 fell
+> 29.2% -> 23.6%. **More of the right clauses are now retrievable, and the
+> cross-encoder reshuffled the top three.** Cleaner text is a different
+> embedding, so the ranking moves; the same thing happened when the merged table
+> cells were fixed between v5 and v6.
+>
+> **The number went up, and the reason to be careful is elsewhere in the row.**
+> 51.5% -> 54.0%, payout error 63.8% -> 56.9%, dodges 131 -> 117. But
+> **abstention recall fell 90.0% -> 83.3% and false answers went 3 -> 5**: the
+> judge, given readable text, answers two lines it should have flagged. No
+> threshold, tolerance or guardrail was touched to get this - it is a downstream
+> effect of the index - but answering when the key says flag is the failure this
+> project cares about most after a fabricated citation, and it is now worse.
+> Fabricated clauses stayed at **0**.
+>
+> The p95 of 91.3s is a cold run: changing `clauses.json` makes every retrieval
+> cache entry unaddressable by design, so this row re-searched everything.
+>
+> **The 13 rows in `answer_key_todo.md` Q1 are still unresolved, but for a
+> different reason.** Before the fix the key's quote matched **0 of its 9 words**
+> against `III.2`, which read "E xpenses". It now matches **7 of 9**, stopping at
+> "listed conditions" because the clause says "the *following* listed
+> Conditions". The extraction defect is gone; what is left is that the key
+> paraphrased instead of copying. That is a question for the PDF, not for the
+> splitter.
+
+### v10-top5 - 2026-09-04
+
+Bills run: 44   
+Bills with no answers filled in yet: 0   
+Lines scored: 328   Lines skipped (key not filled): 0
+
+| metric | value |
+|---|---|
+| Backend | ollama (qwen3:8b), retrieval on cpu |
+| Code fingerprint | `209c1f33393b` |
+| Line accuracy (allowed within Rs 1) | 47.3% |
+| Citation accuracy | 46.9% |
+| Payout error | 69.6% |
+| Abstention recall (flagged when it should) | 60.0% |
+| Abstention precision (flagged and was right) | 14.3% |
+| False answers (answered, should have flagged) | 12 |
+| Dodges (flagged, key has an answer) | 108 |
+| **Fabricated clauses** | **0** |
+| p95 latency per bill | 230.1s |
+| Avg tool calls per bill | 15.3 |
+
+| category | lines | line acc | citation acc | dodges | false answers |
+|---|---|---|---|---|---|
+| clean | 65 | 30.8% | 40.0% | 34 | 1 |
+| non_payable | 95 | 70.5% | 71.6% | 23 | 2 |
+| room_category_limit | 15 | 33.3% | 40.0% | 4 | 6 |
+| room_rent_over | 83 | 32.5% | 24.1% | 23 | 0 |
+| schedule_missing | 13 | 61.5% | 50.0% | 3 | 2 |
+| sub_limit | 26 | 34.6% | 32.0% | 13 | 1 |
+| waiting_period | 31 | 61.3% | 58.1% | 8 | 0 |
+
+**Retry loop**  
+Lines settled on the non-payable fast path (no search, no judge call): 125  
+Average attempts per line: 1.67  
+Lines that went past attempt 1: 149  
+...of which a later attempt actually produced an answer: **70** (47%)
+
+
+> **REVERTED. Experiment (a): pass 5 clauses to the judge instead of 3.**
+>
+> Run with `BA_RERANK_TOP_N=5`, everything else identical to v9. `rerank_top_n`
+> stays at its default of **3**; nothing in the repository was changed to
+> produce this row and nothing had to be changed back.
+>
+> | | v9 (top-3) | v10 (top-5) |
+> |---|---|---|
+> | line accuracy | 54.0% | **47.3%** |
+> | recall at the cut | 34.5% | 44.4% |
+> | false answers | 5 | **12** |
+> | fabricated clauses | 0 | 0 |
+>
+> **It breaks the false-answer limit and it is reverted for that, not for the
+> accuracy.** Twelve lines answered where the key says flag, against a ceiling
+> of five. Abstention recall fell 83.3% -> 60.0%. `room_category_limit` alone
+> went from 1 false answer to 6: those are the star_health 10L bills where the
+> entitlement is a room *category* with no rupee figure, so no ratio can be
+> computed and the key flags every associated line. Given five clauses instead
+> of three the judge finds something to cite and answers anyway.
+>
+> Accuracy fell too, 54.0% -> 47.3%, so there was no trade to consider. Recall at
+> the cut rose exactly as predicted, 34.5% -> 44.4% - **the right clause reaching
+> the judge more often did not make the judge more right.** Citation accuracy did
+> improve, 44.4% -> 46.9%, which is the honest shape of it: better citations,
+> worse verdicts, more guessing.
+>
+> The checkpoint fingerprint now covers retrieval settings as well as source and
+> index (`eval/checkpoint.tuning_digest`). Without it this row would have
+> replayed v9's stored reports and reported v9's numbers - the same failure the
+> code fingerprint was added to close, wearing an environment variable instead of
+> a commit.
+>
+> **Top-8 was not run.** Recall at the cut would rise a further 3.9 points
+> (48.3% vs 44.4%), and the mechanism that produced twelve false answers at five
+> clauses is more clauses in the prompt. Spending 90 minutes to confirm a worse
+> number needs a decision, not an assumption.
+
+### v11-zero-limit-guardrail - 2026-09-04
+
+Bills run: 44   
+Bills with no answers filled in yet: 0   
+Lines scored: 328   Lines skipped (key not filled): 0
+
+| metric | value |
+|---|---|
+| Backend | ollama (qwen3:8b), retrieval on cpu |
+| Code fingerprint | `a93a108f2ff7` |
+| Line accuracy (allowed within Rs 1) | 55.2% |
+| Citation accuracy | 43.2% |
+| Payout error | 56.4% |
+| Abstention recall (flagged when it should) | 90.0% |
+| Abstention precision (flagged and was right) | 18.8% |
+| False answers (answered, should have flagged) | 3 |
+| Dodges (flagged, key has an answer) | 117 |
+| **Fabricated clauses** | **0** |
+| p95 latency per bill | 13.4s |
+| Avg tool calls per bill | 17.3 |
+
+| category | lines | line acc | citation acc | dodges | false answers |
+|---|---|---|---|---|---|
+| clean | 65 | 44.6% | 30.8% | 35 | 0 |
+| non_payable | 95 | 74.7% | 70.5% | 23 | 0 |
+| room_category_limit | 15 | 73.3% | 20.0% | 3 | 1 |
+| room_rent_over | 83 | 39.8% | 24.1% | 29 | 0 |
+| schedule_missing | 13 | 61.5% | 41.7% | 4 | 1 |
+| sub_limit | 26 | 42.3% | 28.0% | 14 | 1 |
+| waiting_period | 31 | 58.1% | 58.1% | 9 | 0 |
+
+**Retry loop**  
+Lines settled on the non-payable fast path (no search, no judge call): 125  
+Average attempts per line: 1.88  
+Lines that went past attempt 1: 168  
+...of which a later attempt actually produced an answer: **47** (28%)
+
+
+> **Guardrail 3: a limit of zero must be supported by the clause it cites.**
+>
+> Guardrail 2 asks whether a cited clause *exists*. Nothing asked whether it
+> *says* what the verdict claims. On B41 and B42 the judge returned
+> `limits=[{amount: 0.0}]` citing `star_health II.1` - the in-patient coverage
+> clause, "We will cover the following Medical Expenses" - for anaesthetist
+> charges. The citation was real, so every check passed, and the report told the
+> insured that Rs 26,000 was not payable with a clause reference beside it.
+>
+> **Measured before enforcing anything: 8 zero limits across the 44 bills, and
+> every one of them wrong.** Seven became a confident `Rs 0` on a line the key
+> pays in full. Zero is not one wrong number among many - it is the claim that
+> the policy excludes the expense.
+>
+> The rule: a verdict stating a limit of zero is rejected unless the clause it
+> cites contains exclusionary language, and then falls through to the ordinary
+> rewrite-retry-abstain path. `core/exclusion.py` decides from the clause text,
+> title included, tables included; `core/agent._unsupported_zero_limit` applies
+> it. **Only zero is checked** - verifying every rupee figure against its clause
+> is a much larger problem with real false-rejection risk.
+>
+> | | v9 | v11 |
+> |---|---|---|
+> | line accuracy | 54.0% | **55.2%** |
+> | recall@3 | 34.5% | 34.5% (unchanged by construction) |
+> | false answers | 5 | **3** |
+> | fabricated clauses | 0 | **0** |
+> | abstentions | 142 of 328 | 144 of 328 |
+> | abstention recall | 83.3% | **90.0%** |
+>
+> **Accuracy did not have to fall.** It was offered as an acceptable cost and was
+> not spent: 54.0% -> 55.2%, with false answers down and abstention recall back
+> to where it was before the phantom-space fix disturbed it. Dodges are unchanged
+> at 117 and abstentions rose by only 2, so this did not buy safety by refusing
+> to answer.
+>
+> **It fired on 4 judge outputs, and all 4 became correct lines**: B05 and B14
+> were rejected, retried, found `I.Def45` and returned the right figure (12,000
+> and 16,000, previously 0); B41 and B42 were rejected and abstained, which is
+> what the key asks for. `room_category_limit` went 60.0% -> 73.3%.
+>
+> **Three damaging zeros survive, and the rule is why.** B07 (ICU, cites `II.20`,
+> key 10,000), B21 and B28 (ambulance, cite `E.2.1`, key 1,800 and 4,000). Both
+> clauses do contain exclusionary language - `II.20` says "Not Available" in its
+> benefit table, `E.2.1` is headed "Not Covered" - but about something other than
+> the line being judged. Catching those needs the exclusion to be tied to *this
+> expense*, which is the general case the rule deliberately does not attempt.
+> Requiring the language to appear outside a table would catch B07 and would
+> reject a correct zero read off `II.20` for a genuine shared-accommodation line
+> at a 1L sum insured, so it was not taken.
+>
+> Citation accuracy fell 44.4% -> 43.2%: two lines that had cited `II.1` wrongly
+> and confidently now abstain and cite nothing at all, which scores worse and
+> reads better.

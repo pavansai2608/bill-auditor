@@ -36,8 +36,12 @@ class RetrievalServiceTest(unittest.TestCase):
 
         self.client = TestClient(app)
 
-    def test_health_reports_the_clause_index(self):
+    def test_health_reports_the_clause_index_and_the_search_cache(self):
         body = self.client.get("/health").json()
+        # This is the process that searches, so this is the cache that decides
+        # whether a repeat audit costs seconds or minutes.
+        self.assertIn("enabled", body["retrieval_cache"])
+        self.assertIn("entries", body["retrieval_cache"])
         self.assertEqual(body["status"], "ok")
         self.assertGreater(body["clauses"], 0)
 
@@ -201,6 +205,13 @@ class AuditServiceTest(unittest.TestCase):
         body = self.client.get("/health").json()
         self.assertIn("model", body)
         self.assertIn("remote_retrieval", body)
+
+    def test_stats_says_whether_the_llm_cache_is_on(self):
+        """A bill that is slow on every submission is usually this, not the key."""
+        cache = self.client.get("/stats").json()["llm_cache"]
+        self.assertIn("enabled", cache)
+        self.assertIn("dir", cache)
+        self.assertIn("entries", cache)
 
 
 class IngestionServiceTest(unittest.TestCase):

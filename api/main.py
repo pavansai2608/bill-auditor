@@ -26,7 +26,7 @@ from api.shared import (
     policy_rows,
     report_payload,
 )
-from core import llm
+from core import llm, retrieve
 from core.assumptions import Assumptions
 from core.audit import audit_lines
 from core.config import settings
@@ -164,11 +164,21 @@ def health() -> dict[str, Any]:
         clauses = load_clauses()
     except Exception as exc:  # health must answer, not raise
         return {"status": "degraded", "error": str(exc), "clauses": 0}
+    backend = llm.active_backend()
     return {
         "status": "ok",
         "clauses": len(clauses),
         "policies": known_policies(),
-        "model": settings.ollama_model,
+        # The backend actually in force, and the model that goes with it. This
+        # said "qwen3:8b" whatever was running, which is the wrong field to
+        # read when an audit is unexpectedly slow.
+        "backend": backend,
+        "model": settings.groq_model if backend == "groq" else settings.ollama_model,
+        # Repeat audits are only fast if these say enabled. Model calls come
+        # back from the first, searches from the second; between them they are
+        # the whole cost of re-auditing a bill that has been audited before.
+        "llm_cache": llm.cache_health(),
+        "retrieval_cache": retrieve.cache_health(),
     }
 
 

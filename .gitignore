@@ -24,6 +24,7 @@ target/
 # Generated data (never commit)
 data/db/
 data/llm_cache/
+data/retrieval_cache/
 data/policies/*.pdf
 data/traces/
 
@@ -44,3 +45,7 @@ node_modules/
 # OS
 .DS_Store
 docker-compose.override.yml
+
+# E2E server logs, written by tests/e2e/run_stage.sh
+.e2e-logs/
+frontend/dist/ba-build-stamp.txt

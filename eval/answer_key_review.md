@@ -3821,3 +3821,116 @@ ii. for transportation of the Insured Person by private ambulance service from o
 iii. for transportation of the Insured Person from the hospital where treatment is taken to their place of residence (if it is in same city) provided the requirement of an ambulance to the residence is certified by the medical practitioner
 ```
 
+
+---
+
+## Citation repair — 2026-09-04
+
+Written by `eval/repair_answer_key.py`. The rule: take the text a
+derivation puts in quotation marks, search every clause of that bill's
+policy for it, and where exactly one clause contains every quote, that
+clause is the citation. Zero matches or more than one: nothing changed,
+and the row is listed under **still unsettled** for a human to read the
+PDF for.
+
+No amount, no `needs_human` and no `allowed` was touched — a quotation is
+evidence about which clause, never about how much. No verdict, report or
+checkpoint was read while this ran.
+
+**0 citations moved. 72 still unsettled.**
+
+### Moved
+
+**Nothing.** Every citation that carries a quotation mark already points at a
+clause that contains it.
+
+That is not the result the 37-of-93 figure in the CANNOT SUPPORT section above
+predicts, and the reason is that the section above predates **D-12**. Those 37
+rows were the associated-medical-expense lines citing the room-rent cap; D-12
+moved 85 of them to `I.Def45` / `A.1.2.Def5`, which is exactly the clause their
+derivations quote. The repair had nothing left to do because the repair had
+already been made, by hand, as a decision.
+
+What is left is in `answer_key_todo.md`, and none of it can be settled by
+searching text - it needs the PDF.
+
+
+### Still unsettled
+
+The quoted text is in no clause of the policy, or in more than one. These
+keep the citation they had; the reason is what to check against the PDF.
+
+| bill | line | cites | why it could not be settled |
+|---|---|---|---|
+| B01 | Room Rent (Single A/C) 8,000 x 5 days | `II.1` | no quoted text in the derivation |
+| B01 | Disposable Syringes | `II.1` | no quoted text in the derivation |
+| B02 | Consultant Visit Charges | `B.1.1` | no quoted text in the derivation |
+| B03 | Surgeon Fee | `6.2.4` | no quoted text in the derivation |
+| B04 | Room Rent (Single A/C) 9,500 x 7 days | `B.1.1` | no quoted text in the derivation |
+| B05 | Surgeon Fee | `II.1` | no quoted text in the derivation |
+| B05 | Anaesthetist Charges | `II.1` | no quoted text in the derivation |
+| B05 | Operation Theatre Charges | `II.1` | no quoted text in the derivation |
+| B05 | Consultant Visit Charges | `II.1` | no quoted text in the derivation |
+| B07 | Room Rent (Deluxe) 7,500 x 4 days | `II.1` | no quoted text in the derivation |
+| B09 | Surgeon Fee | `II.1` | no quoted text in the derivation |
+| B10 | Ambulance Charges | `6.2.4` | no quoted text in the derivation |
+| B11 | Room Rent (Single Private) 11,000 x 6 days | `6.2.4` | no quoted text in the derivation |
+| B12 | Robotic Assisted Surgery Package | `II.5` | no quoted text in the derivation |
+| B12 | Surgeon Fee | `II.1` | no quoted text in the derivation |
+| B13 | Surgeon Fee | `B.1.1` | no quoted text in the derivation |
+| B14 | Surgeon Fee | `II.1` | no quoted text in the derivation |
+| B14 | Anaesthetist Charges | `II.1` | no quoted text in the derivation |
+| B14 | Operation Theatre Charges | `II.1` | no quoted text in the derivation |
+| B15 | Room Rent (Deluxe) 12,000 x 7 days | `B.1.1` | no quoted text in the derivation |
+| B16 | Surgeon Fee | `6.2.4` | no quoted text in the derivation |
+| B16 | Operation Theatre Charges | `6.2.4` | no quoted text in the derivation |
+| B16 | Consultant Visit Charges | `6.2.4` | no quoted text in the derivation |
+| B17 | Room Rent (Shared) 2,500 x 2 days | `II.1` | no quoted text in the derivation |
+| B17 | Surgeon Fee | `II.1` | no quoted text in the derivation |
+| B19 | Room Rent (Suite) 15,000 x 7 days | `II.1` | no quoted text in the derivation |
+| B20 | Surgeon Fee | `B.1.1` | no quoted text in the derivation |
+| B20 | Anaesthetist Charges | `B.1.1` | no quoted text in the derivation |
+| B20 | Operation Theatre Charges | `B.1.1` | no quoted text in the derivation |
+| B20 | Consultant Visit Charges | `B.1.1` | no quoted text in the derivation |
+| B21 | Surgeon Fee | `B.1.1` | no quoted text in the derivation |
+| B22 | Surgeon Fee | `II.1` | no quoted text in the derivation |
+| B22 | Anaesthetist Charges | `II.1` | no quoted text in the derivation |
+| B22 | Operation Theatre Charges | `II.1` | no quoted text in the derivation |
+| B22 | Consultant Visit Charges | `II.1` | no quoted text in the derivation |
+| B23 | Room Rent (Single Private) 13,500 x 5 days | `6.2.4` | no quoted text in the derivation |
+| B24 | Consultant Visit Charges | `B.1.1` | no quoted text in the derivation |
+| B25 | Surgeon Fee | `6.2.4` | no quoted text in the derivation |
+| B25 | Operation Theatre Charges | `6.2.4` | no quoted text in the derivation |
+| B25 | Consultant Visit Charges | `6.2.4` | no quoted text in the derivation |
+| B26 | Surgeon Fee | `II.1` | no quoted text in the derivation |
+| B27 | Room Rent (Shared) 3,500 x 3 days | `III.2` | the quoted text is in no clause of this policy |
+| B27 | Total Knee Replacement - Surgeon Fee | `III.2` | the quoted text is in no clause of this policy |
+| B27 | Knee Implant | `III.2` | the quoted text is in no clause of this policy |
+| B27 | Anaesthetist Charges | `III.2` | the quoted text is in no clause of this policy |
+| B27 | Operation Theatre Charges | `III.2` | the quoted text is in no clause of this policy |
+| B27 | Medicines and Drugs | `III.2` | the quoted text is in no clause of this policy |
+| B27 | Physiotherapy Sessions | `III.2` | the quoted text is in no clause of this policy |
+| B28 | Room Rent (Suite) 22,000 x 8 days | `B.1.1` | no quoted text in the derivation |
+| B28 | Ambulance Charges | `B.1.1` | no quoted text in the derivation |
+| B29 | Surgeon Fee | `B.1.1` | no quoted text in the derivation |
+| B29 | Anaesthetist Charges | `B.1.1` | no quoted text in the derivation |
+| B29 | Operation Theatre Charges | `B.1.1` | no quoted text in the derivation |
+| B30 | Surgeon Fee | `6.2.4` | no quoted text in the derivation |
+| B32 | Surgeon Fee | `II.1` | no quoted text in the derivation |
+| B32 | Anaesthetist Charges | `II.1` | no quoted text in the derivation |
+| B32 | Operation Theatre Charges | `II.1` | no quoted text in the derivation |
+| B33 | Room Rent (Suite) 18,000 x 6 days | `II.1` | no quoted text in the derivation |
+| B35 | Surgeon Fee | `B.1.1` | no quoted text in the derivation |
+| B36 | Surgeon Fee | `B.1.1` | no quoted text in the derivation |
+| B36 | Operation Theatre Charges | `B.1.1` | no quoted text in the derivation |
+| B36 | Consultant Visit Charges | `B.1.1` | no quoted text in the derivation |
+| B37 | Room Rent (Single Private) 10,500 x 5 days | `6.2.4` | no quoted text in the derivation |
+| B38 | Stem Cell Therapy for Bone Marrow Transplant | `II.5` | no quoted text in the derivation |
+| B38 | Surgeon Fee | `II.1` | no quoted text in the derivation |
+| B40 | Room Rent (Shared) 2,800 x 2 days | `III.2` | the quoted text is in no clause of this policy |
+| B40 | Piles / Fistula Surgery - Surgeon Fee | `III.2` | the quoted text is in no clause of this policy |
+| B40 | Anaesthetist Charges | `III.2` | the quoted text is in no clause of this policy |
+| B40 | Operation Theatre Charges | `III.2` | the quoted text is in no clause of this policy |
+| B40 | Medicines and Drugs | `III.2` | the quoted text is in no clause of this policy |
+| B40 | Investigations - Basic Panel | `III.2` | the quoted text is in no clause of this policy |
+| B43 | Consultant Visit Charges | `B.1.1` | no quoted text in the derivation |

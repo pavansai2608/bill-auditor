@@ -120,3 +120,169 @@ separate route removes the shared plumbing but not the shared reader. The same
 file records an unresolved conflict on B43 - whether HDFC's "At Actuals" is a
 stated default or a deferral to the schedule - which needs a decision before
 that bill's row means anything.
+
+## 6. The eval measures agreement between two implementations, not correctness
+
+This is the most serious limitation in the file, and it is not about a category
+or a bill. It is about what the headline number means.
+
+**The key's substance came from a model reading the same PDFs the judge reads.**
+`eval/derive_key.py` is genuinely independent of the pipeline's *plumbing*: it
+imports no retriever, no judge, no audit code, and it makes no model call. That
+is real, and it is the failure most eval harnesses have. But it is independence
+of the wiring, not of the reading. Every policy figure in it - the room-rent
+table, the cataract sub-limits, the definition of associated medical expenses,
+the 24-month list - is a constant typed into the source file, put there by a
+language model reading the three policy documents. The judge is a language model
+reading the same three documents. Different route, same reader. A misreading
+available to one was available to the other, and **nothing re-checks either
+against the PDF.**
+
+Worth being exact about: `derive_key.py` does not open the PDFs. Its whole
+runtime input is `eval/bills/*.json` and `data/non_payable.json`. The docstring's
+claim that rules were "read off the PDF pages directly with pdfplumber"
+describes where the constants came from when someone wrote them, not what the
+script does. It imports `argparse, json, re, sys, datetime, pathlib`, and
+nothing else.
+
+**The key and `core/` share a taxonomy.** This is the part that cannot be fixed
+by being careful. The key decides that a surgeon's fee is an associated medical
+expense with its own `AME_RE`; `core/second_pass.py` decides the same thing with
+its own `AME_RE`. The key routes room lines with `ROOM_RE`; `core/agent.py`
+routes them with `RULE_PATTERNS`. Two separate regex sets, written by the same
+process, cutting bill lines into the same categories with the same vocabulary.
+
+Where that cut is wrong, **both sides are wrong in the same direction and the
+eval scores the line correct.** No amount of running the eval can surface it,
+because the eval is the thing that shares the error. Only reading the policy can.
+
+**So what the number is.** 51.5% line accuracy is a real, deterministic,
+reproducible measurement of how often the pipeline agrees with a second
+implementation of the same beliefs. It will catch a regression in the splitter,
+the retriever, the reranker or the judge - that is what it is for, and it has
+done so more than once. It will not catch a misreading of the policy. Read it as
+*agreement*, not as *correctness*, and do not describe it as accuracy against
+the documents anywhere it could be mistaken for one.
+
+**What is on the correct side of that line.** Exactly two things.
+`eval/build_answer_key_review.py` goes back to the PDFs and locates quoted text
+on real pages; it prepares a check by a person, and that check has not been
+performed. And `tests/test_tables_golden.py` pins the extracted text of every
+table in all four documents, which is the one place a policy figure is verified
+against the source rather than against a second opinion about the source.
+
+`eval/answer_key_todo.md` is the shortlist that would close the gap: **72 rows
+in 5 questions**, each one naming the page to open.
+
+### What was checked, and what it showed
+
+`eval/repair_answer_key.py` takes the text each derivation puts in quotation
+marks and searches every clause of that policy for it. Where exactly one clause
+contains every quote, that clause is the citation. It never reads a verdict, a
+report or a checkpoint.
+
+It moved **nothing**. Of 261 cited lines, 189 already point at a clause that
+contains every quote they use; 59 are table derivations with no quoted text to
+search for; 13 quote text that is in no clause of their policy at all.
+
+Those 13 are one question. Every one cites `star_health III.2`, the
+specified-disease waiting period, and quotes *"Expenses related to the treatment
+of the listed conditions"*. That text is in `hdfc_ergo C.1` and `niva_bupa 5.1.2`
+but not in star_health's own III.2 - whose indexed text begins **"E xpenses
+related to the treatment of the following listed Conditions"**. The split word
+is a PDF extraction artefact; there are **48 of them across 33 clauses**, and
+BM25 cannot match a term that is broken in half. The citation is probably right
+and the evidence chain is broken, which is a different problem from a wrong
+citation and needs the same PDF to settle.
+
+The "37 of 93 entries cite a clause that does not contain the text they quote"
+figure in `answer_key_review.md` is **stale**. Those rows were the associated
+medical expenses citing the room-rent cap, and decision D-12 moved 85 of them by
+hand to `I.Def45` / `A.1.2.Def5` - which is exactly where their quotes live. The
+repair found nothing because the repair had already been made as a decision.
+
+**`eval/derive_key.py` no longer reproduces the key**, and running it with
+`--write` would have reverted 87 of those decisions in one command. `--write` is
+now refused, and `tests/test_derive_key_divergence.py` pins the disagreement
+line by line against a golden file so it cannot grow unnoticed.
+
+## 7. A fabricated figure attached to a real clause passed every check
+
+Until v11 the system could tell an insured that an expense was not payable,
+cite a real clause for it, and nothing anywhere would notice.
+
+The guardrail that exists to stop invented citations - guardrail 2 - asks one
+question: is this clause id in the index? `star_health II.1` is. It is the
+in-patient coverage clause, and it opens *"We will cover the following Medical
+Expenses"*. On B41 and B42 the judge returned a limit of **Rs 0** citing it, for
+anaesthetist charges. `money.allowed_for_line` did exactly what it is built to
+do and returned zero. The report showed Rs 26,000 struck out, with `II.1` beside
+it as the authority.
+
+**Every check passed.** The clause was real, the model was confident, the
+arithmetic was correct, and the citation resolved to a clause a reader could
+look up and find. The only thing wrong was that the clause did not say it.
+
+Measured across the whole 44-bill eval: **8 zero limits, all 8 wrong**, 7 of
+them landing as a confident `Rs 0` on a line the answer key pays in full.
+
+The gap was structural, not a slip. The project's hard rule is that the model
+never does arithmetic - it reports a limit and a clause id, and Python computes
+the money. That removes one class of error entirely and, until now, quietly
+assumed the *limit* was as trustworthy as the arithmetic. It is not. The clause
+id was checked against the index from the start; the figure attached to it was
+checked against nothing.
+
+**What v11 closes, and what it does not.** A limit of zero is now rejected
+unless the cited clause contains exclusionary language, because zero is not a
+small number - it is the claim that the policy excludes the expense, and it is
+the most damaging thing this system can say short of citing a clause that does
+not exist. Every other figure is still unverified. A limit of Rs 5,000 read out
+of a clause that states Rs 50,000 would pass today exactly as the zero did.
+
+And three of the eight still get through, for a reason worth stating plainly:
+`hdfc_ergo E.2.1` is headed "Not Covered" and `star_health II.20` says "Not
+Available" in its benefit table, so both satisfy a rule that only asks whether
+the clause excludes *anything*. Neither excludes the line being judged. Closing
+that needs the exclusion tied to this expense, which is the general case - and
+the general case is where false rejections start costing correct answers.
+
+The honest summary: **the citation is verified, the figure is not, and only the
+worst figure is.**
+
+## 8. Until 2026-09-04, Jenkins E2E results did not test the build under test
+
+Every E2E result this project has recorded — **including the green ones** — was
+produced against whatever happened to be listening on port 5173. That was
+usually a `vite preview` orphaned by an earlier build.
+
+The stage started its servers in the background, polled `curl -sf
+http://localhost:5173` until something answered, and killed `$!` afterwards.
+Three things were wrong with that and they compounded:
+
+- `npx vite preview` forks vite as a child, so `kill $!` killed the wrapper and
+  left the server holding the port. Every build donated one orphan to the next.
+- The readiness check asked whether *something* answered, never whether it was
+  ours. An orphan answers in milliseconds, so the check always passed
+  immediately — the faster it passed, the more certainly it was wrong.
+- The preview server ran inside a background subshell, so when it failed to
+  start the failure went nowhere.
+
+`develop #17` failed because Selenium drove a stale bundle that had no
+`[data-testid='bill-text']`. `main #11` passed after its own preview server died
+with "Port 5173 is already in use". Same defect, opposite colours, and neither
+number meant anything.
+
+**What that costs retrospectively.** No E2E run before this fix is evidence of
+anything. A green E2E stage in an old build does not mean the frontend worked
+then; it means something was listening. The four tests are real and they do pass
+against a fresh build — verified 2026-09-04, twice in a row, 4 tests in ~6s —
+but that is a statement about today, not about the build history.
+
+**What is still not covered.** The fix proves the server is this run's process
+*and* serving this run's build stamp, which is as far as process identity can be
+taken. It does not prove the browser reached that server rather than a cached
+response, and on macOS two processes can hold the same port on different address
+families (IPv4 and IPv6) — observed while testing this. The
+every-listener-must-be-ours check catches that case only if the stranger is
+present when the check runs; one that arrives afterwards would not be seen.

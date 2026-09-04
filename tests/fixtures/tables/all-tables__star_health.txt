@@ -167,9 +167,9 @@
 [table] 10% - Company will provide 10%
 [table] 20% - Company will provide 20%
 === page 34 table 0 ===
-[table] C. F or Sl. No. - Reimbursement c Type of Claim - Prescribed time limit
-[table] C. F or 1 - Reimbursement c Reimbursement of hospitalization, day care and pre hospitalization expenses - Claim must be filed within 15 days from the date of dis- charge from the Hospital
-[table] C. F or 2 - Reimbursement c Reimbursement of Post hospitalization - Within 15 days after completion of 90 days from the date of discharge from hospital
+[table] C. For Sl. No. - Reimbursement c Type of Claim - Prescribed time limit
+[table] C. For 1 - Reimbursement c Reimbursement of hospitalization, day care and pre hospitalization expenses - Claim must be filed within 15 days from the date of dis- charge from the Hospital
+[table] C. For 2 - Reimbursement c Reimbursement of Post hospitalization - Within 15 days after completion of 90 days from the date of discharge from hospital
 === page 44 table 0 ===
 [table] SI.No. - Item
 [table] 1 - BABY CHARGES (UNLESS SPECIFIED / INDICATED)

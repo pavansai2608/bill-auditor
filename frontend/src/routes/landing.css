@@ -199,7 +199,9 @@ body:has(.landing) {
   font-weight: var(--weight-semibold);
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--colour-ink-faint);
+  /* ink-muted, not ink-faint: on paper-sunken the faint token is 4.16:1, and
+     this is 12px text. See tests/e2e/contrast_check.py. */
+  color: var(--colour-ink-muted);
 }
 
 .plate--bill {
@@ -215,7 +217,8 @@ body:has(.landing) {
   font-family: var(--font-mono);
   font-size: 0.625rem;
   line-height: 1.9;
-  color: var(--colour-ink-faint);
+  /* 10px on paper-sunken. ink-faint reads 4.16:1 here, under AA. */
+  color: var(--colour-ink-muted);
   white-space: pre;
   overflow: hidden;
 }
@@ -523,7 +526,9 @@ body:has(.landing) {
   border-radius: var(--radius-pill);
   border: 1px solid var(--colour-hairline);
   background: var(--colour-accent-soft);
-  color: var(--colour-accent);
+  /* The hover shade, used here for contrast rather than for state: accent on
+     accent-soft is 4.36:1 at 12px, and accent-hover is 6.50:1. */
+  color: var(--colour-accent-hover);
   font-size: var(--text-caption);
   font-weight: var(--weight-semibold);
   font-variant-numeric: tabular-nums;

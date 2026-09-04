@@ -25,8 +25,10 @@ from __future__ import annotations
 
 import re
 import threading
+import time
 from collections import OrderedDict
 from functools import lru_cache
+from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from langchain_core.callbacks import Callbacks
@@ -34,6 +36,7 @@ from langchain_core.documents import BaseDocumentTransformer, Document
 from langchain_core.documents.compressor import BaseDocumentCompressor
 from pydantic import Field
 
+from core import cache
 from core.config import settings
 from core.embeddings import INFERENCE_LOCK, get_embeddings
 from core.ingest import COLLECTION, build_bm25, load_clauses
@@ -379,20 +382,13 @@ def clear_search_cache() -> None:
         SEARCH_CACHE_STATS["misses"] = 0
 
 
-def _retrieve_documents(query: str, policy: str) -> list:
-    """The expensive half of a search, memoised on (query, policy).
-
-    Only this part is cached. Everything after it - resolving clause ids,
-    slicing to `top_n`, following references - is cheap and depends on
-    arguments the cache is deliberately not keyed on, so two callers wanting
-    different depths of the same search still share the one retrieval.
-    """
+def _memory_get(policy: str, query: str) -> list | None:
+    """The in-process half. Returns None when it is disabled or does not have it."""
     global _search_cache_stamp
 
     if settings.retrieval_cache_size <= 0:
-        return get_retriever(policy).invoke(query)
+        return None
 
-    key = (policy, query)
     stamp = _index_stamp()
     with _search_cache_lock:
         if stamp != _search_cache_stamp:
@@ -402,11 +398,47 @@ def _retrieve_documents(query: str, policy: str) -> list:
                 log.info("clause index changed, dropping %d cached searches", len(_search_cache))
             _search_cache.clear()
             _search_cache_stamp = stamp
-        hit = _search_cache.get(key)
-        if hit is not None:
-            _search_cache.move_to_end(key)
-            SEARCH_CACHE_STATS["hits"] += 1
-            return hit
+        hit = _search_cache.get((policy, query))
+        if hit is None:
+            return None
+        _search_cache.move_to_end((policy, query))
+        SEARCH_CACHE_STATS["hits"] += 1
+        return hit
+
+
+def _memory_put(policy: str, query: str, documents: list) -> None:
+    if settings.retrieval_cache_size <= 0:
+        return
+    with _search_cache_lock:
+        SEARCH_CACHE_STATS["misses"] += 1
+        _search_cache[(policy, query)] = documents
+        _search_cache.move_to_end((policy, query))
+        while len(_search_cache) > settings.retrieval_cache_size:
+            _search_cache.popitem(last=False)
+
+
+def _retrieve_documents(query: str, policy: str) -> list:
+    """The expensive half of a search, cached in memory and then on disk.
+
+    Only this part is cached. Everything after it - resolving clause ids,
+    slicing to `top_n`, following references - is cheap and depends on
+    arguments the cache is deliberately not keyed on, so two callers wanting
+    different depths of the same search still share the one retrieval.
+
+    Three layers, cheapest first: this process, then `data/retrieval_cache`,
+    then the retriever itself. The disk layer is what survives a restart, and a
+    restart is otherwise the whole cost of a repeat audit - every model call
+    already comes back from disk.
+    """
+    hit = _memory_get(policy, query)
+    if hit is not None:
+        return hit
+
+    key = disk_cache_key(query, policy)
+    hit = disk_cache_get(key)
+    if hit is not None:
+        _memory_put(policy, query, hit)
+        return hit
 
     # Deliberately outside the lock: a search takes seconds, and holding the
     # lock across it would serialise the very workers this is meant to help.
@@ -414,13 +446,151 @@ def _retrieve_documents(query: str, policy: str) -> list:
     # simply overwrites an identical value.
     documents = get_retriever(policy).invoke(query)
 
-    with _search_cache_lock:
-        SEARCH_CACHE_STATS["misses"] += 1
-        _search_cache[key] = documents
-        _search_cache.move_to_end(key)
-        while len(_search_cache) > settings.retrieval_cache_size:
-            _search_cache.popitem(last=False)
+    disk_cache_put(key, documents, query=query, policy=policy)
+    _memory_put(policy, query, documents)
     return documents
+
+
+# --------------------------------------------------------------------------
+# the same searches, kept on disk
+# --------------------------------------------------------------------------
+#
+# The cache above dies with the process. This one does not, and after a restart
+# it is the difference between a repeat audit costing 68 seconds and costing
+# five: the model calls already come back from `data/llm_cache`, and searching
+# is everything that is left.
+#
+# The key is a sha256 over everything that can change what comes back, hashed
+# by `core.cache` so it cannot drift from the LLM cache's key discipline:
+#
+#   policy          two policies asking the same question are two lookups, and
+#                   a hit that crossed them would be a fabricated citation
+#   query           exactly as sent, not normalised
+#   index           a sha256 of clauses.json. Re-index and every entry stored
+#                   against the old one becomes unaddressable, which is what
+#                   stops a hit returning a clause_id the index no longer has
+#   config          the knobs that change the result: how many candidates each
+#                   retriever surfaces, how they are weighted, which embedder
+#                   and reranker scored them, how many survive, and the
+#                   sub-chunk sizes the windows are cut to
+#
+# There is no TTL and no eviction. A complete key does not need an expiry: an
+# entry that can still be addressed was computed from inputs that have not
+# changed. An entry that cannot be addressed is simply never read again.
+
+RETRIEVAL_DISK_STATS: dict[str, int] = {"hits": 0, "misses": 0, "writes": 0}
+
+
+def _config_fingerprint() -> dict[str, Any]:
+    return {
+        "chroma_top_k": settings.chroma_top_k,
+        "bm25_top_k": settings.bm25_top_k,
+        "dense_weight": settings.dense_weight,
+        "sparse_weight": settings.sparse_weight,
+        "embedding_model": settings.embedding_model,
+        "reranker_model": settings.reranker_model,
+        "rerank_top_n": settings.rerank_top_n,
+        # Constants rather than settings, but they decide how a long clause is
+        # cut up before it is scored, so a change to them changes the result.
+        "sub_chunk_threshold": SUB_CHUNK_THRESHOLD,
+        "sub_chunk_target": SUB_CHUNK_TARGET,
+    }
+
+
+def disk_cache_key(query: str, policy: str) -> str:
+    return cache.key_digest(
+        {
+            "policy": policy,
+            "query": query,
+            "index": cache.file_digest(settings.clauses_path),
+            "config": _config_fingerprint(),
+        }
+    )
+
+
+def _disk_cache_path(key: str) -> Path:
+    return settings.retrieval_cache_dir / f"{key}.json"
+
+
+def disk_cache_get(key: str) -> list[Document] | None:
+    """The stored documents, rebuilt, or None."""
+    if not settings.retrieval_cache_enabled:
+        return None
+
+    entry = cache.read_json(_disk_cache_path(key))
+    if entry is None:
+        RETRIEVAL_DISK_STATS["misses"] += 1
+        return None
+
+    try:
+        documents = [
+            Document(page_content=row["page_content"], metadata=dict(row["metadata"]))
+            for row in entry["documents"]
+        ]
+    except KeyError, TypeError:
+        # An entry written by an older shape of this code. Discard it rather
+        # than half-read it; the search is recomputed and the entry rewritten.
+        log.warning("discarding unusable retrieval cache entry %s", key[:12])
+        _disk_cache_path(key).unlink(missing_ok=True)
+        RETRIEVAL_DISK_STATS["misses"] += 1
+        return None
+
+    RETRIEVAL_DISK_STATS["hits"] += 1
+    log.debug("retrieval cache hit %s", key[:12])
+    return documents
+
+
+def disk_cache_put(key: str, documents: list[Document], *, query: str, policy: str) -> None:
+    """Store the reranked documents whole: the ids and the text that was scored.
+
+    Both, deliberately. An entry holding clause ids alone would have to re-read
+    the clause text at hit time, and a clause edited since would then come back
+    as a stale id wearing fresh text - a citation that looks right and quotes
+    something the judge never saw. What is stored here is exactly what built
+    the prompt.
+    """
+    if not settings.retrieval_cache_enabled:
+        return
+
+    settings.retrieval_cache_dir.mkdir(parents=True, exist_ok=True)
+    cache.write_json(
+        _disk_cache_path(key),
+        {
+            "key": key,
+            "policy": policy,
+            "query": query,
+            "index": cache.file_digest(settings.clauses_path),
+            "config": _config_fingerprint(),
+            "created_at": time.time(),
+            "documents": [
+                {
+                    "clause_id": document.metadata.get("clause_id"),
+                    "page_content": document.page_content,
+                    "metadata": dict(document.metadata),
+                }
+                for document in documents
+            ],
+        },
+    )
+    RETRIEVAL_DISK_STATS["writes"] += 1
+
+
+def clear_disk_cache() -> int:
+    """Delete every stored search. Returns how many were removed."""
+    removed = 0
+    for path in settings.retrieval_cache_dir.glob("*.json"):
+        path.unlink()
+        removed += 1
+    return removed
+
+
+def cache_health() -> dict[str, Any]:
+    """Whether a repeat search can be answered from disk, asked of the process."""
+    return cache.store_health(
+        settings.retrieval_cache_dir,
+        settings.retrieval_cache_enabled,
+        RETRIEVAL_DISK_STATS,
+    )
 
 
 def search(

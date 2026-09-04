@@ -56,8 +56,15 @@ services:
       dockerfile: services/retrieval/Dockerfile
     environment:
       BA_LOG_LEVEL: INFO
+      # As with the model cache: off for measurement only, because timing a
+      # search twice is meaningless when the second one is a disk read.
+      BA_RETRIEVAL_CACHE_ENABLED: "${BA_RETRIEVAL_CACHE_ENABLED:-true}"
     volumes:
       - clause-data:/app/data/db
+      # Searching is the other 90% of an audit, and this is the container that
+      # does it - audit-service calls in over HTTP. Without this volume every
+      # restart costs a full re-search of every bill already audited.
+      - retrieval-cache:/app/data/retrieval_cache
     depends_on:
       ingestion-service:
         condition: service_started
@@ -129,3 +136,4 @@ volumes:
   ollama-models:
   clause-data:
   llm-cache:
+  retrieval-cache:
