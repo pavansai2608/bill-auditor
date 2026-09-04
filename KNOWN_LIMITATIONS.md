@@ -205,3 +205,47 @@ repair found nothing because the repair had already been made as a decision.
 `--write` would have reverted 87 of those decisions in one command. `--write` is
 now refused, and `tests/test_derive_key_divergence.py` pins the disagreement
 line by line against a golden file so it cannot grow unnoticed.
+
+## 7. A fabricated figure attached to a real clause passed every check
+
+Until v11 the system could tell an insured that an expense was not payable,
+cite a real clause for it, and nothing anywhere would notice.
+
+The guardrail that exists to stop invented citations - guardrail 2 - asks one
+question: is this clause id in the index? `star_health II.1` is. It is the
+in-patient coverage clause, and it opens *"We will cover the following Medical
+Expenses"*. On B41 and B42 the judge returned a limit of **Rs 0** citing it, for
+anaesthetist charges. `money.allowed_for_line` did exactly what it is built to
+do and returned zero. The report showed Rs 26,000 struck out, with `II.1` beside
+it as the authority.
+
+**Every check passed.** The clause was real, the model was confident, the
+arithmetic was correct, and the citation resolved to a clause a reader could
+look up and find. The only thing wrong was that the clause did not say it.
+
+Measured across the whole 44-bill eval: **8 zero limits, all 8 wrong**, 7 of
+them landing as a confident `Rs 0` on a line the answer key pays in full.
+
+The gap was structural, not a slip. The project's hard rule is that the model
+never does arithmetic - it reports a limit and a clause id, and Python computes
+the money. That removes one class of error entirely and, until now, quietly
+assumed the *limit* was as trustworthy as the arithmetic. It is not. The clause
+id was checked against the index from the start; the figure attached to it was
+checked against nothing.
+
+**What v11 closes, and what it does not.** A limit of zero is now rejected
+unless the cited clause contains exclusionary language, because zero is not a
+small number - it is the claim that the policy excludes the expense, and it is
+the most damaging thing this system can say short of citing a clause that does
+not exist. Every other figure is still unverified. A limit of Rs 5,000 read out
+of a clause that states Rs 50,000 would pass today exactly as the zero did.
+
+And three of the eight still get through, for a reason worth stating plainly:
+`hdfc_ergo E.2.1` is headed "Not Covered" and `star_health II.20` says "Not
+Available" in its benefit table, so both satisfy a rule that only asks whether
+the clause excludes *anything*. Neither excludes the line being judged. Closing
+that needs the exclusion tied to this expense, which is the general case - and
+the general case is where false rejections start costing correct answers.
+
+The honest summary: **the citation is verified, the figure is not, and only the
+worst figure is.**

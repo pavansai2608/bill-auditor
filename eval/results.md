@@ -897,3 +897,96 @@ Lines that went past attempt 1: 149
 > (48.3% vs 44.4%), and the mechanism that produced twelve false answers at five
 > clauses is more clauses in the prompt. Spending 90 minutes to confirm a worse
 > number needs a decision, not an assumption.
+
+### v11-zero-limit-guardrail - 2026-09-04
+
+Bills run: 44   
+Bills with no answers filled in yet: 0   
+Lines scored: 328   Lines skipped (key not filled): 0
+
+| metric | value |
+|---|---|
+| Backend | ollama (qwen3:8b), retrieval on cpu |
+| Code fingerprint | `a93a108f2ff7` |
+| Line accuracy (allowed within Rs 1) | 55.2% |
+| Citation accuracy | 43.2% |
+| Payout error | 56.4% |
+| Abstention recall (flagged when it should) | 90.0% |
+| Abstention precision (flagged and was right) | 18.8% |
+| False answers (answered, should have flagged) | 3 |
+| Dodges (flagged, key has an answer) | 117 |
+| **Fabricated clauses** | **0** |
+| p95 latency per bill | 13.4s |
+| Avg tool calls per bill | 17.3 |
+
+| category | lines | line acc | citation acc | dodges | false answers |
+|---|---|---|---|---|---|
+| clean | 65 | 44.6% | 30.8% | 35 | 0 |
+| non_payable | 95 | 74.7% | 70.5% | 23 | 0 |
+| room_category_limit | 15 | 73.3% | 20.0% | 3 | 1 |
+| room_rent_over | 83 | 39.8% | 24.1% | 29 | 0 |
+| schedule_missing | 13 | 61.5% | 41.7% | 4 | 1 |
+| sub_limit | 26 | 42.3% | 28.0% | 14 | 1 |
+| waiting_period | 31 | 58.1% | 58.1% | 9 | 0 |
+
+**Retry loop**  
+Lines settled on the non-payable fast path (no search, no judge call): 125  
+Average attempts per line: 1.88  
+Lines that went past attempt 1: 168  
+...of which a later attempt actually produced an answer: **47** (28%)
+
+
+> **Guardrail 3: a limit of zero must be supported by the clause it cites.**
+>
+> Guardrail 2 asks whether a cited clause *exists*. Nothing asked whether it
+> *says* what the verdict claims. On B41 and B42 the judge returned
+> `limits=[{amount: 0.0}]` citing `star_health II.1` - the in-patient coverage
+> clause, "We will cover the following Medical Expenses" - for anaesthetist
+> charges. The citation was real, so every check passed, and the report told the
+> insured that Rs 26,000 was not payable with a clause reference beside it.
+>
+> **Measured before enforcing anything: 8 zero limits across the 44 bills, and
+> every one of them wrong.** Seven became a confident `Rs 0` on a line the key
+> pays in full. Zero is not one wrong number among many - it is the claim that
+> the policy excludes the expense.
+>
+> The rule: a verdict stating a limit of zero is rejected unless the clause it
+> cites contains exclusionary language, and then falls through to the ordinary
+> rewrite-retry-abstain path. `core/exclusion.py` decides from the clause text,
+> title included, tables included; `core/agent._unsupported_zero_limit` applies
+> it. **Only zero is checked** - verifying every rupee figure against its clause
+> is a much larger problem with real false-rejection risk.
+>
+> | | v9 | v11 |
+> |---|---|---|
+> | line accuracy | 54.0% | **55.2%** |
+> | recall@3 | 34.5% | 34.5% (unchanged by construction) |
+> | false answers | 5 | **3** |
+> | fabricated clauses | 0 | **0** |
+> | abstentions | 142 of 328 | 144 of 328 |
+> | abstention recall | 83.3% | **90.0%** |
+>
+> **Accuracy did not have to fall.** It was offered as an acceptable cost and was
+> not spent: 54.0% -> 55.2%, with false answers down and abstention recall back
+> to where it was before the phantom-space fix disturbed it. Dodges are unchanged
+> at 117 and abstentions rose by only 2, so this did not buy safety by refusing
+> to answer.
+>
+> **It fired on 4 judge outputs, and all 4 became correct lines**: B05 and B14
+> were rejected, retried, found `I.Def45` and returned the right figure (12,000
+> and 16,000, previously 0); B41 and B42 were rejected and abstained, which is
+> what the key asks for. `room_category_limit` went 60.0% -> 73.3%.
+>
+> **Three damaging zeros survive, and the rule is why.** B07 (ICU, cites `II.20`,
+> key 10,000), B21 and B28 (ambulance, cite `E.2.1`, key 1,800 and 4,000). Both
+> clauses do contain exclusionary language - `II.20` says "Not Available" in its
+> benefit table, `E.2.1` is headed "Not Covered" - but about something other than
+> the line being judged. Catching those needs the exclusion to be tied to *this
+> expense*, which is the general case the rule deliberately does not attempt.
+> Requiring the language to appear outside a table would catch B07 and would
+> reject a correct zero read off `II.20` for a genuine shared-accommodation line
+> at a 1L sum insured, so it was not taken.
+>
+> Citation accuracy fell 44.4% -> 43.2%: two lines that had cited `II.1` wrongly
+> and confidently now abstain and cite nothing at all, which scores worse and
+> reads better.
