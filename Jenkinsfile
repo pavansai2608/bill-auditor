@@ -46,7 +46,7 @@ pipeline {
     // The eval gate. See the block comment on the Eval stage before changing it.
     EVAL_THRESHOLD = '0.52'
 
-    // Ports for the E2E stage's own servers.
+    // Ports for the E2E stage's own servers, one pair per executor.
     //
     // Not the defaults, because on this agent 8000 and 5173 belong to the
     // docker-compose stack - gateway and frontend - which Docker Desktop
@@ -55,8 +55,19 @@ pipeline {
     // listener. Giving it ports of its own is the intended way through: the
     // alternative is a pipeline that kills the daemon two stages before it
     // needs it.
-    BA_E2E_API_PORT = '8111'
-    BA_E2E_WEB_PORT = '5111'
+    //
+    // Offset by EXECUTOR_NUMBER because one fixed pair is not enough. This node
+    // has two executors and multibranch runs main and develop at once: main #17
+    // and develop #21 both wanted 8111/5111 at 13:59:44Z, main got them, and
+    // develop refused a port held by another workspace - correctly, but the
+    // build was red for a reason that had nothing to do with its commit.
+    // Executor numbers are unique among builds running together, which is
+    // exactly the property needed here.
+    //
+    // Both scripts read these, so run_stage.sh and the post block's
+    // free_ports.sh always agree on which ports this build owns.
+    BA_E2E_API_PORT = "${8100 + (env.EXECUTOR_NUMBER ?: '0').toInteger()}"
+    BA_E2E_WEB_PORT = "${5100 + (env.EXECUTOR_NUMBER ?: '0').toInteger()}"
   }
 
   stages {
