@@ -364,6 +364,91 @@ class PageText:
 # --------------------------------------------------------------------------
 
 
+# --------------------------------------------------------------------------
+# phantom spaces
+# --------------------------------------------------------------------------
+
+# How much slack, in points, when asking whether one glyph box sits inside
+# another. Half a point is smaller than any glyph in these documents and larger
+# than the rounding in a PDF text matrix.
+PHANTOM_EPSILON = 0.5
+# Two glyphs are on one text line when their tops agree this closely. Every
+# character in a line of body text in these PDFs shares a top to three decimals.
+SAME_LINE = 1.0
+
+
+def is_phantom_space(space: dict, previous: dict, following: dict) -> bool:
+    """A space glyph painted on top of the letter before it, not between words.
+
+    star_health.pdf emits a space at the same cursor position as the first
+    letter after a list marker, so the two overlap: for "Expenses related to the
+    treatment of the listed conditions" the content stream carries
+
+        'E'  x0=347.242  x1=352.664
+        ' '  x0=347.244  x1=350.066      <- inside the E
+        'x'  x0=352.596  x1=357.659
+
+    The space paints nothing, so the page reads correctly, but pdfplumber sorts
+    by position, the space lands between the E and the x, and the index gets
+    "E xpenses". BM25 then cannot match "Expenses" at all, and a citation cannot
+    be located by quoting it. 79 of these exist across the four documents, all
+    of them in star_health.pdf.
+
+    **The rule: a space whose box lies entirely inside the box of the character
+    immediately before it, on the same line, where neither neighbour is itself a
+    space.**
+
+    It cannot fire on a real space. A space exists to advance the cursor past the
+    glyph before it, so its box begins at or after that glyph's right edge. To be
+    caught here it would have to begin at or after the previous glyph's *left*
+    edge and end at or before its *right* edge - the previous glyph covering it
+    completely - which in correctly typeset text would mean the following word
+    was painted on top of the preceding one. Measured across all four documents:
+    50,297 spaces, 79 caught.
+
+    The "neither neighbour is a space" condition is what keeps a doubled space
+    safe. star_health writes list markers as "i.  Having", two spaces, and the
+    second one overlaps the first. Without this condition both would be dropped
+    and the words would weld together.
+    """
+    if space["text"] != " " or previous["text"] == " " or following["text"] == " ":
+        return False
+    if abs(space["top"] - previous["top"]) >= SAME_LINE:
+        return False
+    if abs(space["top"] - following["top"]) >= SAME_LINE:
+        return False
+    return (
+        space["x0"] >= previous["x0"] - PHANTOM_EPSILON
+        and space["x1"] <= previous["x1"] + PHANTOM_EPSILON
+    )
+
+
+def without_phantom_spaces(page):
+    """The page with those space glyphs removed, ready for any extraction.
+
+    Applied to the whole page rather than to the extracted string, so every
+    reader downstream - flowing text, table cells, the column heuristic - sees
+    the same characters. A regex sweep over the finished text could not tell
+    "E xpenses" from a genuine "E xpenses", because by then the geometry that
+    proves it is gone.
+    """
+    chars = sorted(page.chars, key=lambda c: (round(c["top"], 1), c["x0"]))
+    doomed = {
+        (round(c["x0"], 3), round(c["top"], 3))
+        for index, c in enumerate(chars)
+        if 0 < index < len(chars) - 1 and is_phantom_space(c, chars[index - 1], chars[index + 1])
+    }
+    if not doomed:
+        return page
+    return page.filter(
+        lambda obj: (
+            obj.get("object_type") != "char"
+            or obj.get("text") != " "
+            or (round(obj["x0"], 3), round(obj["top"], 3)) not in doomed
+        )
+    )
+
+
 def _line_starts(page) -> list[float]:
     """Left-most x of every visual text line on the page."""
     words = page.extract_words()
@@ -390,7 +475,7 @@ def right_start_ratio(page) -> float:
 
 def is_two_column_document(pdf) -> bool:
     """Decide once per document, so a full-width table cannot flip the layout."""
-    ratios = sorted(right_start_ratio(p) for p in pdf.pages)
+    ratios = sorted(right_start_ratio(without_phantom_spaces(p)) for p in pdf.pages)
     if not ratios:
         return False
     median = ratios[len(ratios) // 2]
@@ -493,7 +578,8 @@ def extract_pages(pdf_path: Path) -> list[PageText]:
             "two-column" if two_column else "single-column",
         )
         for index, page in enumerate(pdf.pages, start=1):
-            pages.append(PageText(page=index, text=_page_text(page, two_column)))
+            clean = without_phantom_spaces(page)
+            pages.append(PageText(page=index, text=_page_text(clean, two_column)))
     return pages
 
 

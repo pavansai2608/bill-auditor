@@ -8,6 +8,8 @@ before splitting, and letting numbered list items masquerade as clauses.
 
 import unittest
 
+from core import splitter
+from core.config import settings
 from core.models import Clause
 from core.splitter import (
     CLAUSE_RE,
@@ -231,3 +233,121 @@ class AddressNoiseTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class PhantomSpaceTest(unittest.TestCase):
+    """A space glyph painted on top of the letter before it is not a word break.
+
+    star_health.pdf emits one at the same cursor position as the first letter
+    after a list marker, so the index carried "E xpenses related to the
+    treatment" where the page plainly reads "Expenses". BM25 cannot match a term
+    broken in half, and a citation cannot be located by quoting it.
+
+    The danger in fixing it is welding together words that are genuinely
+    separate, so the rule is narrow and every case below is a real shape from
+    the documents. Measured across all four PDFs: 50,297 spaces, 79 caught.
+    """
+
+    @staticmethod
+    def char(text, x0, x1, top=100.0):
+        return {"text": text, "x0": x0, "x1": x1, "top": top, "object_type": "char"}
+
+    def test_the_case_it_was_written_for(self):
+        """The real geometry from star_health.pdf page 28, to three decimals."""
+        self.assertTrue(
+            splitter.is_phantom_space(
+                self.char(" ", 347.244, 350.066),
+                self.char("E", 347.242, 352.664),
+                self.char("x", 352.596, 357.659),
+            )
+        )
+
+    def test_an_ordinary_word_space_is_left_alone(self):
+        """ "Expenses related": the space sits between the glyphs, not inside one."""
+        self.assertFalse(
+            splitter.is_phantom_space(
+                self.char(" ", 395.228, 398.051),
+                self.char("s", 389.780, 395.297),
+                self.char("r", 397.395, 401.338),
+            )
+        )
+
+    def test_a_doubled_space_is_never_touched(self):
+        """star_health writes "i.  Having", and one of the pair is a real gap.
+
+        Without this, both members of the pair look phantom and the words weld:
+        "out  AYUSH" would become "outAYUSH".
+        """
+        first = self.char(" ", 100.0, 102.8)
+        second = self.char(" ", 100.1, 102.9)
+        self.assertFalse(splitter.is_phantom_space(second, first, self.char("A", 103.0, 109.0)))
+        self.assertFalse(splitter.is_phantom_space(first, self.char("t", 95.0, 100.2), second))
+
+    def test_a_space_on_another_line_cannot_be_contained(self):
+        """Sorting brings line ends and line starts together; tops keep them apart."""
+        self.assertFalse(
+            splitter.is_phantom_space(
+                self.char(" ", 100.0, 102.0, top=200.0),
+                self.char("W", 99.0, 110.0, top=100.0),
+                self.char("a", 103.0, 109.0, top=200.0),
+            )
+        )
+
+    def test_a_wide_glyph_does_not_swallow_the_space_after_it(self):
+        """The narrowest real case: a wide W, then a space, then the next word."""
+        self.assertFalse(
+            splitter.is_phantom_space(
+                self.char(" ", 110.1, 112.9),
+                self.char("W", 99.0, 110.0),
+                self.char("a", 113.0, 119.0),
+            )
+        )
+
+    @unittest.skipUnless((settings.policies_dir / "star_health.pdf").exists(), "no PDF")
+    def test_the_clause_that_started_this_reads_correctly_now(self):
+        pages = splitter.extract_pages(settings.policies_dir / "star_health.pdf")
+        text = "\n".join(page.text for page in pages)
+        self.assertIn("Expenses related to the treatment", text)
+        self.assertNotIn("E xpenses", text)
+
+    @unittest.skipUnless((settings.policies_dir / "star_health.pdf").exists(), "no PDF")
+    def test_no_phantom_space_survives_in_any_document(self):
+        """The invariant, stated where it can actually be proved.
+
+        A text-level property cannot express this: `[A-Za-z] [a-z]{3,}` matches
+        "a cost" and "a health" as readily as "E xpenses", because "a" is a real
+        English word. The geometry is unambiguous, so the property is checked
+        there - after filtering, no space glyph anywhere is contained in the
+        glyph before it.
+        """
+        import pdfplumber
+
+        offenders = []
+        for name in ("star_health.pdf", "hdfc_ergo.pdf", "niva_bupa.pdf", "non_payable_items.pdf"):
+            path = settings.policies_dir / name
+            if not path.exists():
+                continue
+            with pdfplumber.open(path) as pdf:
+                for page in pdf.pages:
+                    clean = splitter.without_phantom_spaces(page)
+                    chars = sorted(clean.chars, key=lambda c: (round(c["top"], 1), c["x0"]))
+                    for index in range(1, len(chars) - 1):
+                        if splitter.is_phantom_space(
+                            chars[index], chars[index - 1], chars[index + 1]
+                        ):
+                            offenders.append(f"{name} p{page.page_number}")
+        self.assertEqual([], offenders[:10], f"{len(offenders)} phantom spaces survived")
+
+    @unittest.skipUnless((settings.policies_dir / "star_health.pdf").exists(), "no PDF")
+    def test_the_titles_it_repaired_are_words_again(self):
+        """Six clause headings were split, and a heading is what a citation shows."""
+        pages = splitter.extract_pages(settings.policies_dir / "star_health.pdf")
+        text = "\n".join(page.text for page in pages)
+        for whole, broken in (
+            ("Automatic Restoration", "A utomatic Restoration"),
+            ("Teaching hospital", "T eaching hospital"),
+            ("for transportation", "f or transportation"),
+        ):
+            with self.subTest(word=whole):
+                self.assertIn(whole, text)
+                self.assertNotIn(broken, text)

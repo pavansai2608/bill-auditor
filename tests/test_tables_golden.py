@@ -28,7 +28,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import pdfplumber
 
 from core.config import settings
-from core.splitter import render_table, split_pdf
+from core.splitter import render_table, split_pdf, without_phantom_spaces
 
 FIXTURES = Path(__file__).parent / "fixtures" / "tables"
 
@@ -110,6 +110,11 @@ def _all_tables(policy: str) -> str:
     out: list[str] = []
     with pdfplumber.open(path) as pdf:
         for page in pdf.pages:
+            # The same page production reads. Without this the fixture pins the
+            # raw extraction while `split_pdf` above pins the filtered one, and
+            # the two would drift apart silently - which is the exact failure
+            # this file exists to catch.
+            page = without_phantom_spaces(page)
             tables = page.find_tables()
             for index, table in enumerate(tables):
                 rendered = render_table(page, table, tables)
