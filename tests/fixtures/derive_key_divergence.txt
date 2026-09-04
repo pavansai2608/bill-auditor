@@ -1,0 +1,92 @@
+# Where eval/derive_key.py and eval/answer_key.json disagree.
+# Regenerate with: uv run python tests/test_derive_key_divergence.py --update
+# lines that still agree: 241
+# lines that disagree:    87
+
+B01 line  2  ICU Charges 12,000 x 2 days                    clause II.1 -> I.Def45
+B01 line  3  Surgeon Fee                                    clause II.1 -> I.Def45
+B01 line  4  Anaesthetist Charges                           clause II.1 -> I.Def45
+B01 line  5  Medicines and Drugs                            clause II.1 -> I.Def45
+B01 line  6  Operation Theatre Charges                      clause II.1 -> I.Def45
+B01 line  7  Investigations - CT and Bloodwork              clause II.1 -> I.Def45
+B02 line  3  Medicines and Drugs                            clause B.1.1 -> A.1.2.Def5
+B02 line  9  Investigations - Blood Panel                   clause B.1.1 -> A.1.2.Def5
+B03 line  1  Room Rent (Shared) 2,500 x 1 day               allowed 2500.0 -> None; needs_human False -> True
+B04 line  2  Nursing Charges                                clause B.1.1.1 -> A.1.2.Def5
+B04 line  3  Surgeon Fee                                    clause B.1.1.1 -> A.1.2.Def5
+B04 line  4  Assistant Surgeon Fee                          clause B.1.1.1 -> A.1.2.Def5
+B04 line  5  Medicines and Drugs                            clause B.1.1 -> A.1.2.Def5
+B04 line  6  Operation Theatre Charges                      clause B.1.1.1 -> A.1.2.Def5
+B04 line  8  Investigations - MRI                           clause B.1.1 -> A.1.2.Def5
+B05 line  5  Medicines and Drugs                            clause II.1 -> I.Def45
+B05 line  6  Investigations - Ultrasound and Labs           clause II.1 -> I.Def45
+B07 line  2  ICU Charges 10,000 x 1 day                     clause II.1 -> I.Def45
+B07 line  3  Surgeon Fee                                    clause II.1 -> I.Def45
+B07 line  4  Medicines and Drugs                            clause II.1 -> I.Def45
+B07 line  5  Operation Theatre Charges                      clause II.1 -> I.Def45
+B07 line  6  Investigations - Endoscopy                     clause II.1 -> I.Def45
+B07 line  7  Consultant Visit Charges                       clause II.1 -> I.Def45
+B09 line  3  Medicines and Drugs                            clause II.1 -> I.Def45
+B09 line 10  Investigations - Labs                          clause II.1 -> I.Def45
+B12 line  4  Medicines and Drugs                            clause II.1 -> I.Def45
+B12 line  5  Investigations - Pre-op Panel                  clause II.1 -> I.Def45
+B13 line  3  Medicines and Drugs                            clause B.1.1 -> A.1.2.Def5
+B13 line  9  Investigations - Labs                          clause B.1.1 -> A.1.2.Def5
+B14 line  5  Medicines and Drugs                            clause II.1 -> I.Def45
+B14 line  6  Investigations - Labs and Imaging              clause II.1 -> I.Def45
+B15 line  2  ICU Charges 18,000 x 3 days                    clause B.1.1 -> A.1.2.Def5
+B15 line  3  Surgeon Fee                                    clause B.1.1.1 -> A.1.2.Def5
+B15 line  4  Anaesthetist Charges                           clause B.1.1.1 -> A.1.2.Def5
+B15 line  5  Medicines and Drugs                            clause B.1.1 -> A.1.2.Def5
+B15 line  6  Operation Theatre Charges                      clause B.1.1.1 -> A.1.2.Def5
+B15 line  7  Ventilator Charges                             clause B.1.1 -> A.1.2.Def5
+B15 line  8  Investigations - CT, Labs                      clause B.1.1 -> A.1.2.Def5
+B17 line  3  Medicines and Drugs                            clause II.1 -> I.Def45
+B17 line  9  Investigations - Labs                          clause II.1 -> I.Def45
+B19 line  2  ICU Charges 20,000 x 2 days                    clause II.1 -> I.Def45
+B19 line  3  Surgeon Fee                                    clause II.1 -> I.Def45
+B19 line  4  Anaesthetist Charges                           clause II.1 -> I.Def45
+B19 line  5  Medicines and Drugs                            clause II.1 -> I.Def45
+B19 line  6  Operation Theatre Charges                      clause II.1 -> I.Def45
+B19 line  7  Investigations - PET CT                        clause II.1 -> I.Def45
+B20 line  5  Medicines and Drugs                            clause B.1.1 -> A.1.2.Def5
+B20 line  6  Investigations - Labs and CT                   clause B.1.1 -> A.1.2.Def5
+B21 line  3  Medicines and Drugs                            clause B.1.1 -> A.1.2.Def5
+B21 line 10  Investigations - Labs                          clause B.1.1 -> A.1.2.Def5
+B22 line  5  Medicines and Drugs                            clause II.1 -> I.Def45
+B22 line  6  Investigations - Angiography                   clause II.1 -> I.Def45
+B24 line  4  Medicines - Ayurvedic Preparations             clause B.1.1 -> A.1.2.Def5
+B24 line  5  Investigations - Basic Panel                   clause B.1.1 -> A.1.2.Def5
+B26 line  3  Medicines and Drugs                            clause II.1 -> I.Def45
+B26 line 10  Investigations - MRI                           clause II.1 -> I.Def45
+B28 line  2  ICU Charges 28,000 x 3 days                    clause B.1.1 -> A.1.2.Def5
+B28 line  3  Surgeon Fee                                    clause B.1.1.1 -> A.1.2.Def5
+B28 line  4  Anaesthetist Charges                           clause B.1.1.1 -> A.1.2.Def5
+B28 line  5  Medicines and Drugs                            clause B.1.1 -> A.1.2.Def5
+B28 line  6  Operation Theatre Charges                      clause B.1.1.1 -> A.1.2.Def5
+B28 line  7  Investigations - PET CT and Labs               clause B.1.1 -> A.1.2.Def5
+B28 line  8  Ventilator Charges                             clause B.1.1 -> A.1.2.Def5
+B29 line  5  Medicines and Drugs                            clause B.1.1 -> A.1.2.Def5
+B29 line  6  Investigations - Labs                          clause B.1.1 -> A.1.2.Def5
+B31 line  1  Room Rent (Shared) 2,500 x 1 day               allowed 2500.0 -> None; needs_human False -> True
+B32 line  5  Medicines and Drugs                            clause II.1 -> I.Def45
+B32 line  6  Investigations - Labs and USG                  clause II.1 -> I.Def45
+B33 line  2  ICU Charges 24,000 x 2 days                    clause II.1 -> I.Def45
+B33 line  3  Surgeon Fee                                    clause II.1 -> I.Def45
+B33 line  4  Anaesthetist Charges                           clause II.1 -> I.Def45
+B33 line  5  Medicines and Drugs                            clause II.1 -> I.Def45
+B33 line  6  Operation Theatre Charges                      clause II.1 -> I.Def45
+B33 line  7  Investigations - CT, MRI, Labs                 clause II.1 -> I.Def45
+B35 line  3  Medicines and Drugs                            clause B.1.1 -> A.1.2.Def5
+B35 line 10  Investigations - Labs                          clause B.1.1 -> A.1.2.Def5
+B36 line  4  Medicines and Drugs                            clause B.1.1 -> A.1.2.Def5
+B36 line  5  Investigations - Labs                          clause B.1.1 -> A.1.2.Def5
+B38 line  4  Medicines and Drugs                            clause II.1 -> I.Def45
+B38 line  5  Investigations - Pre-procedure Panel           clause II.1 -> I.Def45
+B41 line  2  ICU Charges 16,000 x 2 days                    clause II.1 -> I.Def45
+B41 line  5  Medicines and Drugs                            clause II.1 -> I.Def45
+B41 line  7  Investigations - CT and Labs                   clause II.1 -> I.Def45
+B42 line  5  Medicines and Drugs                            clause II.1 -> I.Def45
+B42 line  6  Investigations - MRI and Labs                  clause II.1 -> I.Def45
+B43 line  4  Medicines - Ayurvedic Preparations             clause B.1.1 -> A.1.2.Def5
+B43 line  5  Investigations - Basic Panel                   clause B.1.1 -> A.1.2.Def5

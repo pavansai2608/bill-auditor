@@ -1,13 +1,41 @@
-"""Derive the answer key by reading the policy documents, not by running the auditor.
+"""How the answer key was first derived. IT NO LONGER REPRODUCES THE KEY ON DISK.
 
-Every rule below was read off the PDF pages directly with pdfplumber (full page
-context, both columns), and each is quoted in the `derivation` string it
-produces. Nothing here imports the retriever, the judge or the audit pipeline -
-if the key came from the system under test, the evaluation would only show the
-system agrees with itself.
+**Read this before running anything here.** `eval/answer_key.json` has been
+changed since this script wrote it, by two recorded decisions that were applied
+to the key and never back-ported into this file:
+
+* **D-12, the citation rule** - a line the second pass rescales cites the clause
+  defining associated medical expenses, not the room-rent cap that triggered it.
+  85 lines: `II.1` -> `I.Def45` (47), `B.1.1` -> `A.1.2.Def5` (28),
+  `B.1.1.1` -> `A.1.2.Def5` (10).
+* **B03 and B31 became abstentions** - niva_bupa states no default room
+  entitlement, so a shared-room line cannot be answered from the document.
+  This script still answers both at 2,500.
+
+So `--write` would silently revert 87 decisions. **It is refused.** The
+divergence is pinned by `tests/test_derive_key_divergence.py` against a golden
+file, so it cannot grow unnoticed; regenerate that file deliberately, after a
+decision, and read the diff.
+
+This file is kept as the record of where the key came from, and it is still the
+honest answer to "how was this derived" for the 241 lines it does reproduce.
+
+----
+
+Every rule below was read off the PDF pages by hand and typed in as a constant -
+`STAR_ROOM`, `STAR_CATARACT`, `AME_QUOTE` and the rest. **This script does not
+open the PDFs.** It reads `eval/bills/*.json` and `data/non_payable.json`, and
+nothing else. The clause id on a line comes from one of the dicts below, chosen
+by a regex on the item text; the amount comes from arithmetic over those same
+constants. Nothing here re-checks a constant against the document.
+
+It imports no retriever, no judge and no audit code, which is real independence
+of the *plumbing*: a bug in the splitter or the reranker cannot reach the key
+and then be scored as a success. It is not independence of the *reading*. See
+KNOWN_LIMITATIONS.md.
 
     uv run python eval/derive_key.py            # show what it would write
-    uv run python eval/derive_key.py --write    # write eval/answer_key.json
+    uv run python eval/derive_key.py --write    # refused; see above
 
 Where a policy genuinely does not decide a line, `allowed` is null and
 `needs_human` is true. No number is invented to fill a gap.
@@ -482,10 +510,27 @@ def derive_bill(bill: dict, entries: list[dict]) -> list[dict]:
     return out
 
 
+REFUSAL = """--write is refused. This script no longer reproduces eval/answer_key.json.
+
+Writing would revert 87 recorded decisions:
+  85 citations set by D-12 (II.1 -> I.Def45, B.1.1 / B.1.1.1 -> A.1.2.Def5)
+   2 abstentions on B03 and B31, which this script still answers at 2,500
+
+Run without --write to see what it would produce, and
+    uv run python tests/test_derive_key_divergence.py
+to see exactly how the two disagree today."""
+
+
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Derive the answer key from the policy PDFs")
-    parser.add_argument("--write", action="store_true")
+    parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
+    parser.add_argument("--write", action="store_true", help="refused; see the module docstring")
     args = parser.parse_args()
+
+    if args.write:
+        # Deliberately before any work: nothing about this run should look like
+        # it was on its way to succeeding.
+        print(REFUSAL, file=sys.stderr)
+        return 2
 
     entries = load_non_payable()
     key = json.loads(KEY.read_text(encoding="utf-8"))
@@ -507,11 +552,7 @@ def main() -> int:
 
     total = sum(len(v["lines"]) for v in key["bills"].values())
     print(f"lines: {total}   answered: {filled}   flagged needs_human: {flagged}")
-    if args.write:
-        KEY.write_text(json.dumps(key, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-        print(f"written to {KEY}")
-    else:
-        print("(dry run - pass --write to save)")
+    print("(dry run, and the only run there is - --write is refused, see the docstring)")
     return 0
 
 
