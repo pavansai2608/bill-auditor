@@ -98,15 +98,41 @@ def code_digest() -> str:
     return digest(parts)
 
 
+def tuning_digest() -> str:
+    """The settings that change a result without changing a line of source.
+
+    `core.retrieve` already keeps this list, because its own disk cache has the
+    same problem one level down: two runs at different `rerank_top_n` values ask
+    the same question and must not share an answer. Reusing it means the two
+    caches cannot drift apart about what "the same run" means.
+
+    This exists because the code digest above cannot see a setting.
+    `BA_RERANK_TOP_N=8 uv run python eval/evaluate.py --version v9` would have
+    replayed v9's stored reports and reported v9's numbers as though they were
+    the experiment's - the same failure the code fingerprint was added to close,
+    wearing an environment variable instead of a commit.
+    """
+    from core.retrieve import _config_fingerprint
+
+    return digest(_config_fingerprint())
+
+
 def fingerprint(*, use_agent: bool, second_pass: bool) -> str:
-    """The code and the switches that together decide what a bill scores.
+    """The code, the tuning and the switches that together decide what a bill scores.
 
     The two flags belong here as much as the source does. `--second-pass`
     changes every associated line on a bill that breached its room limit, and
     before this it changed nothing about the checkpoint key - so a run with the
     flag happily replayed reports produced without it.
     """
-    return digest({"code": code_digest(), "agent": use_agent, "second_pass": second_pass})
+    return digest(
+        {
+            "code": code_digest(),
+            "tuning": tuning_digest(),
+            "agent": use_agent,
+            "second_pass": second_pass,
+        }
+    )
 
 
 @dataclass

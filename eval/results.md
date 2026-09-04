@@ -821,3 +821,79 @@ Lines that went past attempt 1: 164
 > Conditions". The extraction defect is gone; what is left is that the key
 > paraphrased instead of copying. That is a question for the PDF, not for the
 > splitter.
+
+### v10-top5 - 2026-09-04
+
+Bills run: 44   
+Bills with no answers filled in yet: 0   
+Lines scored: 328   Lines skipped (key not filled): 0
+
+| metric | value |
+|---|---|
+| Backend | ollama (qwen3:8b), retrieval on cpu |
+| Code fingerprint | `209c1f33393b` |
+| Line accuracy (allowed within Rs 1) | 47.3% |
+| Citation accuracy | 46.9% |
+| Payout error | 69.6% |
+| Abstention recall (flagged when it should) | 60.0% |
+| Abstention precision (flagged and was right) | 14.3% |
+| False answers (answered, should have flagged) | 12 |
+| Dodges (flagged, key has an answer) | 108 |
+| **Fabricated clauses** | **0** |
+| p95 latency per bill | 230.1s |
+| Avg tool calls per bill | 15.3 |
+
+| category | lines | line acc | citation acc | dodges | false answers |
+|---|---|---|---|---|---|
+| clean | 65 | 30.8% | 40.0% | 34 | 1 |
+| non_payable | 95 | 70.5% | 71.6% | 23 | 2 |
+| room_category_limit | 15 | 33.3% | 40.0% | 4 | 6 |
+| room_rent_over | 83 | 32.5% | 24.1% | 23 | 0 |
+| schedule_missing | 13 | 61.5% | 50.0% | 3 | 2 |
+| sub_limit | 26 | 34.6% | 32.0% | 13 | 1 |
+| waiting_period | 31 | 61.3% | 58.1% | 8 | 0 |
+
+**Retry loop**  
+Lines settled on the non-payable fast path (no search, no judge call): 125  
+Average attempts per line: 1.67  
+Lines that went past attempt 1: 149  
+...of which a later attempt actually produced an answer: **70** (47%)
+
+
+> **REVERTED. Experiment (a): pass 5 clauses to the judge instead of 3.**
+>
+> Run with `BA_RERANK_TOP_N=5`, everything else identical to v9. `rerank_top_n`
+> stays at its default of **3**; nothing in the repository was changed to
+> produce this row and nothing had to be changed back.
+>
+> | | v9 (top-3) | v10 (top-5) |
+> |---|---|---|
+> | line accuracy | 54.0% | **47.3%** |
+> | recall at the cut | 34.5% | 44.4% |
+> | false answers | 5 | **12** |
+> | fabricated clauses | 0 | 0 |
+>
+> **It breaks the false-answer limit and it is reverted for that, not for the
+> accuracy.** Twelve lines answered where the key says flag, against a ceiling
+> of five. Abstention recall fell 83.3% -> 60.0%. `room_category_limit` alone
+> went from 1 false answer to 6: those are the star_health 10L bills where the
+> entitlement is a room *category* with no rupee figure, so no ratio can be
+> computed and the key flags every associated line. Given five clauses instead
+> of three the judge finds something to cite and answers anyway.
+>
+> Accuracy fell too, 54.0% -> 47.3%, so there was no trade to consider. Recall at
+> the cut rose exactly as predicted, 34.5% -> 44.4% - **the right clause reaching
+> the judge more often did not make the judge more right.** Citation accuracy did
+> improve, 44.4% -> 46.9%, which is the honest shape of it: better citations,
+> worse verdicts, more guessing.
+>
+> The checkpoint fingerprint now covers retrieval settings as well as source and
+> index (`eval/checkpoint.tuning_digest`). Without it this row would have
+> replayed v9's stored reports and reported v9's numbers - the same failure the
+> code fingerprint was added to close, wearing an environment variable instead of
+> a commit.
+>
+> **Top-8 was not run.** Recall at the cut would rise a further 3.9 points
+> (48.3% vs 44.4%), and the mechanism that produced twelve false answers at five
+> clauses is more clauses in the prompt. Spending 90 minutes to confirm a worse
+> number needs a decision, not an assumption.
