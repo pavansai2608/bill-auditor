@@ -181,13 +181,17 @@ includes every green one before it.**
 
 The stage now frees the port and fails if it cannot, starts each server as a
 process-group leader so cleanup can signal the group, and refuses to run the
-test unless **the process holding the port is in this run's process group** and
-**the bytes served carry this run's build stamp**. Neither check alone is
-enough: the stamp cannot catch a survivor, because Jenkins keeps its workspace
-and an orphan serves the same `dist/` this run just rebuilt; the group check
-cannot catch a server that is ours but serving a half-written `dist/`.
+test unless **the process holding the port is in this run's process group**,
+**the bytes served carry this run's build stamp**, and **the bundle was built
+against the API base this run is serving**. No one of the three is enough: the
+stamp cannot catch a survivor, because Jenkins keeps its workspace and an orphan
+serves the same `dist/` this run just rebuilt; the group check cannot catch a
+server that is ours but serving a half-written `dist/`; and neither can catch a
+`BA_E2E_SKIP_BUILD` run, where the stamp is written over a `dist/` this run
+never built and whose `VITE_API_BASE` still points at whatever port the last
+real build used - on this agent, the compose gateway on 8000.
 
-Do not replace either with a sleep or a retry. A stale server answers instantly,
+Do not replace any of them with a sleep or a retry. A stale server answers instantly,
 which is precisely why waiting longer never helped.
 
 ### CI, and the three things that make it honest

@@ -316,8 +316,42 @@ Anything else is named, with its command line and working directory, and the
 stage fails telling the operator to stop it or move the port. Both ports are
 configurable (`BA_E2E_API_PORT`, `BA_E2E_WEB_PORT`).
 
-**What this does not solve.** The stage still needs two ports, and on a machine
-where something legitimate holds one it will refuse to run rather than work
-around it. That is the intended trade - a refusal is cheap to diagnose - but it
-means the E2E stage can be blocked by an unrelated process, and on a shared
-build agent that will happen.
+**It was blocked immediately, and that is the fix working.** `main #15` failed
+with the stage refusing port 8000 because Docker Desktop's proxy held it: the
+docker-compose stack publishes the gateway on 8000 and the frontend on 5173, the
+same two ports the stage wanted, and Docker restores those containers whenever
+it starts. The stage is now given ports of its own in the `Jenkinsfile`
+(`BA_E2E_API_PORT=8111`, `BA_E2E_WEB_PORT=5111`).
+
+**Making the ports configurable took three changes, not one.** A port setting
+that only reaches the servers is a trap, because everything downstream still
+assumes the defaults:
+
+- `VITE_API_BASE` is baked into the bundle at build time and defaults to
+  `http://localhost:8000`. On this machine that is the compose gateway, so the
+  test would have driven our frontend against a different backend entirely and
+  reported a pass.
+- `browser_flow.py` reads `BA_E2E_API` and `BA_E2E_APP`, both defaulting to the
+  same two ports, so it would have tested the compose stack.
+- `core/config.py` allows CORS from `:3000` and `:5173` and nothing else. On any
+  other port the browser's `/policies` fetch is blocked, the policy dropdown
+  never populates, and the test times out on a selector - which looks exactly
+  like a broken frontend and is not one. This one was found by running it.
+
+All three are set by `run_stage.sh` from the two port variables.
+
+**Making the ports configurable also needed a third proof.** The stage proved
+the server was its own and the bytes were this run's, but nothing proved the
+bundle *pointed* at this run's API - and `BA_E2E_SKIP_BUILD` writes the stamp
+without building, so both existing proofs pass over a `dist/` baked against
+whatever port the last real build used. On this agent that is 8000, the compose
+gateway: the stage would have driven our frontend against a different backend
+and reported a pass, which is the exact failure the port work exists to stop.
+The build now records its base in `frontend/dist/ba-build-base.txt` and a
+skipped build must match it or the stage refuses.
+
+**What is still not solved.** The stage needs two free ports and will refuse
+rather than work around a clash. That is the intended trade - a refusal is cheap
+to diagnose, a dead daemon three stages later is not - but on an agent where
+something else takes 8111 or 5111, the same refusal happens again and the answer
+is another pair of ports.
