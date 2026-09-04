@@ -26,7 +26,7 @@ from api.shared import (
     policy_rows,
     report_payload,
 )
-from core import llm
+from core import llm, retrieve
 from core.assumptions import Assumptions
 from core.audit import audit_lines
 from core.config import settings
@@ -174,8 +174,11 @@ def health() -> dict[str, Any]:
         # read when an audit is unexpectedly slow.
         "backend": backend,
         "model": settings.groq_model if backend == "groq" else settings.ollama_model,
-        # Repeat audits are only fast if this says enabled. See llm.cache_health.
+        # Repeat audits are only fast if these say enabled. Model calls come
+        # back from the first, searches from the second; between them they are
+        # the whole cost of re-auditing a bill that has been audited before.
         "llm_cache": llm.cache_health(),
+        "retrieval_cache": retrieve.cache_health(),
     }
 
 

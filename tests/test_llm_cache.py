@@ -22,8 +22,15 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-from core import llm
+from core import cache, llm
 from core.config import Settings, settings
+
+# The exact key the shared serialisation produces for a fixed payload. Every
+# entry already on disk was addressed with this dump, so a change to
+# `core.cache.canonical` would orphan thousands of cached answers in silence.
+# If this assertion ever has to move, the caches have to be rebuilt with it.
+PINNED_PAYLOAD = {"backend": "ollama", "model": "qwen3:8b", "messages": [{"role": "human", "n": 1}]}
+PINNED_KEY = "50494a5c2b39067dccdcefc2f3d11be0db492da0afb9f4da1eb55c857b417d5a"
 
 
 class CacheDirTest(unittest.TestCase):
@@ -95,7 +102,7 @@ class ConcurrentWritersTest(CacheDirTest):
 
     def test_a_failed_write_does_not_orphan_its_temp_file(self):
         with (
-            mock.patch.object(llm.json, "dump", side_effect=OSError("disk full")),
+            mock.patch.object(cache.json, "dump", side_effect=OSError("disk full")),
             self.assertRaises(OSError),
         ):
             llm.cache_put("c" * 64, {"a": 1}, {"kind": "structured"})
@@ -112,9 +119,9 @@ class TheKeyIsStableAcrossRunsTest(CacheDirTest):
 
     def payload_fields(self) -> set[str]:
         messages = llm._build_messages("judge this line", system="you are a judge")
-        with mock.patch.object(llm.json, "dumps", wraps=json.dumps) as dumps:
+        with mock.patch.object(cache, "canonical", wraps=cache.canonical) as canonical:
             llm.cache_key(messages, schema_name="JudgeOutput")
-        return set(dumps.call_args.args[0])
+        return set(canonical.call_args.args[0])
 
     def test_the_key_payload_holds_only_things_that_decide_the_answer(self):
         self.assertEqual(
@@ -130,6 +137,15 @@ class TheKeyIsStableAcrossRunsTest(CacheDirTest):
             },
             self.payload_fields(),
             "a field that varies per run would make every repeat a miss",
+        )
+
+    def test_the_serialisation_still_produces_the_key_it_always_has(self):
+        """The ~2,000 entries already on disk were addressed with this exact dump."""
+        self.assertEqual(PINNED_KEY, cache.key_digest(PINNED_PAYLOAD))
+        self.assertEqual(
+            cache.key_digest(PINNED_PAYLOAD),
+            cache.key_digest(dict(reversed(list(PINNED_PAYLOAD.items())))),
+            "field order must not reach the key",
         )
 
     def test_the_same_prompt_keys_the_same_way_twice(self):

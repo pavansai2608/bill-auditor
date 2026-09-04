@@ -149,6 +149,19 @@ class Settings(BaseSettings):
     # latency and nothing else.
     retrieval_cache_size: int = 512
 
+    # The same result, kept on disk instead of only in this process.
+    #
+    # The in-memory cache above dies with the process, and retrieval is the
+    # other 90% of an audit: with every model call served from disk, re-running
+    # one 10-line bill after a restart still cost 94.6s of searching and 68s of
+    # wall clock. On disk it is 5s.
+    #
+    # Off only for measurement, exactly like BA_LLM_CACHE_ENABLED - timing a
+    # bill twice is meaningless when the second run is disk reads. The key
+    # carries a digest of clauses.json, so re-indexing makes every stored entry
+    # unaddressable rather than stale.
+    retrieval_cache_enabled: bool = True
+
     # --- Agent loop -----------------------------------------------------
     max_attempts: int = 3
     max_tool_calls: int = 8
@@ -219,6 +232,10 @@ class Settings(BaseSettings):
         return self.data_dir / "llm_cache"
 
     @property
+    def retrieval_cache_dir(self) -> Path:
+        return self.data_dir / "retrieval_cache"
+
+    @property
     def db_dir(self) -> Path:
         """ChromaDB PersistentClient directory."""
         return self.data_dir / "db"
@@ -232,6 +249,7 @@ class Settings(BaseSettings):
             self.data_dir,
             self.policies_dir,
             self.llm_cache_dir,
+            self.retrieval_cache_dir,
             self.db_dir,
             self.traces_dir,
         ):

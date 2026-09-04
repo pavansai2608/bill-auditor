@@ -16,7 +16,7 @@ from pydantic import BaseModel, Field
 
 from api.jobs import Job, jobs
 from api.shared import known_policies, report_payload
-from core import llm
+from core import llm, retrieve
 from core.assumptions import Assumptions
 from core.audit import audit_lines
 from core.config import settings
@@ -167,9 +167,14 @@ def stats() -> dict[str, Any]:
         "workers": worker_count(),
         "seconds": backends.STATS,
         # Whether a repeat audit can be answered from disk at all. A run that
-        # is slow every time, with the same bill and the same policy, is this
-        # field reading false far more often than it is a cache key problem.
+        # is slow every time, with the same bill and the same policy, is one of
+        # these reading false far more often than it is a cache key problem.
         "llm_cache": llm.cache_health(),
+        # Searching happens in retrieval-service when remote_retrieval is true,
+        # and this cache is empty here because nothing in this process searches.
+        # Ask retrieval-service /health for the one that is doing the work.
+        "remote_retrieval": REMOTE_RETRIEVAL,
+        "retrieval_cache": retrieve.cache_health(),
     }
 
 

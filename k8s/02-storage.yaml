@@ -35,3 +35,19 @@ spec:
   resources:
     requests:
       storage: 2Gi
+---
+# Every search is cached by query, policy and a digest of the clause index.
+# The same argument as llm-cache, for the other 90% of an audit: with the model
+# calls served from disk, re-auditing one bill after a restart still cost 94.6s
+# of searching. This is what removes it. Mounted on retrieval-service, which is
+# the container that searches.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: retrieval-cache
+  namespace: bill-auditor
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 2Gi

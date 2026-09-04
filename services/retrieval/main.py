@@ -11,7 +11,7 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
-from core import llm
+from core import llm, retrieve
 from core.config import settings
 from core.logging_conf import get_logger, setup_logging
 from core.retrieve import search
@@ -41,7 +41,11 @@ class SearchRequest(BaseModel):
 
 @app.get("/health")
 def health() -> dict[str, Any]:
-    return clause_index_health()
+    body = clause_index_health()
+    # This is the process that actually searches, so this is the cache that
+    # decides whether a repeat audit costs seconds or minutes.
+    body["retrieval_cache"] = retrieve.cache_health()
+    return body
 
 
 @app.get("/ready")

@@ -50,10 +50,15 @@ spec:
           volumeMounts:
             - name: clause-data
               mountPath: /app/data/db
+            - name: retrieval-cache
+              mountPath: /app/data/retrieval_cache
       volumes:
         - name: clause-data
           persistentVolumeClaim:
             claimName: clause-data
+        - name: retrieval-cache
+          persistentVolumeClaim:
+            claimName: retrieval-cache
 ---
 apiVersion: v1
 kind: Service

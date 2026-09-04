@@ -161,7 +161,23 @@ class RerankCollapseTest(unittest.TestCase):
     "vector store missing - run 'uv run python -m core.ingest'",
 )
 class EndToEndSearchTest(unittest.TestCase):
-    """Slow: loads Chroma, bge-base and the cross-encoder."""
+    """Slow: loads Chroma, bge-base and the cross-encoder.
+
+    Both caches are off here, deliberately. These are the assertions that say
+    the retrieval stack still finds the right clause, and a stored search would
+    answer them without running it - so a change to the reranker or the
+    sub-chunker, neither of which is in the clause index, would pass on an
+    answer computed before the change. That is the failure the eval checkpoints
+    had: a warm cache replaying old work as though it were fresh.
+    """
+
+    def setUp(self):
+        retrieve.clear_search_cache()
+        self.addCleanup(retrieve.clear_search_cache)
+        for name, value in (("retrieval_cache_enabled", False), ("retrieval_cache_size", 0)):
+            patch = mock.patch.object(settings, name, value)
+            patch.start()
+            self.addCleanup(patch.stop)
 
     def test_finds_the_room_rent_rule_in_each_policy(self):
         from core.retrieve import search
@@ -250,17 +266,24 @@ if __name__ == "__main__":
 
 
 class SearchCacheTest(unittest.TestCase):
-    """The (query, policy) cache in front of the expensive half of a search.
+    """The in-process (query, policy) cache in front of the expensive half.
 
     Retrieval is ~92% of an audit's wall clock, and the same searches recur:
     6 of 10 lines retry and each retry searches again, and gloves, syringes
     and room rent appear in nearly every bill.
+
+    The disk layer behind it is switched off here so these tests measure the
+    memory layer alone - and so they never write into the real cache directory.
+    `tests/test_retrieval_cache.py` covers the disk layer.
     """
 
     def setUp(self):
         retrieve.clear_search_cache()
         self.addCleanup(retrieve.clear_search_cache)
         self.addCleanup(setattr, settings, "retrieval_cache_size", settings.retrieval_cache_size)
+        no_disk = mock.patch.object(settings, "retrieval_cache_enabled", False)
+        no_disk.start()
+        self.addCleanup(no_disk.stop)
 
     def _retriever(self, calls):
         class FakeRetriever:

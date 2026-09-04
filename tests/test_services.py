@@ -36,8 +36,12 @@ class RetrievalServiceTest(unittest.TestCase):
 
         self.client = TestClient(app)
 
-    def test_health_reports_the_clause_index(self):
+    def test_health_reports_the_clause_index_and_the_search_cache(self):
         body = self.client.get("/health").json()
+        # This is the process that searches, so this is the cache that decides
+        # whether a repeat audit costs seconds or minutes.
+        self.assertIn("enabled", body["retrieval_cache"])
+        self.assertIn("entries", body["retrieval_cache"])
         self.assertEqual(body["status"], "ok")
         self.assertGreater(body["clauses"], 0)
 

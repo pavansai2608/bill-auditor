@@ -20,9 +20,6 @@ cached this morning would be served this afternoon as if Llama had said it -
 silently, and with no way to tell from the report.
 """
 
-import hashlib
-import json
-import os
 import threading
 import time
 from pathlib import Path
@@ -31,7 +28,7 @@ from typing import Any
 from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
 from pydantic import BaseModel, ValidationError
 
-from core import backends
+from core import backends, cache
 from core.backends import GROQ, OLLAMA, QuotaExhausted, Unreachable
 from core.config import settings
 from core.logging_conf import get_logger
@@ -211,8 +208,10 @@ def cache_key(messages: list[BaseMessage], schema_name: str | None) -> str:
         "schema": schema_name,
         "messages": _messages_payload(messages),
     }
-    blob = json.dumps(payload, sort_keys=True, ensure_ascii=False)
-    return hashlib.sha256(blob.encode("utf-8")).hexdigest()
+    # `core.cache` owns the serialisation, so the retrieval cache cannot drift
+    # away from it. Every entry already on disk was addressed with this exact
+    # dump; tests/test_llm_cache.py pins the hash it produces.
+    return cache.key_digest(payload)
 
 
 def _cache_path(key: str) -> Path:
@@ -222,17 +221,10 @@ def _cache_path(key: str) -> Path:
 def cache_get(key: str) -> Any | None:
     if not settings.llm_cache_enabled:
         return None
-    path = _cache_path(key)
-    if not path.exists():
-        CACHE_STATS["misses"] += 1
-        return None
-    try:
-        with path.open(encoding="utf-8") as fh:
-            entry = json.load(fh)
-    except json.JSONDecodeError, OSError:
-        # A half-written cache file must never take the system down.
-        log.warning("discarding unreadable cache entry %s", path.name)
-        path.unlink(missing_ok=True)
+    entry = cache.read_json(_cache_path(key))
+    if entry is None:
+        # Missing, or half-written and therefore discarded by read_json. Either
+        # way it is a miss; a half-written file must never take the system down.
         CACHE_STATS["misses"] += 1
         return None
     CACHE_STATS["hits"] += 1
@@ -253,46 +245,14 @@ def cache_put(key: str, response: Any, meta: dict[str, Any]) -> None:
         **meta,
         "response": response,
     }
-    # The temp name carries the writer's identity. It used to be one shared
-    # "<key>.tmp": two audit workers judging identical lines write it at the
-    # same time, the first replace() consumes it, and the second raises
-    # FileNotFoundError out of cache_put and takes the line down with it. Six
-    # threads on one key fail 153 times in 240 writes. Whichever writer lands
-    # last wins, which is fine - every writer is storing the same answer.
-    path = _cache_path(key)
-    tmp = path.with_name(f"{path.name}.{os.getpid()}.{threading.get_ident():x}.tmp")
-    try:
-        with tmp.open("w", encoding="utf-8") as fh:
-            json.dump(entry, fh, ensure_ascii=False, indent=2, default=str)
-        tmp.replace(path)
-    except BaseException:
-        tmp.unlink(missing_ok=True)
-        raise
+    # Atomic, and safe from several audit workers at once. See core.cache.
+    cache.write_json(_cache_path(key), entry)
     CACHE_STATS["writes"] += 1
 
 
 def cache_health() -> dict[str, Any]:
-    """What the cache is doing, resolved in this process rather than read off disk.
-
-    `BA_LLM_CACHE_ENABLED` exists so one bill can be timed honestly, and
-    docker-compose takes it from the shell, where `environment:` beats
-    `env_file:`. Left exported from an earlier measurement it turns every
-    repeat audit back into a cold one, and nothing says so: the page is simply
-    slow again. Reading the .env cannot settle it, because the process may not
-    have used that .env. This can.
-    """
-    directory = settings.llm_cache_dir
-    try:
-        entries = sum(1 for _ in directory.glob("*.json"))
-    except OSError:
-        entries = -1
-    return {
-        "enabled": settings.llm_cache_enabled,
-        "dir": str(directory),
-        "writable": directory.exists() and os.access(directory, os.W_OK),
-        "entries": entries,
-        **CACHE_STATS,
-    }
+    """Whether a repeat audit can be answered from disk, asked of the process."""
+    return cache.store_health(settings.llm_cache_dir, settings.llm_cache_enabled, CACHE_STATS)
 
 
 def clear_cache() -> int:

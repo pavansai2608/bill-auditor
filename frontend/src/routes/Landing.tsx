@@ -7,12 +7,22 @@ import "./landing.css";
 /**
  * The front door.
  *
- * Written for someone holding a bill and a settlement letter they did not
- * expect, who is not in the mood to be sold to. So: no gradients, no stock
+ * Written for two people, not one: someone holding a bill they have not
+ * claimed yet, and someone holding a settlement letter they did not expect.
+ * The system needs a bill and a policy and nothing else, so a claim does not
+ * have to exist for it to be useful - and copy written only in the past tense
+ * told half the visitors it was not for them.
+ *
+ * Neither is in the mood to be sold to. So: no gradients, no stock
  * photography, no claims about the technology. The worked example sits second
  * because a real bill with real figures answers "what is this" faster than any
  * paragraph, and the section admitting what the tool cannot do sits fourth
  * because it is the reason to believe the rest.
+ *
+ * What the copy may promise is bounded by what the numbers support. It shows
+ * which clause the policy brings to a line. It does not promise a settlement
+ * figure, and it must never read as though it could: line accuracy is 51.5%.
+ * Broadening the timing is allowed; broadening the certainty is not.
  *
  * Every figure on this page comes from eval/results.md or from an actual audit
  * of eval/bills/B01.json. Nothing here is illustrative.
@@ -198,19 +208,23 @@ export default function Landing() {
       <main id="main">
         <section className="landing-hero" aria-labelledby="hero-heading">
           <h1 id="hero-heading">
-            Check a hospital bill against the policy that is meant to pay it, line by line.
+            Read a hospital bill against the policy that is meant to pay it, line by line — before
+            you claim, or after they settle.
           </h1>
           <div className="hero-row">
             <div className="hero-copy">
               <p className="landing-lead">
-                Insurers deduct against clauses most people never see. This shows you which clause
-                took which rupee, so you can tell a rule from a mistake.
+                Policies cap and exclude through clauses most people never see. Before you claim,
+                read which clause the policy brings to each line of your bill, and what it says
+                about that line. After a settlement, read the same thing and hold it beside the
+                deductions your insurer actually made — which is how you tell a rule from a mistake.
               </p>
               <Link className="landing-cta" to="/audit">
                 Audit a bill
               </Link>
               <p className="landing-cta-note">
-                No account, no email address. Three policies built in.
+                No account, no email address. Three policies built in. The claim does not have to
+                exist yet.
               </p>
             </div>
             <HeroPlate />
@@ -320,8 +334,10 @@ export default function Landing() {
         <Reveal className="landing-section" aria-labelledby="not-heading">
           <h2 id="not-heading">What it does not do</h2>
           <p className="landing-section-note">
-            It reads one bill against one policy document. Everything below is outside that, and
-            saying so is more use to you than pretending otherwise.
+            It reads one bill against one policy document — the policy wording, never your insurer's
+            settlement letter. It cannot tell you what your insurer actually did, only what the
+            policy it was given says. Everything below is outside it too, and saying so is more use
+            to you than pretending otherwise.
           </p>
           <ul className="not-list">
             {NOT_FOR.map((item, index) => (
