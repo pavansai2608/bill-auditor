@@ -28,11 +28,13 @@ from langgraph.graph import END, START, StateGraph
 
 from core import llm
 from core.config import settings
+from core.exclusion import is_zero, states_an_exclusion
 from core.ingest import load_non_payable
 from core.llm import LLMError, complete_structured
 from core.logging_conf import TraceWriter, get_logger
 from core.models import (
     BillLine,
+    Clause,
     JudgeOutput,
     Limit,
     LineVerdict,
@@ -390,6 +392,32 @@ def _room_cap_on_a_non_room_line(
     return cited is not None and governs_room_rent(cited)
 
 
+def _unsupported_zero_limit(
+    output: JudgeOutput, candidates: list[RetrievedClause]
+) -> Clause | None:
+    """A verdict of "nothing is payable" from a clause that excludes nothing.
+
+    Returns the cited clause when the verdict must be rejected, so the caller
+    can name it in the reason. A zero limit is not a small number; it is the
+    claim that the policy excludes this expense, and that claim has to be in the
+    document. `core.exclusion` decides from the clause text, never from the
+    model's prose about it.
+
+    Only zero is checked. Verifying every rupee figure against its clause is a
+    much bigger problem with real false-rejection risk - see the note in
+    `core/exclusion.py`.
+    """
+    if not any(is_zero(limit) for limit in output.limits):
+        return None
+    cited = next(
+        (c.clause for c in candidates if c.clause.clause_id == output.clause_id),
+        None,
+    )
+    if cited is None:
+        return None  # nothing to inspect; guardrail 2 owns that case
+    return None if states_an_exclusion(cited) else cited
+
+
 def grade(state: AgentState) -> AgentState:
     """Accept, retry from a different angle, or abstain. Nothing else."""
     output = state.pop("judge_output", None)
@@ -444,6 +472,34 @@ def grade(state: AgentState) -> AgentState:
             "grade",
             decision="rewrite",
             why="room cap offered for a non-room line",
+            clause_id=output.clause_id,
+        )
+        return state
+
+    # Guardrail: a zero limit must be supported by the clause it cites.
+    #
+    # On B41 and B42 the judge returned a limit of Rs 0 citing II.1 - the
+    # in-patient *coverage* clause - for anaesthetist charges, and the report
+    # said Rs 26,000 was not payable with a clause reference beside it.
+    # Guardrail 2 passed because II.1 exists. Every zero limit in the 44-bill
+    # eval was wrong, and seven of the eight became a confident Rs 0 on a line
+    # the key pays in full.
+    #
+    # Rejection goes down the ordinary path - rewrite, retry, abstain on the
+    # third attempt - so a line the model can support from a different clause
+    # still gets answered.
+    unsupported = _unsupported_zero_limit(output, state["candidates"])
+    if unsupported is not None:
+        state["attempts"] = state.get("attempts", 0) + 1
+        state["reason"] = (
+            f"clause {output.clause_id} does not exclude {line.item!r}, so it cannot "
+            "support a limit of zero"
+        )
+        _note(
+            state,
+            "grade",
+            decision="rewrite",
+            why="zero limit from a clause that excludes nothing",
             clause_id=output.clause_id,
         )
         return state
