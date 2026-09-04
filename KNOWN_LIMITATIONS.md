@@ -286,3 +286,38 @@ response, and on macOS two processes can hold the same port on different address
 families (IPv4 and IPv6) — observed while testing this. The
 every-listener-must-be-ours check catches that case only if the stranger is
 present when the check runs; one that arrives afterwards would not be seen.
+
+## 9. The E2E cleanup killed Docker Desktop
+
+The fix in section 8 introduced a worse bug than the one it closed, and it is
+worth recording as its own item because the shape of the mistake is the point.
+
+Freeing port 5173 before starting was correct. Applying the same logic to port
+8000 was not, because the script had no way to know what was on it. From
+`main #13`:
+
+    === port 8000 is already held by pid(s): 32061 - this is the leak, clearing it
+    32061 32008 /Applications/Docker.app/Contents/MacOS/com.docker.backend services
+
+It killed Docker Desktop. Two stages later the Docker stage found no daemon and
+Deploy found no cluster: **the pipeline killed its own dependency**, and did so
+while reporting that it was tidying up after itself. The same logic also killed
+a developer's `npm run dev` server during ordinary local work.
+
+The assumption was never earned. A port number is not a claim of ownership, and
+"this is the leak" was a guess written as a statement. **Killing an unknown
+process is worse than failing**, because a failure is legible at the moment it
+happens and a dead daemon three stages later is not.
+
+The rule now is ownership, not force: a process may be killed only if its
+process group was recorded by an earlier run of this script, or its command line
+is one this stage starts *and* its working directory is inside this repository.
+Anything else is named, with its command line and working directory, and the
+stage fails telling the operator to stop it or move the port. Both ports are
+configurable (`BA_E2E_API_PORT`, `BA_E2E_WEB_PORT`).
+
+**What this does not solve.** The stage still needs two ports, and on a machine
+where something legitimate holds one it will refuse to run rather than work
+around it. That is the intended trade - a refusal is cheap to diagnose - but it
+means the E2E stage can be blocked by an unrelated process, and on a shared
+build agent that will happen.
