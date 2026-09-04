@@ -194,6 +194,13 @@ real build used - on this agent, the compose gateway on 8000.
 Do not replace any of them with a sleep or a retry. A stale server answers instantly,
 which is precisely why waiting longer never helped.
 
+**The stage is now green on both branches, and that is a first.** main #17 and
+develop #22 both ran it end to end: build, both servers, all three proofs, four
+Selenium tests. Its ports are `8100 + EXECUTOR_NUMBER` / `5100 + EXECUTOR_NUMBER`
+rather than a fixed pair, because 8000 and 5173 belong to the docker-compose
+stack on this agent and because two branch jobs sharing one pair made develop #21
+red for main #17's servers. See BA-205 and BA-206.
+
 ### CI, and the three things that make it honest
 
 The pipeline is `Jenkinsfile`, multibranch, on the two branches that exist:
