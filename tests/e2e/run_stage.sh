@@ -67,9 +67,14 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$ROOT"
 
+# Both ports are overridable, so a clash with something legitimate is worked
+# around by the operator rather than by this script killing it.
 API_PORT="${BA_E2E_API_PORT:-8000}"
 WEB_PORT="${BA_E2E_WEB_PORT:-5173}"
 LOGS="$ROOT/.e2e-logs"
+# Process groups this script has started, so a later run can recognise its own
+# leftovers without guessing from a port number.
+OWNED_PGIDS="$LOGS/owned-pgids"
 STAMP_FILE="$ROOT/frontend/dist/ba-build-stamp.txt"
 # Long enough for a cold uvicorn and a vite preview, short enough that a hang
 # fails the stage instead of holding the executor for the build timeout.
@@ -81,48 +86,15 @@ WEB_PGID=""
 say() { printf '\n=== %s\n' "$*"; }
 die() { printf '\nE2E STAGE FAILED: %s\n' "$*" >&2; exit 1; }
 
+# Ownership lives in one place, shared with free_ports.sh, so the two cannot
+# drift apart about what this stage is allowed to kill. See its header for what
+# killing on a port-number guess cost.
+# shellcheck source=tests/e2e/lib_ports.sh
+. "$ROOT/tests/e2e/lib_ports.sh"
+
 # --------------------------------------------------------------------------
 # ports and process groups
 # --------------------------------------------------------------------------
-
-listeners() {
-  # Every pid listening on a port. lsof is on both the macOS and Linux agents;
-  # `|| true` because it exits 1 when nothing matches, which is not an error.
-  lsof -ti "tcp:$1" -sTCP:LISTEN 2>/dev/null || true
-}
-
-pgid_of() {
-  ps -o pgid= -p "$1" 2>/dev/null | tr -d ' ' || true
-}
-
-free_port() {
-  local port="$1" pids
-  pids="$(listeners "$port")"
-  [ -z "$pids" ] && return 0
-
-  say "port $port is already held by pid(s): $pids - this is the leak, clearing it"
-  # shellcheck disable=SC2086
-  ps -o pid=,pgid=,command= -p $pids 2>/dev/null || true
-  # shellcheck disable=SC2086
-  kill -TERM $pids 2>/dev/null || true
-
-  local waited=0
-  while [ -n "$(listeners "$port")" ] && [ "$waited" -lt 10 ]; do
-    sleep 1
-    waited=$((waited + 1))
-  done
-  if [ -n "$(listeners "$port")" ]; then
-    # shellcheck disable=SC2046
-    kill -KILL $(listeners "$port") 2>/dev/null || true
-    sleep 2
-  fi
-
-  pids="$(listeners "$port")"
-  [ -z "$pids" ] || die "port $port is still held by $pids after TERM and KILL.
-Something is running that this stage may not kill. Free it by hand and re-run;
-carrying on would test whatever that process is serving, which is the exact
-defect this script exists to stop."
-}
 
 owned_by_us() {
   # Is every listener on this port inside the process group we started?
@@ -150,15 +122,17 @@ cleanup() {
     [ -n "$pgid" ] || continue
     kill -KILL "-$pgid" 2>/dev/null || true
   done
-  # Whatever happened above, the ports must be clear for the next build. This
-  # is the promise the old cleanup did not keep.
+  # Whatever happened above, this stage's own servers must not survive into the
+  # next build. Only ours - a stranger that wandered onto the port while we ran
+  # is still not ours to kill.
+  local port pid
   for port in "$WEB_PORT" "$API_PORT"; do
-    local leftover; leftover="$(listeners "$port")"
-    if [ -n "$leftover" ]; then
-      echo "cleanup: port $port still held by $leftover, killing" >&2
-      # shellcheck disable=SC2086
-      kill -KILL $leftover 2>/dev/null || true
-    fi
+    for pid in $(listeners "$port"); do
+      if is_ours "$pid" "$([ "$port" = "$WEB_PORT" ] && echo web || echo api)"; then
+        echo "cleanup: killing our leftover on port $port (pid $pid)" >&2
+        kill -KILL "$pid" 2>/dev/null || true
+      fi
+    done
   done
   exit $status
 }
@@ -169,15 +143,16 @@ trap cleanup EXIT INT TERM
 set -m
 
 mkdir -p "$LOGS"
-rm -f "$LOGS"/*.log
+rm -f "$LOGS"/*.log   # keep owned-pgids: the next run identifies us by it
 
 # --------------------------------------------------------------------------
 # 1. clear the ground
 # --------------------------------------------------------------------------
 
-say "freeing ports $API_PORT and $WEB_PORT"
-free_port "$API_PORT"
-free_port "$WEB_PORT"
+say "freeing ports $API_PORT and $WEB_PORT (only processes this stage owns)"
+free_port "$API_PORT" api BA_E2E_API_PORT || die "port $API_PORT is not this stage's to take."
+free_port "$WEB_PORT" web BA_E2E_WEB_PORT || die "port $WEB_PORT is not this stage's to take."
+: > "$OWNED_PGIDS"
 
 # --------------------------------------------------------------------------
 # 2. build, then stamp the build
@@ -206,11 +181,13 @@ say "build stamp for this run: $STAMP"
 say "starting the API on $API_PORT"
 uv run uvicorn api.main:app --port "$API_PORT" > "$LOGS/api.log" 2>&1 &
 API_PGID=$!
+remember_pgid "$API_PGID"
 
 say "starting vite preview on $WEB_PORT"
 ( cd frontend && exec npx vite preview --port "$WEB_PORT" --strictPort ) \
   > "$LOGS/web.log" 2>&1 &
 WEB_PGID=$!
+remember_pgid "$WEB_PGID"
 
 # --strictPort makes vite exit rather than silently move to 5174. Without it a
 # server that could not have the port it was asked for would keep running on a

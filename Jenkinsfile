@@ -155,7 +155,7 @@ pipeline {
       post {
         always {
           // Whatever happened above, the next build must not inherit a server.
-          sh 'tests/e2e/free_ports.sh 5173 8000'
+          sh 'tests/e2e/free_ports.sh'
           // The server logs are the evidence when readiness fails, and they are
           // inside the workspace, so keep a copy on the build.
           archiveArtifacts artifacts: '.e2e-logs/*.log', allowEmptyArchive: true
