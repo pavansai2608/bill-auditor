@@ -350,8 +350,24 @@ and reported a pass, which is the exact failure the port work exists to stop.
 The build now records its base in `frontend/dist/ba-build-base.txt` and a
 skipped build must match it or the stage refuses.
 
+**One fixed pair was not enough either.** The node has two executors and
+multibranch runs main and develop together. At 13:59:44Z both wanted 8111/5111:
+main #17 got them and passed, develop #21 found 5111 held by a process in the
+`bill-audit_main` workspace and refused. Correct behaviour, red build, nothing
+to do with the commit. The ports are now `8100 + EXECUTOR_NUMBER` and
+`5100 + EXECUTOR_NUMBER`, because executor numbers are unique among builds
+running at the same time, which is the property the collision needs. Verified on
+develop #22, which took 8101/5101 - the non-zero offset is the evidence the
+variable reached the `environment` block instead of collapsing to 8100.
+
 **What is still not solved.** The stage needs two free ports and will refuse
 rather than work around a clash. That is the intended trade - a refusal is cheap
 to diagnose, a dead daemon three stages later is not - but on an agent where
-something else takes 8111 or 5111, the same refusal happens again and the answer
-is another pair of ports.
+something else takes the pair this executor was given, the same refusal happens.
+
+Two builds have never yet been observed running the stage *simultaneously* under
+the new scheme; what is proven is that the offset resolves per executor. The
+remaining hole is an aborted build, whose post block can be skipped: main #16
+was aborted at 19:18 and left no cleanup behind it. A leaked server on an
+executor's pair will be named clearly rather than silently tested against, but
+it is still a red build for an unrelated reason.
