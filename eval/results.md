@@ -649,3 +649,73 @@ Lines that went past attempt 1: 35
 > checkpoint and costs **64s**, landing at 48.8% and failing the gate; reverting
 > is **1s** again, because the pre-break checkpoints were never overwritten.
 > Damage costs a full re-run, repair is free. That is the right way round.
+
+### v8-key-audit - 2026-09-04
+
+Bills run: 44   
+Bills with no answers filled in yet: 0   
+Lines scored: 328   Lines skipped (key not filled): 0
+
+| metric | value |
+|---|---|
+| Backend | ollama (qwen3:8b), retrieval on cpu |
+| Code fingerprint | `7d56431ca578` |
+| Line accuracy (allowed within Rs 1) | 51.5% |
+| Citation accuracy | 44.4% |
+| Payout error | 63.8% |
+| Abstention recall (flagged when it should) | 90.0% |
+| Abstention precision (flagged and was right) | 17.1% |
+| False answers (answered, should have flagged) | 3 |
+| Dodges (flagged, key has an answer) | 131 |
+| **Fabricated clauses** | **0** |
+| p95 latency per bill | 43.2s |
+| Avg tool calls per bill | 16.5 |
+
+| category | lines | line acc | citation acc | dodges | false answers |
+|---|---|---|---|---|---|
+| clean | 65 | 38.5% | 33.8% | 38 | 0 |
+| non_payable | 95 | 72.6% | 70.5% | 25 | 0 |
+| room_category_limit | 15 | 60.0% | 33.3% | 5 | 1 |
+| room_rent_over | 83 | 37.3% | 24.1% | 32 | 0 |
+| schedule_missing | 13 | 61.5% | 41.7% | 4 | 1 |
+| sub_limit | 26 | 34.6% | 28.0% | 16 | 1 |
+| waiting_period | 31 | 58.1% | 58.1% | 11 | 0 |
+
+**Retry loop**  
+Lines settled on the non-payable fast path (no search, no judge call): 125  
+Average attempts per line: 1.82  
+Lines that went past attempt 1: 152  
+...of which a later attempt actually produced an answer: **34** (22%)
+
+
+> **The key was audited. Nothing in it changed, so nothing here could move.**
+>
+> `eval/repair_answer_key.py` took the text each derivation puts in quotation
+> marks and searched every clause of that policy for it, the rule being: exactly
+> one clause contains every quote -> that is the citation; zero or more than one
+> -> change nothing and hand it to a person. It read no verdict, no report and no
+> checkpoint.
+>
+> **0 of 261 cited lines moved.** 189 already point at a clause containing every
+> quote they use; 59 are table derivations with no quoted text to search; 13
+> quote text that is in no clause of their policy. `answer_key.json` is
+> byte-for-byte what it was, so this row is v7's inputs re-measured, not a new
+> key.
+>
+> The "37 of 93 entries cite a clause that does not contain the text they quote"
+> figure was **stale**. Those were the associated-medical-expense lines citing
+> the room-rent cap, and D-12 had already moved 85 of them by hand to the clause
+> their quotes actually live in. The repair had nothing left to do.
+>
+> **What this row does establish.** The fingerprint is `7d56431ca578` against
+> v7's code, so this is a genuine cold re-run of all 44 bills, not a replay - the
+> disk caches added since v7 (`core/cache.py`, the retrieval cache) touch no
+> verdict. Every metric and every one of the seven category rows is identical to
+> v7 to the decimal. That is the caching work costing nothing in accuracy, which
+> is the only thing it was allowed to do.
+>
+> **What is still unchecked** is in `eval/answer_key_todo.md`: 72 rows in 5
+> questions, each naming a page to open. Until those are answered, this number
+> measures agreement between two implementations of the same reading of the
+> policies, not correctness against them. `KNOWN_LIMITATIONS.md` section 6 sets
+> out why, and it is the most important thing in that file.

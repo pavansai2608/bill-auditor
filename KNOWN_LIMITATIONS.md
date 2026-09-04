@@ -120,3 +120,88 @@ separate route removes the shared plumbing but not the shared reader. The same
 file records an unresolved conflict on B43 - whether HDFC's "At Actuals" is a
 stated default or a deferral to the schedule - which needs a decision before
 that bill's row means anything.
+
+## 6. The eval measures agreement between two implementations, not correctness
+
+This is the most serious limitation in the file, and it is not about a category
+or a bill. It is about what the headline number means.
+
+**The key's substance came from a model reading the same PDFs the judge reads.**
+`eval/derive_key.py` is genuinely independent of the pipeline's *plumbing*: it
+imports no retriever, no judge, no audit code, and it makes no model call. That
+is real, and it is the failure most eval harnesses have. But it is independence
+of the wiring, not of the reading. Every policy figure in it - the room-rent
+table, the cataract sub-limits, the definition of associated medical expenses,
+the 24-month list - is a constant typed into the source file, put there by a
+language model reading the three policy documents. The judge is a language model
+reading the same three documents. Different route, same reader. A misreading
+available to one was available to the other, and **nothing re-checks either
+against the PDF.**
+
+Worth being exact about: `derive_key.py` does not open the PDFs. Its whole
+runtime input is `eval/bills/*.json` and `data/non_payable.json`. The docstring's
+claim that rules were "read off the PDF pages directly with pdfplumber"
+describes where the constants came from when someone wrote them, not what the
+script does. It imports `argparse, json, re, sys, datetime, pathlib`, and
+nothing else.
+
+**The key and `core/` share a taxonomy.** This is the part that cannot be fixed
+by being careful. The key decides that a surgeon's fee is an associated medical
+expense with its own `AME_RE`; `core/second_pass.py` decides the same thing with
+its own `AME_RE`. The key routes room lines with `ROOM_RE`; `core/agent.py`
+routes them with `RULE_PATTERNS`. Two separate regex sets, written by the same
+process, cutting bill lines into the same categories with the same vocabulary.
+
+Where that cut is wrong, **both sides are wrong in the same direction and the
+eval scores the line correct.** No amount of running the eval can surface it,
+because the eval is the thing that shares the error. Only reading the policy can.
+
+**So what the number is.** 51.5% line accuracy is a real, deterministic,
+reproducible measurement of how often the pipeline agrees with a second
+implementation of the same beliefs. It will catch a regression in the splitter,
+the retriever, the reranker or the judge - that is what it is for, and it has
+done so more than once. It will not catch a misreading of the policy. Read it as
+*agreement*, not as *correctness*, and do not describe it as accuracy against
+the documents anywhere it could be mistaken for one.
+
+**What is on the correct side of that line.** Exactly two things.
+`eval/build_answer_key_review.py` goes back to the PDFs and locates quoted text
+on real pages; it prepares a check by a person, and that check has not been
+performed. And `tests/test_tables_golden.py` pins the extracted text of every
+table in all four documents, which is the one place a policy figure is verified
+against the source rather than against a second opinion about the source.
+
+`eval/answer_key_todo.md` is the shortlist that would close the gap: **72 rows
+in 5 questions**, each one naming the page to open.
+
+### What was checked, and what it showed
+
+`eval/repair_answer_key.py` takes the text each derivation puts in quotation
+marks and searches every clause of that policy for it. Where exactly one clause
+contains every quote, that clause is the citation. It never reads a verdict, a
+report or a checkpoint.
+
+It moved **nothing**. Of 261 cited lines, 189 already point at a clause that
+contains every quote they use; 59 are table derivations with no quoted text to
+search for; 13 quote text that is in no clause of their policy at all.
+
+Those 13 are one question. Every one cites `star_health III.2`, the
+specified-disease waiting period, and quotes *"Expenses related to the treatment
+of the listed conditions"*. That text is in `hdfc_ergo C.1` and `niva_bupa 5.1.2`
+but not in star_health's own III.2 - whose indexed text begins **"E xpenses
+related to the treatment of the following listed Conditions"**. The split word
+is a PDF extraction artefact; there are **48 of them across 33 clauses**, and
+BM25 cannot match a term that is broken in half. The citation is probably right
+and the evidence chain is broken, which is a different problem from a wrong
+citation and needs the same PDF to settle.
+
+The "37 of 93 entries cite a clause that does not contain the text they quote"
+figure in `answer_key_review.md` is **stale**. Those rows were the associated
+medical expenses citing the room-rent cap, and decision D-12 moved 85 of them by
+hand to `I.Def45` / `A.1.2.Def5` - which is exactly where their quotes live. The
+repair found nothing because the repair had already been made as a decision.
+
+**`eval/derive_key.py` no longer reproduces the key**, and running it with
+`--write` would have reverted 87 of those decisions in one command. `--write` is
+now refused, and `tests/test_derive_key_divergence.py` pins the disagreement
+line by line against a golden file so it cannot grow unnoticed.
