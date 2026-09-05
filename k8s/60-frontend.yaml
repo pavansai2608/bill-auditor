@@ -5,6 +5,15 @@ metadata:
   namespace: bill-auditor
 spec:
   replicas: 2
+  # maxSurge 0, because this node runs at ~92% of its memory requests. The
+  # default rolling update starts the replacement pod before it stops the old
+  # one, and that extra request does not fit: the new pod sits Pending and the
+  # rollout never completes, which is the same "Insufficient memory" the
+  # replica count above already had to work around. Stopping first frees the
+  # request. A one-node cluster gains nothing from surging anyway - both pods
+  # would land on the same node.
+  strategy:
+    rollingUpdate: { maxSurge: 0, maxUnavailable: 1 }
   selector:
     matchLabels: { app: frontend }
   template:
