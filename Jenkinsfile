@@ -17,6 +17,8 @@
 // fails teaches people to ignore red, which is the one thing this pipeline
 // cannot afford.
 
+import groovy.transform.Field
+
 // ---------------------------------------------------------------------------
 // THE GATE LEDGER
 //
@@ -38,8 +40,13 @@
 // The ledger is belt and braces: on main a missing prerequisite also aborts the
 // build outright (see Eval). Either mechanism alone would stop this; both are
 // here because the failure being prevented was silent.
-gates = [:]
-gateWhy = [:]
+// @Field, not a bare assignment. A bare `gates = [:]` lands in the script
+// binding, which Jenkins warns about on every run - "Did you forget the `def`
+// keyword? ... could lead to memory leaks or other issues" - because the
+// binding is retained for the life of the build. @Field gives the same
+// script-wide visibility the stages need without that.
+@Field Map<String, Boolean> gates = [:]
+@Field Map<String, String> gateWhy = [:]
 
 def gatePassed(String name) {
   gates[name] = true
@@ -330,9 +337,11 @@ pipeline {
           }
 
           if (sh(returnStatus: true, script: 'kubectl cluster-info >/dev/null 2>&1') != 0) {
+            gateBlocked('Deploy', 'kubectl reached no cluster, so nothing was rolled out')
             unstable('Deploy skipped: kubectl reaches no cluster from this agent.')
             catchError(buildResult: 'UNSTABLE', stageResult: 'NOT_BUILT') { error('no cluster') }
           } else if (sh(returnStatus: true, script: 'command -v minikube >/dev/null 2>&1') != 0) {
+            gateBlocked('Deploy', 'minikube is not on this agent, so nothing was rolled out')
             unstable('Deploy skipped: minikube is not on this agent.')
             catchError(buildResult: 'UNSTABLE', stageResult: 'NOT_BUILT') { error('no minikube') }
           } else {
@@ -353,7 +362,54 @@ pipeline {
             // This stage is main-only (see `when` above), because loading five
             // images is minutes, not seconds, and develop must stay quick.
             sh 'k8s/deploy.sh'
+            gatePassed('Deploy')
           }
+        }
+      }
+    }
+
+    // Prune. Runs only after a main build that genuinely got all the way
+    // through, because deleting on a build that did not is how you end up with
+    // a cluster that cannot pull.
+    //
+    // Every build produces five images. Left alone that is one more set per
+    // build, for ever. The keep/delete decision is in ci/prune_images.py rather
+    // than inline here, because it is the part that can be wrong in a way that
+    // costs something, and it has tests.
+    //
+    // The rule that is not obvious is the fourth keep rule: an image referenced
+    // by a live deployment survives whatever its number. The cluster does not
+    // necessarily run what this build just pushed - before k8s/deploy.sh, a
+    // rollout could silently not happen at all - so the live references are
+    // read from the cluster at prune time and outrank the arithmetic.
+    stage('Prune') {
+      when { branch 'main' }
+      steps {
+        script {
+          def needed = ['Build', 'Lint', 'Unit', 'Eval', 'E2E', 'Docker', 'Deploy']
+          def missing = blockers(needed)
+          if (missing) {
+            gateBlocked('Prune', 'an earlier gate did not run and pass')
+            echo '================================================================'
+            echo 'Prune is BLOCKED. These gates did not run and pass:'
+            missing.each { echo "    ${it}" }
+            echo ''
+            echo 'NOTHING WAS DELETED, from either daemon.'
+            echo 'Deleting on a build that did not finish is how a cluster ends'
+            echo 'up unable to pull the image it is running.'
+            echo '================================================================'
+            // Not an error(). The images are still correct and still deployed;
+            // only the cleanup was withheld, and disk that was not reclaimed is
+            // not a broken build. The earlier gate has already coloured it.
+            return
+          }
+
+          // Deleted from both stores. Docker Desktop's daemon and minikube's
+          // are separate: an image removed from one is untouched in the other,
+          // which is the same separation that made Deploy silently no-op.
+          // The script skips minikube on its own if no profile is running.
+          sh "uv run python ci/prune_images.py --build-number ${BUILD_NUMBER}"
+          gatePassed('Prune')
         }
       }
     }

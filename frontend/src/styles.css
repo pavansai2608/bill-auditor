@@ -1633,6 +1633,19 @@ table.lines tbody tr:hover .row-toggle {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+
+    /* The delays too, and this is not a detail. `animation-*: both` fills the
+       `from` state during the delay, so a row staggered by
+       `calc(120ms + var(--row) * 40ms)` sits at opacity 0 for that whole time
+       - shortening the duration does nothing to it. Measured here with the
+       duration already reset to 0.01ms: the first report row was opacity 0 at
+       8ms and 74ms and only reached 1 at 140ms, and the eighth row waits
+       440ms. A reader who asked for no motion was still being shown content
+       arriving in sequence. The block above promises everything animated is
+       removed rather than shortened; without these two lines that was not
+       true. */
+    animation-delay: 0ms !important;
+    transition-delay: 0ms !important;
   }
 
   .skeleton {

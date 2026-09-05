@@ -128,6 +128,33 @@ class BrowserTest(unittest.TestCase):
     def wait(self, timeout: int = PAGE_TIMEOUT) -> WebDriverWait:
         return WebDriverWait(self.driver, timeout)
 
+    def rendered_text(self, css: str, timeout: int = PAGE_TIMEOUT) -> str:
+        """The element's rendered text, once it has actually been rendered.
+
+        `presence_of_element_located` on an ancestor is not enough to read a
+        descendant's text. Presence means the node is in the DOM; `.text` is
+        *rendered* text, and WebDriver can return "" for a subtree the browser
+        has not painted yet. Measured on 2026-09-05, 8ms after
+        `[data-testid='report']` appeared:
+
+            .text ''   innerText '\u20b91,36,875'   opacity 1  displayed True
+
+        - populated in the DOM, visible, laid out at 28.6px high, and still
+        empty to `getText`. It is intermittent: the same sample at 9ms on an
+        idle machine already had the figure, which is why this passed locally
+        and failed on the Jenkins agent, where minikube, compose and kind were
+        all running. develop #32 read '' and failed on a report the API log
+        shows had completed - "parsed 2 bill lines totalling 41200".
+
+        So wait for the text to exist, then let the caller assert what it says.
+        This is not a retry around a flaky assertion: the assertion is
+        untouched and a wrong figure still fails it with its own message. It
+        is the condition the read always needed.
+        """
+        locator = (By.CSS_SELECTOR, css)
+        self.wait(timeout).until(lambda driver: driver.find_element(*locator).text.strip() != "")
+        return self.driver.find_element(*locator).text
+
     def set_date(self, testid: str, value: str) -> None:
         """Fill a React-controlled date input, in the ISO form the value uses.
 
@@ -258,10 +285,9 @@ class AuditFlowTest(BrowserTest):
             EC.presence_of_element_located((By.CSS_SELECTOR, "[data-testid='report']"))
         )
 
-        payable = driver.find_element(By.CSS_SELECTOR, "[data-testid='total-allowed']")
         self.assertIn(
             EXPECTED_PAYABLE,
-            payable.text,
+            self.rendered_text("[data-testid='total-allowed']"),
             "the room line resolves from the star_health table at 5,000 a day for five days, "
             "and the gloves are on the IRDAI non-payable list, so payable is exactly 25,000",
         )
@@ -284,15 +310,14 @@ class AuditFlowTest(BrowserTest):
         self.assertIn("differential billing", assumptions.text)
 
         # Every deduction must cite a clause. That is the product.
-        first_clause = driver.find_element(By.CSS_SELECTOR, "[data-testid='line-0'] .chip")
-        self.assertTrue(first_clause.text.strip())
+        self.assertTrue(self.rendered_text("[data-testid='line-0'] .chip"))
 
         # Expand the row and check the trace really shows how it was decided.
         driver.find_element(By.CSS_SELECTOR, "[data-testid='trace-toggle-0']").click()
-        trace = self.wait().until(
+        self.wait().until(
             EC.visibility_of_element_located((By.CSS_SELECTOR, "[data-testid='trace-0']"))
         )
-        self.assertTrue(trace.text.strip())
+        self.assertTrue(self.rendered_text("[data-testid='trace-0']"))
 
     def test_the_example_button_fills_the_whole_form(self):
         """One click has to reach a submittable form, or it is not an example.
