@@ -70,12 +70,36 @@ body:has(.landing) {
 }
 
 /* --- reveal --------------------------------------------------------------
-   One authored entrance, used once per section: a short rise out of a blur.
+   Two entrances, not one repeated eleven times.
+
+   The ordinary one is a short rise and a fade: opacity and transform only,
+   both composited, on every section that is simply arriving. It travels
+   --reveal-rise-sm rather than --reveal-rise so that it reads as a fade with
+   a little movement in it, which is what a section settling should look like.
+
+   The focal one adds the blur, and is spent on the two places this page is
+   actually making an argument: the hero, and the worked example underneath it.
+   Every section wearing the same blur made the entrance a page-wide texture
+   rather than a moment, and put a full-section offscreen composite on eleven
+   elements to do it.
+
    Only an armed section hides. Without JavaScript, or before it runs, every
    section is simply visible. */
 
 .reveal.is-armed {
   opacity: 0;
+  transform: translateY(var(--reveal-rise-sm));
+  transition:
+    opacity var(--motion-reveal) var(--reveal-delay, 0ms),
+    transform var(--motion-reveal) var(--reveal-delay, 0ms);
+}
+
+.reveal.is-armed.is-shown {
+  opacity: 1;
+  transform: none;
+}
+
+.reveal--focal.is-armed {
   transform: translateY(var(--reveal-rise));
   filter: blur(var(--reveal-blur));
   transition:
@@ -84,9 +108,7 @@ body:has(.landing) {
     filter var(--motion-reveal) var(--reveal-delay, 0ms);
 }
 
-.reveal.is-armed.is-shown {
-  opacity: 1;
-  transform: none;
+.reveal--focal.is-armed.is-shown {
   filter: none;
 }
 
@@ -94,7 +116,8 @@ body:has(.landing) {
   /* The hook already returns shown-from-the-start, but a stylesheet that
      depends on JavaScript having run is a stylesheet that fails. */
   .reveal,
-  .reveal.is-armed {
+  .reveal.is-armed,
+  .reveal--focal.is-armed {
     opacity: 1;
     transform: none;
     filter: none;

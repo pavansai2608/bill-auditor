@@ -47,6 +47,56 @@ done
 
 ---
 
+## B-03 — RESOLVED. The Deploy stage now deploys, and fails when it does not
+
+Cleared on 2026-09-05. Until then the stage ran `kubectl apply -f k8s/`,
+reported success, and deployed nothing. Two silent reasons, either of which is
+enough on its own:
+
+- **The image never crossed daemons.** Jenkins builds into Docker Desktop.
+  minikube runs its own Docker daemon inside the minikube container. Nothing in
+  the pipeline ran `minikube image load`, so every build's images stayed on the
+  host. B-01 already recorded this as a manual step; the pipeline never adopted
+  it.
+- **The Deployment spec never changed, so no rollout ever started.** Every
+  manifest pins `:latest`. `kubectl apply` diffs specs, finds `:latest` where
+  `:latest` already was, and does nothing. `imagePullPolicy: IfNotPresent` then
+  guarantees that even a pod restart keeps the old image.
+
+**How visible this was:** on 2026-09-05 the running pods were created
+`2026-09-03T15:23:44Z` and build 22 had finished about an hour earlier. Two days
+of commits, every build green, none of them deployed. The stage was reporting on
+work it had not done - the same failure shape as the E2E stage in CLAUDE.md,
+where green and red were both wrong for the same reason.
+
+**Why `:latest` could not be verified.** The obvious check - read the image back
+off the pods and compare - is worthless against `:latest`, because the string is
+identical whatever the pod is running. Comparing image *IDs* across the two
+daemons was measured and rejected too: `minikube image load` does not preserve
+the ID, so `bill-auditor/frontend:latest` is `f914d475731d` on the host and
+`cdc07a5959a2` on the node for the same image, and a load that silently did
+nothing would still compare equal.
+
+So `k8s/deploy.sh` deploys the **BUILD_NUMBER tag**, which was until now built
+and then never used for anything. The manifests in git keep `:latest`; the
+script renders them through `sed` into a temp directory with the tag
+substituted, so there is one apply and one rollout. `bill-auditor/gateway:23`
+either is what the pod reports or is not, and the script exits 1 naming every
+service that is not on it.
+
+**A third defect surfaced while testing the fix.** The node sits at ~92% of its
+memory requests, and the default rolling update starts the replacement pod
+before stopping the old one. That extra request does not fit, so the new pod
+sits Pending and the rollout never completes - a `retrieval-service` pod had
+been Pending for 17 hours from exactly this. All five app deployments are now
+`maxSurge: 0, maxUnavailable: 1`: stop first, then start. A one-node cluster
+gains nothing from surging, since both pods land on the same node anyway.
+
+**The caveat that remains.** Deploy is main-only. Loading five images is minutes,
+not seconds, and `develop` has to stay quick.
+
+---
+
 ## B-02 — RESOLVED. All five images build and the stack runs
 
 Cleared on 2026-09-01. `docker compose build` produces all five images, all six
