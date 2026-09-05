@@ -201,6 +201,41 @@ rather than a fixed pair, because 8000 and 5173 belong to the docker-compose
 stack on this agent and because two branch jobs sharing one pair made develop #21
 red for main #17's servers. See BA-205 and BA-206.
 
+### The Deploy stage never deployed, until 2026-09-05
+
+`kubectl apply -f k8s/`, green every time, deploying nothing. The images stayed
+in Docker Desktop's daemon - minikube runs its own and nothing ran `minikube
+image load` - and because every manifest pins `:latest`, the Deployment spec was
+byte-identical from one build to the next, so `kubectl apply` started no rollout
+at all. The pods on 2026-09-05 were created `2026-09-03T15:23:44Z`; build 22 had
+finished an hour earlier and had never reached the cluster.
+
+`k8s/deploy.sh` owns the stage now: load the five images, apply the manifests
+with the **BUILD_NUMBER tag** substituted, wait for each rollout, then read the
+image back off every pod and exit 1 if any pod is not on this build's tag.
+
+**It deploys the build-number tag because `:latest` cannot be verified.**
+Comparing `:latest` against `:latest` passes whatever the pod is running - the
+string never changes. Comparing image IDs across the two daemons does not work
+either: `minikube image load` does not preserve the ID, so the same frontend
+image is `f914d475731d` on the host and `cdc07a5959a2` on the node, and a load
+that silently did nothing would still compare equal. The tag Jenkins was already
+building and never using is the one thing that differs per build. The manifests
+in git still say `:latest`; the script renders them through `sed` into a temp
+directory, so there is one apply and one rollout rather than an apply whose
+rollout is immediately superseded.
+
+Do not "simplify" this back to `kubectl apply -f k8s/` plus a `rollout status`.
+`rollout status` exits 0 on a Deployment nobody changed, which is exactly how
+this passed for two days.
+
+All five app deployments are `maxSurge: 0, maxUnavailable: 1`. The node runs at
+~92% of its memory requests, so a surge pod cannot schedule and the rollout
+hangs - one `retrieval-service` pod had been Pending for 17 hours from this.
+Stop first, then start. Surging buys nothing on one node.
+
+The stage is **main only**. Loading five images is minutes; `develop` stays quick.
+
 ### CI, and the three things that make it honest
 
 The pipeline is `Jenkinsfile`, multibranch, on the two branches that exist:

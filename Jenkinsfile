@@ -230,12 +230,27 @@ pipeline {
           if (sh(returnStatus: true, script: 'kubectl cluster-info >/dev/null 2>&1') != 0) {
             unstable('Deploy skipped: kubectl reaches no cluster from this agent.')
             catchError(buildResult: 'UNSTABLE', stageResult: 'NOT_BUILT') { error('no cluster') }
+          } else if (sh(returnStatus: true, script: 'command -v minikube >/dev/null 2>&1') != 0) {
+            unstable('Deploy skipped: minikube is not on this agent.')
+            catchError(buildResult: 'UNSTABLE', stageResult: 'NOT_BUILT') { error('no minikube') }
           } else {
-            // 00-namespace.yaml has to land before anything namespaced, and
-            // `kubectl apply -f k8s/` applies in filename order, which is why
-            // the manifests are numbered.
-            sh 'kubectl apply -f k8s/'
-            sh 'kubectl -n bill-auditor rollout status deploy/gateway --timeout=180s'
+            // k8s/deploy.sh, not `kubectl apply -f k8s/`. The apply on its own
+            // deployed nothing: Jenkins builds into Docker Desktop's daemon
+            // and minikube runs its own, so the image never crossed; and every
+            // manifest pins `:latest`, so the Deployment spec never changed and
+            // no rollout ever started. The stage went green while the pods kept
+            // running an image loaded by hand days earlier.
+            //
+            // The script loads this build's images into the node, applies the
+            // manifests with the BUILD_NUMBER tag substituted, and then reads
+            // back the image every pod reports. It exits 1 if any pod is not on
+            // this build's tag, which is what makes the stage's green mean
+            // something. Verifying `:latest` against `:latest` could not - the
+            // string is identical whatever the pod is running.
+            //
+            // This stage is main-only (see `when` above), because loading five
+            // images is minutes, not seconds, and develop must stay quick.
+            sh 'k8s/deploy.sh'
           }
         }
       }
