@@ -64,9 +64,14 @@ EXCLUSION_RE = re.compile(
 def states_an_exclusion(clause: Clause) -> bool:
     """True when this clause's own text excludes something.
 
-    The title is searched with the body: `hdfc_ergo E.2.1` is headed "Not
-    Covered" and carries the word nowhere else, and a heading is part of what
-    the clause says.
+    The title is searched with the body because a heading is part of what the
+    clause says. On this index it changes no answer: `split_clauses` writes the
+    heading line as the first line of `text`, so every clause that matches in
+    the title matches in the body too - **0 of 402 match on the title alone**.
+    `hdfc_ergo E.2.1` is headed "Not Covered" and its body carries the words
+    twice, the heading line being one of them. The title stays in the search
+    because nothing guarantees that a future heading will be repeated in the
+    body, not because any clause here needs it.
     """
     return bool(EXCLUSION_RE.search(f"{clause.title}\n{clause.text}"))
 
