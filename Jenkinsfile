@@ -17,6 +17,8 @@
 // fails teaches people to ignore red, which is the one thing this pipeline
 // cannot afford.
 
+import groovy.transform.Field
+
 // ---------------------------------------------------------------------------
 // THE GATE LEDGER
 //
@@ -38,8 +40,13 @@
 // The ledger is belt and braces: on main a missing prerequisite also aborts the
 // build outright (see Eval). Either mechanism alone would stop this; both are
 // here because the failure being prevented was silent.
-gates = [:]
-gateWhy = [:]
+// @Field, not a bare assignment. A bare `gates = [:]` lands in the script
+// binding, which Jenkins warns about on every run - "Did you forget the `def`
+// keyword? ... could lead to memory leaks or other issues" - because the
+// binding is retained for the life of the build. @Field gives the same
+// script-wide visibility the stages need without that.
+@Field Map<String, Boolean> gates = [:]
+@Field Map<String, String> gateWhy = [:]
 
 def gatePassed(String name) {
   gates[name] = true
