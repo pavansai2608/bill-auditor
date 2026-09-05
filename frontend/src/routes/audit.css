@@ -121,13 +121,23 @@
 
 /* --- the two columns -----------------------------------------------------
    55/45, the bill wider. The old single column left two thirds of a laptop
-   screen as margin and made a ten-field form scroll for no reason. */
+   screen as margin and made a ten-field form scroll for no reason.
+
+   The two columns finish level. The sheet is the only element on this screen
+   with no natural height - a bill is however long the bill is - so it is the
+   one that gives, and `stretch` hands it the difference. The card keeps its
+   own height with `align-self: start`, so if it is ever the shorter of the two
+   it does not grow a band of empty white at its foot. */
 
 .audit-columns {
   display: grid;
   grid-template-columns: minmax(0, 55fr) minmax(0, 45fr);
   gap: var(--space-7);
-  align-items: start;
+  align-items: stretch;
+}
+
+.policy-panel-wrap {
+  align-self: start;
 }
 
 @media (max-width: 900px) {
@@ -181,23 +191,47 @@
   /* The bill is set at 13px mono; 32px rules would leave it swimming, so the
      document uses the tighter pitch and the text is locked to it below. */
   --rule: var(--space-5);
+  /* The ruling, named once. It is restated three times below - faded, tinted
+     on drag - and three copies of the same gradient is three rulings the first
+     time one of them is edited. */
+  --ruling: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent calc(var(--rule) - 1px),
+    var(--colour-hairline) calc(var(--rule) - 1px),
+    var(--colour-hairline) var(--rule)
+  );
   position: relative;
+  /* The sheet takes the slack in the column and never falls below the floor.
+     A flex container so the textarea inside it can be told to do the same. */
+  display: flex;
+  flex: 1 1 auto;
+  min-height: var(--bill-doc-min);
   border: 1px solid var(--colour-hairline);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-2);
-  background:
-    repeating-linear-gradient(
-      to bottom,
-      transparent,
-      transparent calc(var(--rule) - 1px),
-      var(--colour-hairline) calc(var(--rule) - 1px),
-      var(--colour-hairline) var(--rule)
-    ),
-    var(--colour-card);
+  background: var(--ruling), var(--colour-card);
   transition:
     border-color var(--motion-normal),
     box-shadow var(--motion-normal),
     background-color var(--motion-normal);
+}
+
+/* An empty sheet does not need twenty-five ruled lines shouting at the foot of
+   it. While there is no bill in the document the ruling is veiled away below
+   the first third, so the blank state reads as paper with room on it rather
+   than as a grid; the moment something is pasted the full ledger is back. The
+   veil is the sheet's own colour laid over the rules, not a new value.
+
+   `:not(.is-over)` rather than ordering: `:has()` takes the specificity of its
+   argument, so this selector scores above `.bill-doc.is-over` no matter which
+   is written last, and a sheet being dragged onto kept the white ground
+   instead of the blue one. Excluding the state is the fix; source order is
+   not. */
+.bill-doc:not(.is-over):has(textarea:placeholder-shown) {
+  background:
+    linear-gradient(to bottom, transparent 28%, var(--colour-card) 86%), var(--ruling),
+    var(--colour-card);
 }
 
 /* The lifted edge: a second sheet just behind the first. Layered surface, in
@@ -224,26 +258,30 @@
   outline-offset: 2px;
 }
 
+/* A sheet being dragged onto shows its full ruling even while it is still
+   empty: the whole target lights up. */
 .bill-doc.is-over {
+  --ruling: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent calc(var(--rule) - 1px),
+    var(--colour-brand-edge) calc(var(--rule) - 1px),
+    var(--colour-brand-edge) var(--rule)
+  );
   border-color: var(--colour-brand);
   box-shadow: var(--shadow-3);
-  background:
-    repeating-linear-gradient(
-      to bottom,
-      transparent,
-      transparent calc(var(--rule) - 1px),
-      var(--colour-brand-edge) calc(var(--rule) - 1px),
-      var(--colour-brand-edge) var(--rule)
-    ),
-    var(--colour-brand-soft);
+  background: var(--ruling), var(--colour-brand-soft);
 }
 
 .bill-doc textarea {
   display: block;
   width: 100%;
-  /* Tall on purpose. A bill is 20-odd lines and the point of this screen is
-     to show it whole. */
-  height: 27rem;
+  /* No fixed height. It fills the sheet, the sheet fills the column, and the
+     column is as tall as the policy card beside it - so a bill is shown whole
+     without a hard-coded number that only happens to be right at one width.
+     `resize: vertical` still lets someone drag it past that. */
+  flex: 1 1 auto;
+  min-height: 0;
   padding: var(--space-4) var(--space-5);
   border: 0;
   background: transparent;
@@ -395,7 +433,10 @@
   padding: var(--space-6);
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  /* 24, not 32. Each step also carries a rule and its own padding above it, so
+     32 here put 64px between two questions that belong to the same form and
+     stretched the card 40px past anything it had to say. */
+  gap: var(--space-5);
 }
 
 .policy-panel > h2 {
@@ -414,7 +455,7 @@
   grid-template-columns: var(--space-6) minmax(0, 1fr);
   gap: var(--space-4);
   align-items: start;
-  padding-top: var(--space-6);
+  padding-top: var(--space-5);
   border-top: 1px solid var(--colour-hairline);
 }
 
@@ -460,20 +501,22 @@
   color: var(--colour-ink-muted);
 }
 
+/* Two up when both halves can be read, one up when they cannot.
+ *
+ * Keyed on the width the pair actually has, not on the viewport: this column
+ * is 45% of the page, so at 1024px it handed each select 165px and "3L - Rs
+ * 3,00,000" was clipped to "3L - Rs 3,(" while the viewport was still well
+ * clear of any phone breakpoint. auto-fit drops to one column exactly when the
+ * second one would stop being legible, which is also what the old 480px media
+ * query was reaching for. */
 .step-pair {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--field-min)), 1fr));
   gap: var(--space-4);
 }
 
 .step .field {
   margin-bottom: 0;
-}
-
-@media (max-width: 480px) {
-  .step-pair {
-    grid-template-columns: minmax(0, 1fr);
-  }
 }
 
 .field-error {
@@ -489,11 +532,29 @@
   background: var(--colour-cut-soft);
 }
 
-/* --- the sticky submit --------------------------------------------------- */
+/* --- the submit foot -----------------------------------------------------
+ *
+ * NOT sticky, and the comment is here so nobody restores it.
+ *
+ * It used to be `position: sticky; bottom: 0`. A sticky box with no scroll
+ * container of its own sticks against the viewport, but it is still a child of
+ * this card, so once the card runs past the fold the bar detaches from the end
+ * of the card and paints - opaque, over its own earlier siblings - across
+ * whatever is at the bottom of the screen. Measured at 1440x900 it sat at
+ * y 758-900 while step 3 occupied 798-943: the numeral, the "Room limit per
+ * day" heading and the field were behind an opaque white bar, and the last
+ * line of step 2's help was sliced through the middle of a sentence. It left
+ * 143px of reserved-but-empty space at the foot of the card at the same time,
+ * because sticky keeps its place in flow while painting somewhere else.
+ *
+ * No z-index fixes that: the bar was already on top, which was the problem.
+ * Padding on the card cannot fix it either - the stuck position tracks the
+ * viewport, so the overlap simply moves to whatever is at the fold instead.
+ * The only fix is not to stick. The form is one short scroll, the action sits
+ * where the questions end, and nothing is hidden.
+ */
 
 .policy-submit {
-  position: sticky;
-  bottom: 0;
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
@@ -501,7 +562,9 @@
   padding: var(--space-5) var(--space-6) var(--space-6);
   border-top: 1px solid var(--colour-hairline);
   border-radius: 0 0 var(--radius-xl) var(--radius-xl);
-  background: var(--colour-card);
+  /* A shade off the card, so the foot reads as the place the questions end
+     rather than as a fourth step. */
+  background: var(--colour-veil);
 }
 
 .policy-submit button[type="submit"] {
@@ -510,6 +573,69 @@
   font-size: var(--text-lead);
   font-weight: var(--weight-semibold);
   letter-spacing: -0.01em;
+}
+
+/* The published site's explanation for the dead button.
+ *
+ * Same foot of the same card, so the page is in a state rather than broken -
+ * nothing moves, nothing is missing, and the button stays where the eye
+ * already went. The copy carries the weight instead of the styling.
+ */
+.static-note {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--colour-hairline);
+  font-size: var(--text-small);
+  line-height: var(--leading-normal);
+  color: var(--colour-ink-muted);
+}
+
+.static-note h4 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-body);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-tight);
+  color: var(--colour-ink);
+}
+
+.static-note p {
+  margin: 0;
+}
+
+/* The quickstart, as it is typed. Scrolls rather than wrapping: a wrapped
+   command line is one somebody copies wrong. */
+.static-note-code {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--colour-hairline);
+  border-radius: var(--radius-md);
+  background: var(--colour-sunken);
+  overflow-x: auto;
+}
+
+.static-note-code code {
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+  line-height: var(--leading-loose);
+  color: var(--colour-ink);
+  white-space: pre;
+}
+
+.static-note-aside {
+  font-size: var(--text-caption);
+  color: var(--colour-ink-faint);
+}
+
+.static-note-aside code {
+  font-family: var(--font-mono);
+  font-size: 0.94em;
+}
+
+.static-note .btn-secondary {
+  align-self: flex-start;
 }
 
 /* What is still missing, updating as they fill it in. A dead button that does
@@ -621,8 +747,11 @@
     padding: var(--space-4) var(--space-5) var(--space-5);
   }
 
-  .bill-doc textarea {
-    height: 20rem;
+  /* One column, so there is no card to finish level with: the floor is the
+     height. Shorter than the desktop floor, because on a phone the sheet
+     should not push the policy questions a whole screen down. */
+  .bill-doc {
+    min-height: var(--bill-doc-min-sm);
   }
 
   .bill-example {
