@@ -66,7 +66,8 @@ enough on its own:
 **How visible this was:** on 2026-09-05 the running pods were created
 `2026-09-03T15:23:44Z` and build 22 had finished about an hour earlier. Two days
 of commits, every build green, none of them deployed. The stage was reporting on
-work it had not done - the same failure shape as the E2E stage in CLAUDE.md,
+work it had not done - the same failure shape as the E2E stage in
+ENGINEERING.md,
 where green and red were both wrong for the same reason.
 
 **Why `:latest` could not be verified.** The obvious check - read the image back
