@@ -2,11 +2,17 @@
 export function SkeletonReport() {
   return (
     <div data-testid="skeleton">
-      <div className="panel">
-        <div className="summary">
-          {["charged", "deducted", "payable", "flagged"].map((cell) => (
-            <div className="cell" key={cell}>
-              <div className="skeleton skeleton-row" style={{ width: "60%", height: 12 }} />
+      {/* The same shape the verdict band will take, so nothing jumps when the
+          figures arrive: a head, the bar, and three columns under it. */}
+      <div className="verdict">
+        <div className="verdict-head">
+          <div className="skeleton" style={{ height: 22, width: 200 }} />
+        </div>
+        <div className="skeleton" style={{ height: 14, borderRadius: 999 }} />
+        <div className="verdict-key">
+          {["payable", "deducted", "flagged"].map((cell) => (
+            <div key={cell}>
+              <div className="skeleton skeleton-row" style={{ width: "50%", height: 11 }} />
               <div className="skeleton" style={{ height: 34, width: "80%" }} />
             </div>
           ))}

@@ -1,5 +1,6 @@
 import { useId, useState } from "react";
 
+import { Chevron } from "./icons";
 import { rupees } from "../lib/csv";
 import type { LineVerdict, TraceEntry } from "../types";
 
@@ -9,20 +10,47 @@ interface Props {
   index: number;
 }
 
+/**
+ * What happened to one line, in one word.
+ *
+ * The colour is the fast read and the word is the answer: someone who cannot
+ * tell the green from the crimson still gets "paid in full" or "-Rs 15,000"
+ * in text under the figure, and a flagged line says so rather than relying on
+ * a tinted row.
+ */
+function outcome(line: LineVerdict): { tone: "paid" | "cut"; note: string } {
+  const allowed = line.allowed ?? 0;
+  if (allowed >= line.charged) return { tone: "paid", note: "paid in full" };
+  if (allowed === 0) return { tone: "cut", note: "not payable" };
+  return { tone: "cut", note: `−${rupees(line.charged - allowed)}` };
+}
+
 /** One bill line, expandable to show exactly how it was decided. */
 export function LineRow({ line, trace, index }: Props) {
   const [open, setOpen] = useState(false);
   const panelId = useId();
+  const verdict = line.needs_human ? null : outcome(line);
 
   return (
     <>
       <tr className={line.needs_human ? "flagged" : undefined} data-testid={`line-${index}`}>
-        <td data-label="Item">{line.item}</td>
+        <td data-label="Item">
+          <span className="line-item">{line.item}</span>
+        </td>
         <td className="num" data-label="Charged">
           {rupees(line.charged)}
         </td>
         <td className="num" data-label="Allowed" data-testid={`allowed-${index}`}>
-          {line.needs_human ? <span className="chip chip--flag">flagged</span> : rupees(line.allowed)}
+          {verdict === null ? (
+            <span className="chip chip--flag">needs a person</span>
+          ) : (
+            <span className="allowed-cell">
+              <span className={`allowed allowed--${verdict.tone}`}>{rupees(line.allowed)}</span>
+              <span className={verdict.tone === "paid" ? "delta delta--paid" : "delta"}>
+                {verdict.note}
+              </span>
+            </span>
+          )}
         </td>
         <td data-label="Clause">
           {line.clause_id ? (
@@ -44,7 +72,7 @@ export function LineRow({ line, trace, index }: Props) {
             data-testid={`trace-toggle-${index}`}
             onClick={() => setOpen(!open)}
           >
-            {open ? "−" : "+"}
+            <Chevron />
           </button>
         </td>
       </tr>

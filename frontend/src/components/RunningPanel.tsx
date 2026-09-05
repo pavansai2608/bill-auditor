@@ -37,7 +37,7 @@ export function RunningPanel() {
             aria-valuemax={total || 1}
             aria-label={comparing ? "line checks completed" : "lines checked"}
           >
-            <span style={{ width: `${percent}%` }} />
+            <span style={{ transform: `scaleX(${percent / 100})` }} />
           </div>
           <p className="caption" aria-live="polite" data-testid="progress-caption">
             {total > 0 ? `checked ${done} of ${total} ${unit}` : "reading the bill"}

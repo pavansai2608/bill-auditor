@@ -25,9 +25,7 @@ export default function CompareView() {
               data-testid={`compare-${report.policy}`}
             >
               <div className="label">{report.policy.replace("_", " ")}</div>
-              <div className="value" style={{ fontSize: "var(--text-figure)", fontWeight: 600 }}>
-                {rupees(report.total_allowed)}
-              </div>
+              <div className="value">{rupees(report.total_allowed)}</div>
               <p className="panel-note">
                 {report.flagged_count} flagged of {report.lines.length} lines
                 {report.policy === comparison.best_policy ? " — pays most" : ""}
