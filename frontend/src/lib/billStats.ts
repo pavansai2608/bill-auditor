@@ -19,6 +19,12 @@ export interface BillStats {
   total: number;
 }
 
+/** One charge, as this reading of the bill understood it. */
+export interface BillItem {
+  description: string;
+  amount: number;
+}
+
 /**
  * The figure at the end of a line, in one of the two shapes that mean money.
  *
@@ -43,9 +49,32 @@ const AMOUNT = /(?:\s{2,}|^)(\d{1,3}(?:,\d{2,3})+(?:\.\d+)?|\d+(?:\.\d{2})?)\s*$
  */
 const SUMMING_LINE = /^(grand\s+total|total|sub\s*-?\s*total|net\s+payable|amount\s+payable)\s*[:.\-–]*$/i;
 
-export function readBill(text: string): BillStats {
-  let items = 0;
-  let total = 0;
+/**
+ * The quantity column, which sits between the description and the amount.
+ *
+ * Stripped only for display. "Room Rent (Single A/C) 8,000 x 5 days     5"
+ * names the item and then states a quantity of 5 in its own column, and
+ * showing that trailing 5 in a list of item names reads as a typo. The 2+
+ * spaces are what make it a column rather than part of the description: "8,000
+ * x 5 days" is single-spaced and survives, exactly as it should.
+ */
+const TRAILING_QTY = /\s{2,}\d+$/;
+
+/**
+ * The charges this reading finds, in the order they are written.
+ *
+ * Order is the whole reason this returns a list rather than a count: the
+ * server audits the bill top to bottom, so "checked 4 of 10" and the fourth
+ * item in this list are the same line, and the running panel can name the work
+ * instead of only counting it.
+ *
+ * It is still the shy reader described above. It can find fewer items than the
+ * server does - `core/bill.py` is the parser - so the panel that uses this
+ * must degrade to the server's own count when the two disagree rather than
+ * claiming a line it cannot name.
+ */
+export function readBillItems(text: string): BillItem[] {
+  const items: BillItem[] = [];
 
   for (const raw of text.split("\n")) {
     const line = raw.trim();
@@ -66,11 +95,20 @@ export function readBill(text: string): BillStats {
     const amount = Number(found[1].replace(/,/g, ""));
     if (!Number.isFinite(amount) || amount <= 0) continue;
 
-    items += 1;
-    total += amount;
+    // The count and the total are taken from the untrimmed description above,
+    // so stripping the quantity here cannot change what `readBill` reports.
+    items.push({ description: description.replace(TRAILING_QTY, "").trim(), amount });
   }
 
-  return { items, total };
+  return items;
+}
+
+export function readBill(text: string): BillStats {
+  const items = readBillItems(text);
+  return {
+    items: items.length,
+    total: items.reduce((sum, item) => sum + item.amount, 0),
+  };
 }
 
 /** Indian grouping, no paise: the figures on these bills are whole rupees. */

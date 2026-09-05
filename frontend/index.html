@@ -4,16 +4,25 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bill Auditor</title>
-    <!-- Instrument Serif for display headings, Inter for everything else. The
-         serif is what stops the page reading as a default; it is loaded here
-         rather than @import so the request starts with the document. Both have
-         real fallback stacks, so a blocked font degrades to Georgia and the
-         system sans rather than to nothing. -->
+    <!-- The three faces the stylesheet actually asks for: Fraunces for
+         display, Inter for the interface, JetBrains Mono for the bill, the
+         trace and every clause id. All have real fallback stacks, so a blocked
+         font degrades to a face rather than to nothing.
+
+         Requested here rather than by @import in styles.css so that the
+         request starts with the document instead of waiting for the stylesheet
+         to arrive and be parsed - one round trip earlier, on the fonts that
+         set every heading on the page.
+
+         This link previously asked for Instrument Serif, which nothing has
+         used since the palette changed, and for Inter without its 700 weight,
+         which --weight-bold does use. So it was simultaneously fetching a face
+         that never rendered and failing to fetch one that did. -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
     />
   </head>
   <body>

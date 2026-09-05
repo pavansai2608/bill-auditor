@@ -233,7 +233,10 @@ export default function Landing() {
           </div>
         </section>
 
-        <Reveal className="landing-section" aria-labelledby="example-heading">
+        {/* The focal entrance. This section is the argument the page is
+            making - a bill, and what came back - so it is the one that gets
+            the blur. Everything below it simply rises. */}
+        <Reveal className="landing-section reveal--focal" aria-labelledby="example-heading">
           <h2 id="example-heading">A bill, and what came back</h2>
           <p className="landing-section-note">
             Four lines of a ten-line bill. Star Health, sum insured Rs 3,00,000, five days as an

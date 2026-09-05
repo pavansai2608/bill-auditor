@@ -2,6 +2,8 @@ import { AssumptionsPanel } from "./AssumptionsPanel";
 import { LineRow } from "./LineRow";
 import { useAudit } from "../context/AuditContext";
 import { downloadCsv, rupees } from "../lib/csv";
+import { roomRatio } from "../lib/arithmetic";
+import { useCountUp } from "../hooks/useReveal";
 import type { AuditReport, TraceEntry } from "../types";
 
 /** Group the trace by the bill line it belongs to, so a row can show its own. */
@@ -51,9 +53,22 @@ export default function ReportView() {
   const deducted = report.total_charged - report.total_allowed;
   const grouped = traceByItem(report.trace);
   const flaggedLines = report.flagged_count;
+  const ratio = roomRatio(report.lines, report.trace);
+
+  // The one authored moment on this screen. The deducted figure is what the
+  // reader opened the report to find out, so it is the only number that
+  // arrives rather than simply being there - counting up settles it the way a
+  // total settles at the bottom of a column.
+  //
+  // It is also the only figure it is safe to animate. `total-allowed` is read
+  // for its exact text by tests/e2e/browser_flow.py the moment the report
+  // appears, and a figure mid-count would fail that read intermittently.
+  // Restraint and the test agree here, which is usually the sign of a good
+  // constraint: one moment, not four.
+  const deductedShown = useCountUp(deducted, true);
 
   return (
-    <div data-testid="report">
+    <div data-testid="report" className="report-arrive">
       {/* The whole answer, to scale, before a single row is read. */}
       <section className="verdict" aria-labelledby="verdict-heading">
         <h2 id="verdict-heading" className="visually-hidden">
@@ -90,8 +105,11 @@ export default function ReportView() {
           </div>
           <div className="key-cut">
             <span className="label">Deducted</span>
+            {/* aria-live is deliberately absent: the count would be announced
+                on every frame. The figure is in the DOM from the first render
+                and reduced motion gets it final immediately. */}
             <span className="value" data-testid="total-deducted">
-              {rupees(deducted)}
+              {rupees(deductedShown)}
             </span>
             <span className="note">
               {rupees(reduced)} cut by a clause
@@ -145,6 +163,7 @@ export default function ReportView() {
                 key={`${line.item}-${index}`}
                 line={line}
                 index={index}
+                ratio={ratio}
                 trace={grouped.get(line.item) ?? []}
               />
             ))}
