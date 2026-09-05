@@ -17,6 +17,45 @@
 // fails teaches people to ignore red, which is the one thing this pipeline
 // cannot afford.
 
+// ---------------------------------------------------------------------------
+// THE GATE LEDGER
+//
+// main #21 is why this exists. Eval was skipped (no Ollama) and E2E was skipped
+// (no Ollama, no npm). Neither ran. The build went UNSTABLE rather than
+// FAILURE, Docker read that as "not failed", built and tagged five images as
+// 21, and Deploy attempted a rollout with them. Those images came from code
+// whose accuracy gate and browser tests had never executed.
+//
+// "Not failed" is not "passed". A gate that could not run has proved nothing,
+// and everything downstream of it is unsafe.
+//
+// So each gate records, as its own last act, that it actually executed and
+// passed. Docker and Deploy read these records and nothing else - never
+// currentBuild.result, which is the signal that let main #21 through. A stage
+// that throws never reaches its gatePassed() call, so the ledger cannot say a
+// gate passed when it did not.
+//
+// The ledger is belt and braces: on main a missing prerequisite also aborts the
+// build outright (see Eval). Either mechanism alone would stop this; both are
+// here because the failure being prevented was silent.
+gates = [:]
+gateWhy = [:]
+
+def gatePassed(String name) {
+  gates[name] = true
+}
+
+def gateBlocked(String name, String why) {
+  gates[name] = false
+  gateWhy[name] = why
+}
+
+/** Gates from `names` that did not run and pass, each with the reason. */
+def blockers(List names) {
+  return names.findAll { gates[it] != true }
+              .collect { "${it} - ${gateWhy[it] ?: 'did not run'}" }
+}
+
 pipeline {
   agent any
 
@@ -79,6 +118,7 @@ pipeline {
         // leaves an environment in which a third of the suite cannot import.
         sh 'uv sync --frozen --all-extras'
         sh 'uv run pyb clean'
+        script { gatePassed('Build') }
       }
     }
 
@@ -101,6 +141,7 @@ pipeline {
           steps {
             sh 'uv run ruff check .'
             sh 'uv run ruff format --check .'
+            script { gatePassed('Lint') }
           }
         }
         stage('Unit') {
@@ -109,6 +150,7 @@ pipeline {
           // so it can no longer be dragged into this stage without its services.
           steps {
             sh 'uv run pyb --no-venvs run_unit_tests'
+            script { gatePassed('Unit') }
           }
         }
       }
@@ -135,11 +177,23 @@ pipeline {
         script {
           def ollamaUp = sh(returnStatus: true, script: "curl -sf --max-time 5 ${BA_OLLAMA_BASE_URL}/api/tags >/dev/null") == 0
           if (!ollamaUp) {
+            gateBlocked('Eval', "no Ollama at ${BA_OLLAMA_BASE_URL}, so the accuracy gate never ran")
+            if (env.BRANCH_NAME == 'main') {
+              // Red, not yellow, and deliberately. main is the branch that
+              // produces images and deploys them. A build that cannot measure
+              // its own accuracy has not earned either, and yellow is the
+              // colour people stop reading.
+              error("Eval could not run: no Ollama at ${BA_OLLAMA_BASE_URL}. " +
+                    'On main that is a failure, not a warning - this build cannot ' +
+                    'prove its accuracy, so it must not produce images or deploy.')
+            }
             unstable("Eval skipped: no Ollama at ${BA_OLLAMA_BASE_URL}. The accuracy gate did not run.")
             catchError(buildResult: 'UNSTABLE', stageResult: 'NOT_BUILT') { error('Ollama unavailable') }
           } else {
             // Exits 1 below the threshold, which fails the stage and the build.
+            // gatePassed is only reached if that command exits 0.
             sh "uv run python eval/evaluate.py --quick --agent --second-pass --threshold ${EVAL_THRESHOLD}"
+            gatePassed('Eval')
           }
         }
       }
@@ -152,6 +206,15 @@ pipeline {
           def ollamaUp = sh(returnStatus: true, script: "curl -sf --max-time 5 ${BA_OLLAMA_BASE_URL}/api/tags >/dev/null") == 0
           def nodeUp = sh(returnStatus: true, script: 'command -v npm >/dev/null') == 0
           if (!ollamaUp || !nodeUp) {
+            def lack = []
+            if (!ollamaUp) { lack << "no Ollama at ${BA_OLLAMA_BASE_URL}" }
+            if (!nodeUp) { lack << 'no npm on the agent' }
+            gateBlocked('E2E', "${lack.join(', ')}, so the browser tests never ran")
+            if (env.BRANCH_NAME == 'main') {
+              error("E2E could not run: ${lack.join(', ')}. On main that is a failure - " +
+                    'this build has no evidence the app works in a browser, so it must ' +
+                    'not produce images or deploy.')
+            }
             unstable('E2E skipped: needs both a running Ollama and npm on the agent.')
             catchError(buildResult: 'UNSTABLE', stageResult: 'NOT_BUILT') { error('E2E prerequisites missing') }
           } else {
@@ -172,6 +235,7 @@ pipeline {
             // group AND is serving this run's build stamp. See its header for
             // why neither check alone is enough.
             sh 'tests/e2e/run_stage.sh'
+            gatePassed('E2E')
           }
         }
       }
@@ -190,9 +254,31 @@ pipeline {
       when { branch 'main' }
       steps {
         script {
+          // Every gate, checked explicitly and by name. Not currentBuild.result:
+          // main #21 was UNSTABLE with Eval and E2E both skipped, and "not
+          // failed" was enough to get five images built and tagged 21.
+          def missing = blockers(['Build', 'Lint', 'Unit', 'Eval', 'E2E'])
+          if (missing) {
+            echo '================================================================'
+            echo 'Docker is BLOCKED. These gates did not run and pass:'
+            missing.each { echo "    ${it}" }
+            echo ''
+            echo 'No image has been built and no tag has been created.'
+            echo 'A gate that could not run has proved nothing, and an image'
+            echo 'built past it would carry a build number implying it had.'
+            echo '================================================================'
+            error("Docker blocked: ${missing.size()} gate(s) did not run and pass.")
+          }
+          echo "Gates cleared: ${gates.findAll { it.value }.keySet().join(', ')}"
+
           if (sh(returnStatus: true, script: 'docker info >/dev/null 2>&1') != 0) {
-            unstable('Docker skipped: no reachable Docker daemon on this agent.')
-            catchError(buildResult: 'UNSTABLE', stageResult: 'NOT_BUILT') { error('no docker daemon') }
+            gateBlocked('Docker', 'no reachable Docker daemon on this agent')
+            // main's job is to produce images and deploy them. An agent that
+            // cannot do that has not run main's pipeline, whatever colour the
+            // other stages are.
+            error('Docker could not run: no reachable Docker daemon. On main that ' +
+                  'is a failure - this build produced no images, so Deploy has ' +
+                  'nothing to roll out.')
           } else {
             // Both tags on purpose. BUILD_NUMBER is the traceable one; :latest
             // is what k8s/ pins, and every manifest is imagePullPolicy
@@ -218,6 +304,7 @@ pipeline {
               docker build -t bill-auditor/frontend:${BUILD_NUMBER} \
                            -t bill-auditor/frontend:latest ./frontend
             '''
+            gatePassed('Docker')
           }
         }
       }
@@ -227,6 +314,21 @@ pipeline {
       when { branch 'main' }
       steps {
         script {
+          // Deploy rolls out images. If Docker did not run and succeed, the
+          // images this build claims to deploy do not exist, and rolling out
+          // would either fail to pull or - worse - silently leave the cluster
+          // on an older build while the stage reported success.
+          def missing = blockers(['Docker'])
+          if (missing) {
+            echo '================================================================'
+            echo 'Deploy is BLOCKED. This gate did not run and pass:'
+            missing.each { echo "    ${it}" }
+            echo ''
+            echo 'Nothing was applied and no rollout was started.'
+            echo '================================================================'
+            error('Deploy blocked: Docker did not run and pass.')
+          }
+
           if (sh(returnStatus: true, script: 'kubectl cluster-info >/dev/null 2>&1') != 0) {
             unstable('Deploy skipped: kubectl reaches no cluster from this agent.')
             catchError(buildResult: 'UNSTABLE', stageResult: 'NOT_BUILT') { error('no cluster') }
