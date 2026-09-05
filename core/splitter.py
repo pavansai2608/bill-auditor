@@ -85,6 +85,11 @@ MIN_DEFS_TO_SPLIT = 5
 NOISE_RE = re.compile(r"(?:Tel\.:|Email:|bimalokpal|cioins\.co\.in|Ombudsman)", re.I)
 NOISE_HITS = 4
 
+# How much of a line's vocabulary must already be in the rendered rows before
+# the line counts as the flat read of those rows rather than a heading.
+TABLE_WORD_RE = re.compile(r"[0-9a-z]+")
+TABLE_ECHO_RATIO = 0.8
+
 # Star Health writes its definitions as unnumbered "Term: Term means ..."
 # headings, so nothing before Section II matches the clause pattern and the
 # whole definitions section was dropped - 68 definitions including "Room Rent
@@ -483,6 +488,25 @@ def is_two_column_document(pdf) -> bool:
     return median > COLUMN_START_RATIO
 
 
+def _echoes_the_table(text: str, rendered: str) -> bool:
+    """Is this line the flat read of rows the table already rendered?
+
+    `extract_text_lines` reads a table straight across, so every row also
+    reaches the text as a line of interleaved cells. Where that line begins with
+    a cell that looks like a clause number - "2.1 Not Covered" - it matches
+    `CLAUSE_RE` and would open a clause built entirely out of table debris. The
+    tell is that its words are already in the rendered rows.
+
+    Word overlap rather than an exact match, because the flat read joins cells
+    from different columns in an order the rendered row does not use.
+    """
+    words = [word for word in TABLE_WORD_RE.findall(text.lower()) if len(word) > 1]
+    if not words:
+        return True
+    have = set(TABLE_WORD_RE.findall(rendered.lower()))
+    return sum(1 for word in words if word in have) / len(words) >= TABLE_ECHO_RATIO
+
+
 def _region_text(page, tables, bbox) -> str:
     """Text of one region with tables rendered structurally, in reading order.
 
@@ -503,22 +527,31 @@ def _region_text(page, tables, bbox) -> str:
         and top <= (table.bbox[1] + table.bbox[3]) / 2 <= bottom
     ]
 
-    here = [table for table in here if render_table(page, table, tables)]
+    # Render once. The rendered rows are needed twice: to place them back in the
+    # text, and to recognise the flat read of those same rows.
+    rendered_here = [(table, render_table(page, table, tables)) for table in here]
+    rendered_here = [pair for pair in rendered_here if pair[1]]
 
     def inside_a_table(line) -> bool:
-        # A clause heading that happens to sit inside a detected table region
-        # must survive, or the clause it opens disappears from the index.
         text = line["text"]
-        if _section_at(text) or CLAUSE_RE.match(text):
+        # A section banner is a document landmark, never a table row.
+        if _section_at(text):
             return False
-        for table in here:
+        for table, rendered in rendered_here:
             tx0, ttop, tx1, tbottom = table.bbox
-            if (
+            if not (
                 ttop - TABLE_BAND_LIFT <= line["top"] <= tbottom
                 and line["x0"] < tx1
                 and line["x1"] > tx0
             ):
-                return True
+                continue
+            # A clause heading that happens to sit inside a detected table
+            # region must survive, or the clause it opens disappears from the
+            # index - **unless the table already carries its words**, in which
+            # case it is not a heading at all. It is the flat read of a row that
+            # has already been emitted structurally, and keeping it puts the
+            # same row in the index twice, once correctly and once as rubbish.
+            return not CLAUSE_RE.match(text) or _echoes_the_table(text, rendered)
         return False
 
     items: list[tuple[float, str]] = []
@@ -529,10 +562,8 @@ def _region_text(page, tables, bbox) -> str:
     except ValueError:
         return region.extract_text() or ""
 
-    for table in here:
-        rendered = render_table(page, table, tables)
-        if rendered:
-            items.append((table.bbox[1] - TABLE_BAND_LIFT, rendered))
+    for table, rendered in rendered_here:
+        items.append((table.bbox[1] - TABLE_BAND_LIFT, rendered))
 
     items.sort(key=lambda pair: pair[0])
     return "\n".join(text for _, text in items)
@@ -819,6 +850,13 @@ def split_clauses(pages: list[PageText], policy: str) -> list[Clause]:
         body = join_wrapped_lines("\n".join(ln for ln, _ in lines[start["index"] + 1 : stop]))
 
         # A heading with nothing under it is a contents entry, not a clause.
+        # Its own line goes with it. That costs one real sentence today -
+        # "4.2.2 We pay for Modern treatments as specified below:" sits under a
+        # table lifted above it, so its body is empty and the only occurrence of
+        # "Modern" in niva_bupa goes with the start. Keeping such headings by
+        # folding them into the clause above was measured and rejected: it
+        # recovers 3,359 characters and moves 30 clauses, most of them contents
+        # entries glued onto unrelated bodies. See eval/table_corruption_survey.md.
         if len(body) < MIN_BODY_CHARS:
             continue
 
@@ -854,6 +892,57 @@ def _drop_duplicates(clauses: list[Clause]) -> list[Clause]:
 def _is_address_noise(clause: Clause) -> bool:
     """True for ombudsman/branch address annexures - contact data, not rules."""
     return len(NOISE_RE.findall(clause.text)) >= NOISE_HITS
+
+
+def _without_the_address_block(clause: Clause) -> Clause | None:
+    """Cut an address annexure where the addresses stop, and keep the rest.
+
+    **An address list ends; the document does not.** hdfc_ergo's ombudsman
+    annexure is followed, with no heading of its own between them, by IRDAI List
+    I and by the plan-comparison grid that states every benefit limit in the
+    policy. Dropping the whole clause as contact data drops those too - two
+    pages, 6,314 characters, sixteen rendered table rows and the legend defining
+    what "Not Covered" means in that grid.
+
+    That did not happen before, only because the flat read of the grid's own
+    rows was opening clauses of table debris part-way down, which cut the
+    annexure into pieces small enough to survive. Removing the debris removed
+    the accident that was preserving the tables, and the tables have to be kept
+    on purpose instead.
+
+    So the clause is cut after the last line carrying an address marker.
+    Everything above it is contact data and goes; everything below stays, under
+    the same id, retitled from what is actually left.
+    """
+    lines = clause.text.split("\n")
+    last_address = max(
+        (index for index, line in enumerate(lines) if NOISE_RE.search(line)),
+        default=None,
+    )
+    if last_address is None:
+        return None
+
+    body = "\n".join(lines[last_address + 1 :]).strip()
+    if len(body) < MIN_BODY_CHARS:
+        return None
+
+    heading = next(
+        (
+            line.strip()
+            for line in body.split("\n")
+            if not line.lstrip().startswith(TABLE_MARKER)
+            and _looks_like_title(line.strip())
+            and not is_table_debris(line.strip())
+        ),
+        clause.title,
+    )
+    return Clause(
+        clause_id=clause.clause_id,
+        title=heading[:120],
+        text=body,
+        page=clause.page,
+        policy=clause.policy,
+    )
 
 
 def _split_definitions(clause: Clause) -> list[Clause]:
@@ -1008,13 +1097,30 @@ def split_pdf(pdf_path: Path, policy: str) -> list[Clause]:
     for clause in clauses:
         expanded.extend(_split_definitions(clause))
 
-    kept = attach_refs([c for c in expanded if not _is_address_noise(c)])
-    dropped = len(expanded) - len(kept)
+    # An address annexure is cut where the addresses stop rather than dropped
+    # whole, because what follows one can be a rule - see
+    # `_without_the_address_block`.
+    survivors: list[Clause] = []
+    dropped = trimmed = 0
+    for clause in expanded:
+        if not _is_address_noise(clause):
+            survivors.append(clause)
+            continue
+        remainder = _without_the_address_block(clause)
+        if remainder is None:
+            dropped += 1
+            continue
+        trimmed += 1
+        survivors.append(remainder)
+
+    kept = attach_refs(survivors)
     log.info(
-        "%s: %d clauses (%d after splitting definitions, %d address blocks dropped)",
+        "%s: %d clauses (%d after splitting definitions, %d address blocks dropped, "
+        "%d trimmed to what followed them)",
         policy,
         len(kept),
         len(expanded),
         dropped,
+        trimmed,
     )
     return kept

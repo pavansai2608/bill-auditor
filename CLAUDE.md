@@ -9,7 +9,7 @@ are - is `ENGINEERING.md`. The phase plan is `PHASES.md`.
 **Last updated: 2026-09-06. Every phase in `PHASES.md` is built, including
 Jenkins. The recorded eval is `v11` at 55.2% line accuracy over all 44 bills.
 The CI gate runs the 10-bill subset against a 56.1% baseline at
-`--threshold 0.52`. 462 tests.**
+`--threshold 0.52`. 474 tests.**
 
 **Read `KNOWN_LIMITATIONS.md` sections 6 and 7 before quoting any accuracy
 number**, and treat `eval/results.md` as the only authoritative source for one.
@@ -47,6 +47,24 @@ Built and passing:
   rolls out the BUILD_NUMBER tag and fails if any pod is not on it;
   `ci/prune_images.py` then deletes stale tags, keeping N, N-1, `latest` and
   anything the cluster is live on.
+- `.github/workflows/pages.yml` — the front end alone on GitHub Pages at
+  <https://pavansai2608.github.io/bill-auditor/>, on push to `main`. **Separate
+  from Jenkins and does not touch it.** `npm run build:pages` reads
+  `frontend/.env.pages`: base `/bill-auditor/`, `index.html` copied to
+  `404.html`, and `VITE_STATIC_DEMO` disabling the submit path — there is no
+  API on a CDN, so the form explains itself and points at the quickstart
+  instead of posting into nothing. The report screen is fed
+  `frontend/src/data/exampleReport.json`, exported from the v11 B01 checkpoint
+  by `eval/export_example_report.py`; it is a real run, and
+  `tests/test_example_report.py` pins its citations to `data/clauses.json`,
+  because a fabricated citation in a committed file is not covered by the
+  metric that keeps fabrications at zero everywhere else.
+  `tests/e2e/pages_static_check.py` serves `dist/` the way Pages does — the
+  subpath, and `404.html` under a real 404 status — and checks it in a browser,
+  because every one of these fails **only** in production and looks perfect
+  against a dev server at the domain root. **No secret belongs in that
+  workflow, in `.env.pages`, or in the bundle:** a `VITE_` variable is not
+  configuration, it is a string anyone can fetch off the published site.
 - The clause index: 402 clauses in `data/clauses.json` (star_health 153,
   hdfc_ergo 144, niva_bupa 105) plus `non_payable.json`.
 - The eval harness: **44 bills** in `eval/bills/`, an answer key derived
@@ -57,7 +75,7 @@ Built and passing:
   `bill_text` and the `lines` array of every bill against each other — the two
   halves of a fixture can drift and nothing else compares them. `--llm` runs
   the same check through `core.bill.parse_bill` instead of the regex.
-- 462 PyUnit tests, all passing, `unittest discover -s tests` in ~80s.
+- 474 PyUnit tests, all passing, `unittest discover -s tests` in ~100s.
 
 Not built yet — do not assume these exist:
 

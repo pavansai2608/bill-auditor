@@ -111,6 +111,52 @@ zeros. But it is a correctness fix, not an accuracy fix, and it must not be sold
 as one. The cause and the cost of fixing it are in `KNOWN_LIMITATIONS.md`
 section 10.
 
+## The fix, and the trap inside it
+
+The cause was one line of `_region_text`. `pdfplumber` reads a table straight
+across as well as by cell, so every row also arrives as a flat line of
+interleaved text. The escape hatch that lets a genuine clause heading survive
+inside a table region - `if _section_at(text) or CLAUSE_RE.match(text)` - was
+exempting those flat rows too, because a row that opens with "2.1" looks exactly
+like a clause number. **The table code was never broken. The line protecting
+headings was.**
+
+Deleting the exemption removes `E.2.1`. It also deletes **hdfc_ergo pages 50 and
+51 outright** - 6,314 characters, the 16-row plan-comparison grid, and the
+legend defining "Not Covered" for it. Those pages carry no heading of their own,
+so once the debris stops opening clauses on them, their content falls into the
+"Contact Us" ombudsman annexure and is dropped whole by `_is_address_noise`.
+**The debris was the only thing keeping the real tables in the index.**
+
+All 462 unit tests passed while that happened, and so did all 6 golden table
+tests. Nothing in the suite asked whether content was still there. That gap is
+now `tests/test_index_coverage.py`, written before the fix and shown failing
+against the naive version first.
+
+So the fix is two halves:
+
+1. A line inside a rendered table is dropped even if it matches `CLAUSE_RE`,
+   **unless its words are not already in the rendered rows** - the test is
+   whether the line echoes the table, not whether it looks like a heading.
+2. An address annexure is cut where the addresses stop rather than dropped
+   whole, so what follows one stays in the index.
+
+## One thing it costs, and one fix declined
+
+23 lines left niva_bupa. 22 are word-for-word flat reads of rows that remain in
+the index as `[table]` rows. The 23rd is real: `4.2.2 We pay for Modern
+treatments as specified below:` carried the only occurrence of "Modern" in that
+policy. Its table is rendered *above* it - `TABLE_BAND_LIFT` lifts a table over
+the band that holds its header - so the heading is left with an empty body and
+`MIN_BODY_CHARS` drops the start, taking its own line with it.
+
+Folding such headings into the clause above them was written, measured and
+**rejected**: it recovers 3,359 characters across the three policies and moves
+30 clauses, most of them contents-page entries glued onto the end of unrelated
+bodies. Recovering one token is not worth perturbing thirty clauses on an
+unmeasured guess. The loss is recorded here and in
+`tests/fixtures/index_coverage.json` instead.
+
 ## What the survey is worth as a negative result
 
 The suspicion was a systematic extraction failure. The detector found 18 things
