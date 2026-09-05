@@ -13,8 +13,6 @@ plan is `PHASES.md`. Accuracy numbers are authoritative only in
 
 ## Where the numbers come from
 
-  was OOM-killed in a 7.7 GB VM. See B-02.
-
 Last recorded eval: **`v11`, line accuracy 55.2% over 44 bills / 328 lines.**
 Citation accuracy 43.2%, payout error 56.4%, abstention recall 90.0%, false
 answers 3, dodges 117, **fabricated clauses 0**. Backend ollama (qwen3:8b),
