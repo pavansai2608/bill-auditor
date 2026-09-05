@@ -96,7 +96,7 @@ Two things about that table, both deliberate:
 
 - **There are no v1, v2 or v3 rows because `results.md` has none.** It holds
   five sections - v0, v4, v5 and v5-full twice. The v2 51.2% and v3 54.9%
-  figures quoted in `CLAUDE.md` are not in the results file, so they are not on
+  figures quoted in `ENGINEERING.md` are not in the results file, so they are not on
   the page.
 - **Both v5 rows are shown**, the ten-bill run at 68.3% and the full 44-bill
   run at 59.5%, each labelled with its bill count. Showing only 68.3% while a
