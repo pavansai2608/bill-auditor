@@ -990,3 +990,41 @@ Lines that went past attempt 1: 168
 > Citation accuracy fell 44.4% -> 43.2%: two lines that had cited `II.1` wrongly
 > and confidently now abstain and cite nothing at all, which scores worse and
 > reads better.
+
+### v12-ambulance-override - 2026-09-06
+
+Bills run: 44   
+Bills with no answers filled in yet: 0   
+Lines scored: 328   Lines skipped (key not filled): 0
+
+| metric | value |
+|---|---|
+| Backend | ollama (qwen3:8b), retrieval on mps |
+| Code fingerprint | `ef25ff967455` |
+| Line accuracy (allowed within Rs 1) | 55.2% |
+| Citation accuracy | 43.2% |
+| Payout error | 56.4% |
+| Abstention recall (flagged when it should) | 90.0% |
+| Abstention precision (flagged and was right) | 18.8% |
+| False answers (answered, should have flagged) | 3 |
+| Dodges (flagged, key has an answer) | 117 |
+| **Fabricated clauses** | **0** |
+| p95 latency per bill | 0.0s |
+| Avg tool calls per bill | 17.3 |
+
+| category | lines | line acc | citation acc | dodges | false answers |
+|---|---|---|---|---|---|
+| clean | 65 | 44.6% | 30.8% | 35 | 0 |
+| non_payable | 95 | 74.7% | 70.5% | 23 | 0 |
+| room_category_limit | 15 | 73.3% | 20.0% | 3 | 1 |
+| room_rent_over | 83 | 39.8% | 24.1% | 29 | 0 |
+| schedule_missing | 13 | 61.5% | 41.7% | 4 | 1 |
+| sub_limit | 26 | 42.3% | 28.0% | 14 | 1 |
+| waiting_period | 31 | 58.1% | 58.1% | 9 | 0 |
+
+**Retry loop**  
+Lines settled on the non-payable fast path (no search, no judge call): 125  
+Average attempts per line: 1.88  
+Lines that went past attempt 1: 168  
+...of which a later attempt actually produced an answer: **47** (28%)
+

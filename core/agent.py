@@ -51,11 +51,23 @@ log = get_logger(__name__)
 
 IRDAI_CITATION = "IRDAI-List-I"
 
-# "Ambulance" is IRDAI List I #67, but every policy also carries a named
-# ambulance benefit with its own limit. The benefit clause decides it, so the
-# fast path must not claim it - the list entry covers ambulance equipment
-# billed as an item, not the journey.
-BENEFIT_OVERRIDES_LIST_RE = re.compile(r"ambulance", re.I)
+# List I names that a policy's own named benefit outranks, matched against the
+# LIST ENTRY, not the bill line.
+#
+# "Ambulance" is List I #67, but all three policies carry a named ambulance
+# benefit - star_health II.8 caps the journey at Rs 750 per hospitalization,
+# hdfc_ergo covers it under B.1.1.1, niva_bupa under 6.2.4 - so the benefit
+# clause decides the journey and the fast path must not claim it.
+#
+# This used to be a regex run against the bill line before the list was
+# searched at all, which over-reached in the other direction: "Ambulance
+# Collar" (#49) and "Ambulance Equipment" (#50) are genuine List I
+# consumables, and matching the bare word on the line meant they skipped the
+# fast path too and were never zeroed. Testing the matched ENTRY instead keeps
+# the journey with the benefit clause while leaving every more specific
+# "Ambulance <thing>" entry to do its job. The list is searched in order and
+# #49/#50 precede #67, so the specific entry is the one that matches.
+BENEFIT_OVERRIDDEN_LIST_ITEMS = frozenset({"ambulance"})
 
 # Deterministic rule-type routing. A model call per line to classify would add
 # seven seconds a line to answer something a dozen keywords settle.
@@ -156,14 +168,18 @@ def _normalise(text: str) -> str:
 
 def check_non_payable(state: AgentState) -> AgentState:
     """Path A - settle excluded consumables with no search and no model call."""
-    if BENEFIT_OVERRIDES_LIST_RE.search(state["line"].item):
-        _note(state, "check_non_payable", hit=None, skipped="named benefit takes precedence")
-        return state
-
     item = _normalise(state["line"].item)
     for entry in load_non_payable():
         name = _normalise(re.split(r"[(/-]", entry["item"])[0])
         if len(name.strip()) > 3 and name.strip() in item:
+            if name.strip() in BENEFIT_OVERRIDDEN_LIST_ITEMS:
+                _note(
+                    state,
+                    "check_non_payable",
+                    hit=None,
+                    skipped=f"{entry['item']} is a named benefit in this policy",
+                )
+                return state
             line = state["line"]
             state["verdict"] = LineVerdict(
                 item=line.item,
