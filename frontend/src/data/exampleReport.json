@@ -1,0 +1,1031 @@
+{
+  "recorded": {
+    "run": "v11-zero-limit-guardrail",
+    "bill_id": "B01",
+    "recorded_at": "2026-09-04T11:02:22+00:00",
+    "backend": "ollama",
+    "model": "qwen3:8b"
+  },
+  "report": {
+    "lines": [
+      {
+        "item": "Room Rent (Single A/C) 8,000 x 5 days",
+        "charged": 40000.0,
+        "allowed": 25000.0,
+        "clause_id": "II.1",
+        "reason": "II.1 table: Sum Insured 300,000 -> Up to 5,000/- per day; 5,000 x 5 = 25,000, min(40,000, 25,000) = 25,000",
+        "needs_human": false,
+        "over_limit": true,
+        "limit_per_day": 5000.0
+      },
+      {
+        "item": "ICU Charges 12,000 x 2 days",
+        "charged": 24000.0,
+        "allowed": 24000.0,
+        "clause_id": "II.20",
+        "reason": "The bill item is for ICU Charges, and the clause explicitly excludes ICU charges from the Shared accommodation benefit. Therefore, the clause does not apply to this item.",
+        "needs_human": false,
+        "over_limit": false,
+        "limit_per_day": null
+      },
+      {
+        "item": "Surgeon Fee",
+        "charged": 80000.0,
+        "allowed": null,
+        "clause_id": null,
+        "reason": "no clause found after 3 attempts: The clause is highly ambiguous and appears to list various treatment limits without clear association to the 'Surgeon Fee' item. The text does not explicitly mention surgeon fees or provide a clear limit for this specific item. Therefore, it is not possible to confidently determine the applicable limit based on the provided clause.",
+        "needs_human": true,
+        "over_limit": false,
+        "limit_per_day": null
+      },
+      {
+        "item": "Anaesthetist Charges",
+        "charged": 15000.0,
+        "allowed": 9375.0,
+        "clause_id": "II.1",
+        "reason": "room rent exceeded its per-day limit, so this associated medical expense is reduced in the same proportion: 15,000.00 x 0.6250 = 9,375.00 (II.1)",
+        "needs_human": false,
+        "over_limit": false,
+        "limit_per_day": null
+      },
+      {
+        "item": "Medicines and Drugs",
+        "charged": 38000.0,
+        "allowed": 38000.0,
+        "clause_id": "II.7",
+        "reason": "The clause allows Medicines and Drugs expenses as part of post-hospitalization medical expenses, but does not specify any limit for this item. Therefore, there is no explicit limit stated for the Medicines and Drugs bill item in this clause.",
+        "needs_human": false,
+        "over_limit": false,
+        "limit_per_day": null
+      },
+      {
+        "item": "Operation Theatre Charges",
+        "charged": 22000.0,
+        "allowed": 13750.0,
+        "clause_id": "II.1",
+        "reason": "room rent exceeded its per-day limit, so this associated medical expense is reduced in the same proportion: 22,000.00 x 0.6250 = 13,750.00 (II.1)",
+        "needs_human": false,
+        "over_limit": false,
+        "limit_per_day": null
+      },
+      {
+        "item": "Investigations - CT and Bloodwork",
+        "charged": 14000.0,
+        "allowed": null,
+        "clause_id": null,
+        "reason": "no clause found after 3 attempts: best clause scored 0.03, below the relevance threshold",
+        "needs_human": true,
+        "over_limit": false,
+        "limit_per_day": null
+      },
+      {
+        "item": "Surgical Gloves",
+        "charged": 1200.0,
+        "allowed": 0.0,
+        "clause_id": "IRDAI-List-I",
+        "reason": "Gloves is item #56 on the IRDAI non-payable list, so nothing is payable",
+        "needs_human": false,
+        "over_limit": false,
+        "limit_per_day": null
+      },
+      {
+        "item": "Disposable Syringes",
+        "charged": 800.0,
+        "allowed": null,
+        "clause_id": null,
+        "reason": "no clause found after 3 attempts: best clause scored 0.06, below the relevance threshold",
+        "needs_human": true,
+        "over_limit": false,
+        "limit_per_day": null
+      },
+      {
+        "item": "Ambulance Charges",
+        "charged": 1000.0,
+        "allowed": 750.0,
+        "clause_id": "II.8",
+        "reason": "The clause specifies that road ambulance expenses are payable up to Rs.750/- per hospitalization and up to Rs.1,500/- per Policy Period.",
+        "needs_human": false,
+        "over_limit": false,
+        "limit_per_day": null
+      }
+    ],
+    "total_charged": 236000.0,
+    "total_allowed": 110875.0,
+    "flagged_count": 3,
+    "policy": "star_health",
+    "trace": [
+      {
+        "assumption": "differential_billing",
+        "assumed": true,
+        "statement": "assumed the hospital follows differential billing, so proportionate deduction applies",
+        "because": "the policy disapplies proportionate deduction at hospitals that do not bill differentially, and nothing on a bill states whether this one does. This was assumed, not verified - pass --no-differential-billing to turn it off.",
+        "clause_id": "II.1",
+        "clause_text": "igible room rent/room category stated in the policy schedule or actuals whichever is less. Proportionate deductions are not applied in respect of the hospitals which do not follow differential billing or for those expenses in respect of which differential billing is not adopted based on the room category.\nii. Surgeon, Anaesthetist, Medical Practitioner, Consultants, Specialist Fee"
+      },
+      {
+        "node": "waiting",
+        "excluded": false,
+        "clause_id": null,
+        "kind": null,
+        "why": "44 months of coverage at admission; no waiting period applies. III.1 excludes pre-existing disease for 36 months; nothing on a bill states whether a condition pre-existed the policy, so that was not assessed"
+      },
+      {
+        "node": "check_non_payable",
+        "attempt": 0,
+        "hit": null
+      },
+      {
+        "node": "classify",
+        "attempt": 0,
+        "rule_type": "room_rent"
+      },
+      {
+        "node": "room_limit",
+        "attempt": 0,
+        "resolved": true,
+        "clause_id": "II.1",
+        "per_day": 5000.0,
+        "category": null,
+        "source": "II.1 table: Sum Insured 300,000 -> Up to 5,000/- per day",
+        "allowed": 25000.0,
+        "needs_human": false
+      },
+      {
+        "node": "summary",
+        "item": "Room Rent (Single A/C) 8,000 x 5 days",
+        "attempts": 1,
+        "judge_calls": 0,
+        "tool_calls": 0,
+        "resolved_on_attempt": null,
+        "retry_changed_answer": false,
+        "backend": "none",
+        "fast_path": true,
+        "abstained": false
+      },
+      {
+        "node": "check_non_payable",
+        "attempt": 0,
+        "hit": null
+      },
+      {
+        "node": "classify",
+        "attempt": 0,
+        "rule_type": "other"
+      },
+      {
+        "node": "build_query",
+        "attempt": 0,
+        "query": "ICU Charges limit coverage"
+      },
+      {
+        "node": "retrieve",
+        "attempt": 0,
+        "clauses": [
+          "I.Def24",
+          "II.1",
+          "II.16",
+          "II.2",
+          "II.20",
+          "II.3",
+          "II.4"
+        ],
+        "top_score": 0.405
+      },
+      {
+        "node": "judge",
+        "attempt": 0,
+        "clause_id": "II.1",
+        "confident": true,
+        "limits": [
+          {
+            "amount": 5000.0,
+            "percentage": null,
+            "of": null,
+            "basis": "per_day"
+          }
+        ]
+      },
+      {
+        "node": "grade",
+        "attempt": 1,
+        "decision": "rewrite",
+        "why": "room cap offered for a non-room line",
+        "clause_id": "II.1"
+      },
+      {
+        "node": "build_query",
+        "attempt": 1,
+        "query": "expenses payable for ICU Charges during hospitalization"
+      },
+      {
+        "node": "retrieve",
+        "attempt": 1,
+        "clauses": [
+          "I.Def24",
+          "I.Def45",
+          "II.20"
+        ],
+        "top_score": 0.964
+      },
+      {
+        "node": "judge",
+        "attempt": 1,
+        "clause_id": "II.20",
+        "confident": true,
+        "limits": []
+      },
+      {
+        "node": "grade",
+        "attempt": 1,
+        "decision": "save",
+        "clause_id": "II.20",
+        "allowed": 24000.0
+      },
+      {
+        "node": "summary",
+        "item": "ICU Charges 12,000 x 2 days",
+        "attempts": 2,
+        "judge_calls": 2,
+        "tool_calls": 4,
+        "resolved_on_attempt": 2,
+        "retry_changed_answer": true,
+        "backend": "ollama",
+        "fast_path": false,
+        "abstained": false
+      },
+      {
+        "node": "check_non_payable",
+        "attempt": 0,
+        "hit": null
+      },
+      {
+        "node": "classify",
+        "attempt": 0,
+        "rule_type": "other"
+      },
+      {
+        "node": "build_query",
+        "attempt": 0,
+        "query": "Surgeon Fee limit coverage"
+      },
+      {
+        "node": "retrieve",
+        "attempt": 0,
+        "clauses": [
+          "I.Def55",
+          "II.1",
+          "II.16",
+          "II.17",
+          "II.2",
+          "II.3",
+          "II.4"
+        ],
+        "top_score": 0.236
+      },
+      {
+        "node": "judge",
+        "attempt": 0,
+        "skipped": "below threshold",
+        "top_score": 0.236
+      },
+      {
+        "node": "grade",
+        "attempt": 1,
+        "decision": "rewrite",
+        "why": "best clause scored 0.24, below the relevance threshold"
+      },
+      {
+        "node": "build_query",
+        "attempt": 1,
+        "query": "expenses payable for Surgeon Fee during hospitalization"
+      },
+      {
+        "node": "retrieve",
+        "attempt": 1,
+        "clauses": [
+          "I.Def45",
+          "I.Def64",
+          "II.5"
+        ],
+        "top_score": 0.502
+      },
+      {
+        "node": "judge",
+        "attempt": 1,
+        "clause_id": "II.5",
+        "confident": false,
+        "limits": []
+      },
+      {
+        "node": "grade",
+        "attempt": 2,
+        "decision": "rewrite",
+        "why": "not confident"
+      },
+      {
+        "node": "build_query",
+        "attempt": 2,
+        "query": "Surgeon Fee exclusion or cap under this policy"
+      },
+      {
+        "node": "retrieve",
+        "attempt": 2,
+        "clauses": [
+          "I.Def64",
+          "II.18",
+          "IV.19"
+        ],
+        "top_score": 0.139
+      },
+      {
+        "node": "judge",
+        "attempt": 2,
+        "skipped": "below threshold",
+        "top_score": 0.139
+      },
+      {
+        "node": "grade",
+        "attempt": 3,
+        "decision": "rewrite",
+        "why": "not confident"
+      },
+      {
+        "node": "abstain",
+        "attempt": 3,
+        "attempts": 3,
+        "tool_calls": 4
+      },
+      {
+        "node": "summary",
+        "item": "Surgeon Fee",
+        "attempts": 3,
+        "judge_calls": 1,
+        "tool_calls": 4,
+        "resolved_on_attempt": null,
+        "retry_changed_answer": false,
+        "backend": "ollama",
+        "fast_path": false,
+        "abstained": true
+      },
+      {
+        "node": "check_non_payable",
+        "attempt": 0,
+        "hit": null
+      },
+      {
+        "node": "classify",
+        "attempt": 0,
+        "rule_type": "other"
+      },
+      {
+        "node": "build_query",
+        "attempt": 0,
+        "query": "Anaesthetist Charges limit coverage"
+      },
+      {
+        "node": "retrieve",
+        "attempt": 0,
+        "clauses": [
+          "II.1",
+          "II.16",
+          "II.17",
+          "II.2",
+          "II.25",
+          "II.3",
+          "II.4"
+        ],
+        "top_score": 0.531
+      },
+      {
+        "node": "judge",
+        "attempt": 0,
+        "clause_id": "II.1",
+        "confident": true,
+        "limits": [
+          {
+            "amount": 5000.0,
+            "percentage": null,
+            "of": null,
+            "basis": "per_day"
+          }
+        ]
+      },
+      {
+        "node": "grade",
+        "attempt": 1,
+        "decision": "rewrite",
+        "why": "room cap offered for a non-room line",
+        "clause_id": "II.1"
+      },
+      {
+        "node": "build_query",
+        "attempt": 1,
+        "query": "expenses payable for Anaesthetist Charges during hospitalization"
+      },
+      {
+        "node": "retrieve",
+        "attempt": 1,
+        "clauses": [
+          "I.Def45",
+          "II.5",
+          "IV.2"
+        ],
+        "top_score": 0.55
+      },
+      {
+        "node": "judge",
+        "attempt": 1,
+        "clause_id": "I.Def45",
+        "confident": true,
+        "limits": []
+      },
+      {
+        "node": "grade",
+        "attempt": 1,
+        "decision": "save",
+        "clause_id": "I.Def45",
+        "allowed": 15000.0
+      },
+      {
+        "node": "summary",
+        "item": "Anaesthetist Charges",
+        "attempts": 2,
+        "judge_calls": 2,
+        "tool_calls": 4,
+        "resolved_on_attempt": 2,
+        "retry_changed_answer": true,
+        "backend": "ollama",
+        "fast_path": false,
+        "abstained": false
+      },
+      {
+        "node": "check_non_payable",
+        "attempt": 0,
+        "hit": null
+      },
+      {
+        "node": "classify",
+        "attempt": 0,
+        "rule_type": "other"
+      },
+      {
+        "node": "build_query",
+        "attempt": 0,
+        "query": "Medicines and Drugs limit coverage"
+      },
+      {
+        "node": "retrieve",
+        "attempt": 0,
+        "clauses": [
+          "I.Def55",
+          "II.1",
+          "II.16",
+          "II.2",
+          "II.3",
+          "II.4",
+          "III.1"
+        ],
+        "top_score": 0.694
+      },
+      {
+        "node": "judge",
+        "attempt": 0,
+        "clause_id": "II.16",
+        "confident": false,
+        "limits": []
+      },
+      {
+        "node": "grade",
+        "attempt": 1,
+        "decision": "rewrite",
+        "why": "not confident"
+      },
+      {
+        "node": "build_query",
+        "attempt": 1,
+        "query": "expenses payable for Medicines and Drugs during hospitalization"
+      },
+      {
+        "node": "retrieve",
+        "attempt": 1,
+        "clauses": [
+          "II.25",
+          "II.7",
+          "II.8"
+        ],
+        "top_score": 0.977
+      },
+      {
+        "node": "judge",
+        "attempt": 1,
+        "clause_id": "II.7",
+        "confident": true,
+        "limits": []
+      },
+      {
+        "node": "grade",
+        "attempt": 1,
+        "decision": "save",
+        "clause_id": "II.7",
+        "allowed": 38000.0
+      },
+      {
+        "node": "summary",
+        "item": "Medicines and Drugs",
+        "attempts": 2,
+        "judge_calls": 2,
+        "tool_calls": 4,
+        "resolved_on_attempt": 2,
+        "retry_changed_answer": true,
+        "backend": "ollama",
+        "fast_path": false,
+        "abstained": false
+      },
+      {
+        "node": "check_non_payable",
+        "attempt": 0,
+        "hit": null
+      },
+      {
+        "node": "classify",
+        "attempt": 0,
+        "rule_type": "other"
+      },
+      {
+        "node": "build_query",
+        "attempt": 0,
+        "query": "Operation Theatre Charges limit coverage"
+      },
+      {
+        "node": "retrieve",
+        "attempt": 0,
+        "clauses": [
+          "I.Def45",
+          "I.Def55",
+          "II.17"
+        ],
+        "top_score": 0.143
+      },
+      {
+        "node": "judge",
+        "attempt": 0,
+        "skipped": "below threshold",
+        "top_score": 0.143
+      },
+      {
+        "node": "grade",
+        "attempt": 1,
+        "decision": "rewrite",
+        "why": "best clause scored 0.14, below the relevance threshold"
+      },
+      {
+        "node": "build_query",
+        "attempt": 1,
+        "query": "expenses payable for Operation Theatre Charges during hospitalization"
+      },
+      {
+        "node": "retrieve",
+        "attempt": 1,
+        "clauses": [
+          "I.Def45",
+          "II.1",
+          "II.5"
+        ],
+        "top_score": 0.751
+      },
+      {
+        "node": "judge",
+        "attempt": 1,
+        "clause_id": "II.5",
+        "confident": true,
+        "limits": [
+          {
+            "amount": 25000.0,
+            "percentage": null,
+            "of": null,
+            "basis": "per_policy_period"
+          }
+        ]
+      },
+      {
+        "node": "grade",
+        "attempt": 1,
+        "decision": "save",
+        "clause_id": "II.5",
+        "allowed": 22000.0
+      },
+      {
+        "node": "summary",
+        "item": "Operation Theatre Charges",
+        "attempts": 2,
+        "judge_calls": 1,
+        "tool_calls": 3,
+        "resolved_on_attempt": 2,
+        "retry_changed_answer": true,
+        "backend": "ollama",
+        "fast_path": false,
+        "abstained": false
+      },
+      {
+        "node": "check_non_payable",
+        "attempt": 0,
+        "hit": null
+      },
+      {
+        "node": "classify",
+        "attempt": 0,
+        "rule_type": "other"
+      },
+      {
+        "node": "build_query",
+        "attempt": 0,
+        "query": "Investigations - CT and Bloodwork limit coverage"
+      },
+      {
+        "node": "retrieve",
+        "attempt": 0,
+        "clauses": [
+          "I.Def55",
+          "II.1",
+          "II.16",
+          "II.2",
+          "II.3",
+          "II.4",
+          "IV.14"
+        ],
+        "top_score": 0.227
+      },
+      {
+        "node": "judge",
+        "attempt": 0,
+        "skipped": "below threshold",
+        "top_score": 0.227
+      },
+      {
+        "node": "grade",
+        "attempt": 1,
+        "decision": "rewrite",
+        "why": "best clause scored 0.23, below the relevance threshold"
+      },
+      {
+        "node": "build_query",
+        "attempt": 1,
+        "query": "expenses payable for Investigations - CT and Bloodwork during hospitalization"
+      },
+      {
+        "node": "retrieve",
+        "attempt": 1,
+        "clauses": [
+          "II.25",
+          "II.5",
+          "II.8"
+        ],
+        "top_score": 0.215
+      },
+      {
+        "node": "judge",
+        "attempt": 1,
+        "skipped": "below threshold",
+        "top_score": 0.215
+      },
+      {
+        "node": "grade",
+        "attempt": 2,
+        "decision": "rewrite",
+        "why": "best clause scored 0.21, below the relevance threshold"
+      },
+      {
+        "node": "build_query",
+        "attempt": 2,
+        "query": "Investigations - CT and Bloodwork exclusion or cap under this policy"
+      },
+      {
+        "node": "retrieve",
+        "attempt": 2,
+        "clauses": [
+          "III.19",
+          "III.35",
+          "III.4"
+        ],
+        "top_score": 0.032
+      },
+      {
+        "node": "judge",
+        "attempt": 2,
+        "skipped": "below threshold",
+        "top_score": 0.032
+      },
+      {
+        "node": "grade",
+        "attempt": 3,
+        "decision": "rewrite",
+        "why": "best clause scored 0.03, below the relevance threshold"
+      },
+      {
+        "node": "abstain",
+        "attempt": 3,
+        "attempts": 3,
+        "tool_calls": 3
+      },
+      {
+        "node": "summary",
+        "item": "Investigations - CT and Bloodwork",
+        "attempts": 3,
+        "judge_calls": 0,
+        "tool_calls": 3,
+        "resolved_on_attempt": null,
+        "retry_changed_answer": false,
+        "backend": "none",
+        "fast_path": true,
+        "abstained": true
+      },
+      {
+        "node": "check_non_payable",
+        "attempt": 0,
+        "hit": "Gloves",
+        "irdai_no": 56
+      },
+      {
+        "node": "summary",
+        "item": "Surgical Gloves",
+        "attempts": 1,
+        "judge_calls": 0,
+        "tool_calls": 0,
+        "resolved_on_attempt": null,
+        "retry_changed_answer": false,
+        "backend": "none",
+        "fast_path": true,
+        "abstained": false
+      },
+      {
+        "node": "check_non_payable",
+        "attempt": 0,
+        "hit": null
+      },
+      {
+        "node": "classify",
+        "attempt": 0,
+        "rule_type": "other"
+      },
+      {
+        "node": "build_query",
+        "attempt": 0,
+        "query": "Disposable Syringes limit coverage"
+      },
+      {
+        "node": "retrieve",
+        "attempt": 0,
+        "clauses": [
+          "I.Def55",
+          "II.1",
+          "II.13",
+          "II.15",
+          "II.2",
+          "II.3",
+          "II.4"
+        ],
+        "top_score": 0.057
+      },
+      {
+        "node": "judge",
+        "attempt": 0,
+        "skipped": "below threshold",
+        "top_score": 0.057
+      },
+      {
+        "node": "grade",
+        "attempt": 1,
+        "decision": "rewrite",
+        "why": "best clause scored 0.06, below the relevance threshold"
+      },
+      {
+        "node": "build_query",
+        "attempt": 1,
+        "query": "expenses payable for Disposable Syringes during hospitalization"
+      },
+      {
+        "node": "retrieve",
+        "attempt": 1,
+        "clauses": [
+          "II.25",
+          "II.5",
+          "II.8"
+        ],
+        "top_score": 0.196
+      },
+      {
+        "node": "judge",
+        "attempt": 1,
+        "skipped": "below threshold",
+        "top_score": 0.196
+      },
+      {
+        "node": "grade",
+        "attempt": 2,
+        "decision": "rewrite",
+        "why": "best clause scored 0.20, below the relevance threshold"
+      },
+      {
+        "node": "build_query",
+        "attempt": 2,
+        "query": "Disposable Syringes exclusion or cap under this policy"
+      },
+      {
+        "node": "retrieve",
+        "attempt": 2,
+        "clauses": [
+          "III.1",
+          "III.19",
+          "IV.19"
+        ],
+        "top_score": 0.061
+      },
+      {
+        "node": "judge",
+        "attempt": 2,
+        "skipped": "below threshold",
+        "top_score": 0.061
+      },
+      {
+        "node": "grade",
+        "attempt": 3,
+        "decision": "rewrite",
+        "why": "best clause scored 0.06, below the relevance threshold"
+      },
+      {
+        "node": "abstain",
+        "attempt": 3,
+        "attempts": 3,
+        "tool_calls": 3
+      },
+      {
+        "node": "summary",
+        "item": "Disposable Syringes",
+        "attempts": 3,
+        "judge_calls": 0,
+        "tool_calls": 3,
+        "resolved_on_attempt": null,
+        "retry_changed_answer": false,
+        "backend": "none",
+        "fast_path": true,
+        "abstained": true
+      },
+      {
+        "node": "check_non_payable",
+        "attempt": 0,
+        "hit": null,
+        "skipped": "named benefit takes precedence"
+      },
+      {
+        "node": "classify",
+        "attempt": 0,
+        "rule_type": "sub_limit"
+      },
+      {
+        "node": "build_query",
+        "attempt": 0,
+        "query": "Ambulance Charges sub-limit maximum payable"
+      },
+      {
+        "node": "retrieve",
+        "attempt": 0,
+        "clauses": [
+          "II.25",
+          "II.8",
+          "IV.19"
+        ],
+        "top_score": 0.997
+      },
+      {
+        "node": "judge",
+        "attempt": 0,
+        "clause_id": "II.8",
+        "confident": true,
+        "limits": [
+          {
+            "amount": 750.0,
+            "percentage": null,
+            "of": null,
+            "basis": "per_hospitalization"
+          },
+          {
+            "amount": 1500.0,
+            "percentage": null,
+            "of": null,
+            "basis": "per_policy_period"
+          }
+        ]
+      },
+      {
+        "node": "grade",
+        "attempt": 0,
+        "decision": "save",
+        "clause_id": "II.8",
+        "allowed": 750.0
+      },
+      {
+        "node": "summary",
+        "item": "Ambulance Charges",
+        "attempts": 1,
+        "judge_calls": 1,
+        "tool_calls": 2,
+        "resolved_on_attempt": 1,
+        "retry_changed_answer": false,
+        "backend": "ollama",
+        "fast_path": false,
+        "abstained": false
+      },
+      {
+        "node": "second_pass",
+        "applied": true,
+        "ratio": 0.625,
+        "because": "Room Rent (Single A/C) 8,000 x 5 days",
+        "clause_id": "II.1"
+      },
+      {
+        "node": "second_pass",
+        "item": "Room Rent (Single A/C) 8,000 x 5 days",
+        "rescaled": false,
+        "scope": "excluded",
+        "why": "this is the room line itself, already capped at its per-day limit"
+      },
+      {
+        "node": "second_pass",
+        "item": "ICU Charges 12,000 x 2 days",
+        "rescaled": false,
+        "scope": "excluded",
+        "why": "outside associated medical expenses, so the deduction does not reach it"
+      },
+      {
+        "node": "second_pass",
+        "item": "Surgeon Fee",
+        "rescaled": false,
+        "scope": "included",
+        "why": "flagged for human review, so there is no amount to rescale"
+      },
+      {
+        "node": "second_pass",
+        "item": "Anaesthetist Charges",
+        "rescaled": true,
+        "scope": "included",
+        "before": 15000.0,
+        "after": 9375.0,
+        "clause_id": "II.1"
+      },
+      {
+        "node": "second_pass",
+        "item": "Medicines and Drugs",
+        "rescaled": false,
+        "scope": "excluded",
+        "why": "outside associated medical expenses, so the deduction does not reach it"
+      },
+      {
+        "node": "second_pass",
+        "item": "Operation Theatre Charges",
+        "rescaled": true,
+        "scope": "included",
+        "before": 22000.0,
+        "after": 13750.0,
+        "clause_id": "II.1"
+      },
+      {
+        "node": "second_pass",
+        "item": "Investigations - CT and Bloodwork",
+        "rescaled": false,
+        "scope": "excluded",
+        "why": "flagged for human review, so there is no amount to rescale"
+      },
+      {
+        "node": "second_pass",
+        "item": "Surgical Gloves",
+        "rescaled": false,
+        "scope": "unnamed",
+        "why": "the definition of associated medical expenses does not name this item"
+      },
+      {
+        "node": "second_pass",
+        "item": "Disposable Syringes",
+        "rescaled": false,
+        "scope": "unnamed",
+        "why": "flagged for human review, so there is no amount to rescale"
+      },
+      {
+        "node": "second_pass",
+        "item": "Ambulance Charges",
+        "rescaled": false,
+        "scope": "unnamed",
+        "why": "the definition of associated medical expenses does not name this item"
+      }
+    ],
+    "assumptions": [
+      {
+        "assumption": "differential_billing",
+        "assumed": true,
+        "statement": "assumed the hospital follows differential billing, so proportionate deduction applies",
+        "because": "the policy disapplies proportionate deduction at hospitals that do not bill differentially, and nothing on a bill states whether this one does. This was assumed, not verified - pass --no-differential-billing to turn it off.",
+        "clause_id": "II.1",
+        "clause_text": "igible room rent/room category stated in the policy schedule or actuals whichever is less. Proportionate deductions are not applied in respect of the hospitals which do not follow differential billing or for those expenses in respect of which differential billing is not adopted based on the room category.\nii. Surgeon, Anaesthetist, Medical Practitioner, Consultants, Specialist Fee"
+      }
+    ]
+  }
+}

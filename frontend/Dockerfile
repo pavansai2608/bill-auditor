@@ -6,6 +6,10 @@ COPY package.json package-lock.json* ./
 RUN npm ci || npm install
 COPY tsconfig.json vite.config.ts index.html ./
 COPY src/ ./src/
+# public/ holds the favicon, which index.html links by name. Without this the
+# built page asks nginx for a file that is not in the image, try_files hands
+# back index.html, and the tab icon is silently a page of HTML.
+COPY public/ ./public/
 # Baked in at build time, because Vite inlines it. docker-compose passes the
 # gateway's address; k8s passes the service address.
 ARG VITE_API_BASE=http://localhost:8000

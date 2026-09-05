@@ -14,12 +14,25 @@ STAGED_ALL=$(git diff --cached --name-only --diff-filter=ACM)
 for FILE in $STAGED_ALL; do
     case "$FILE" in
         .env|.env.*|*/.env|*/.env.*)
-            if [ "$FILE" != ".env.example" ]; then
-                echo "pre-commit: BLOCKED - refusing to commit $FILE." >&2
-                echo "  It is meant to hold secrets and is gitignored." >&2
-                echo "  Unstage it: git restore --staged $FILE" >&2
-                exit 1
-            fi
+            # Matched on the basename, not the path. The exemption used to be
+            # the exact string ".env.example", so frontend/.env.example - a
+            # committed template that has always been in the repo - was blocked
+            # the moment the front end grew one of its own.
+            #
+            # .env.pages is committed on purpose too: it holds three facts about
+            # where the static site is hosted, all of them visible in the URL
+            # bar. Nothing a Vite build inlines can be private anyway - a VITE_
+            # variable is a string anyone can fetch off the published site - and
+            # the key scan below still reads the content of both.
+            case "${FILE##*/}" in
+                .env.example|.env.pages) ;;
+                *)
+                    echo "pre-commit: BLOCKED - refusing to commit $FILE." >&2
+                    echo "  It is meant to hold secrets and is gitignored." >&2
+                    echo "  Unstage it: git restore --staged $FILE" >&2
+                    exit 1
+                    ;;
+            esac
             ;;
     esac
 done

@@ -54,3 +54,4 @@ frontend/dist/ba-build-stamp.txt
 # kept, because frontend/design/landing/README.md cites it by name.
 frontend/design/screenshots/screen-1-*.png
 frontend/design/screenshots/screen-2-*.png
+frontend/dist/

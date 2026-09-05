@@ -2,6 +2,7 @@ import { AssumptionsPanel } from "./AssumptionsPanel";
 import { LineRow } from "./LineRow";
 import { useAudit } from "../context/AuditContext";
 import { downloadCsv, rupees } from "../lib/csv";
+import { STATIC_DEMO } from "../lib/staticDemo";
 import { roomRatio } from "../lib/arithmetic";
 import { useCountUp } from "../hooks/useReveal";
 import type { AuditReport, TraceEntry } from "../types";
@@ -89,6 +90,19 @@ export default function ReportView() {
           </span>
         </div>
 
+        {/* A report that was replayed rather than run says so, here, before a
+            single figure is read. It is a real report - these are the numbers
+            and the citations that run produced - but it is not this visitor's
+            bill, and the page must never let the two be confused. */}
+        {job.recorded && (
+          <p className="verdict-recorded" data-testid="recorded-note">
+            A recorded run, not a live one: bill <strong>{job.recorded.bill_id}</strong> from the
+            evaluation set, audited by <code>{job.recorded.model}</code> on{" "}
+            {job.recorded.recorded_at.slice(0, 10)}. Every figure and clause below is that
+            run&rsquo;s own output.
+          </p>
+        )}
+
         <div className="verdict-bar" role="presentation">
           <span className="seg-paid" style={{ flexBasis: percent(payable, report.total_charged) }} />
           <span className="seg-cut" style={{ flexBasis: percent(reduced, report.total_charged) }} />
@@ -172,14 +186,20 @@ export default function ReportView() {
       </section>
 
       <div className="actions">
-        <button
-          type="button"
-          className="btn-secondary"
-          data-testid="compare"
-          onClick={() => job.compare(form)}
-        >
-          Compare with other policies
-        </button>
+        {/* Comparing re-audits the same bill against the other two policies -
+            two more runs of the whole pipeline, so it needs the backend. On
+            the static build it is absent rather than present and dead: there
+            is nothing useful a person could do about it here. */}
+        {!STATIC_DEMO && (
+          <button
+            type="button"
+            className="btn-secondary"
+            data-testid="compare"
+            onClick={() => job.compare(form)}
+          >
+            Compare with other policies
+          </button>
+        )}
         <button
           type="button"
           className="btn-secondary"
