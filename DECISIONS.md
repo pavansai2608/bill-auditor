@@ -29,8 +29,10 @@ and change the pattern in the hook and its test together.
 
 ## D-02 — `git revert` is left out of the planned history
 
-**Choice.** `GIT_COMMANDS.md` contains a squash rebase, a cherry-pick, merges,
-tags, a worktree and a stash, but no `revert`.
+**Choice.** The planned history contains a squash rebase, a cherry-pick,
+merges, tags, a worktree and a stash, but no `revert`. (These were to be
+collected in a `GIT_COMMANDS.md`; that file was never created, and the commands
+are delivered in each reply instead.)
 
 **Why.** Part 0.1 says an advanced operation must have an honest place and
 that inventing a sequence to tick the box is not acceptable. Every wrong state
@@ -41,7 +43,7 @@ commit that never carried the bug would be theatre.
 
 **When the other option wins.** The moment a committed change drops an eval
 score, revert it for real and record the revert here. The `git bisect` runbook
-at the end of `GIT_COMMANDS.md` exists to find exactly that commit.
+in `CLAUDE.md` exists to find exactly that commit.
 
 ---
 

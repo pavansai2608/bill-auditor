@@ -12,8 +12,9 @@ If you ever do land in vim anyway: press `Esc`, then type `:q!` and press
 1. No commit carries a `[BA-XX]` ticket. Two separate reasons, both true:
    `core.hooksPath` was never set, so `.githooks/` never ran at all; and the
    hook had no ticket check in it even if it had run. Both are fixed below.
-2. `f2c0b1f` is still a `fixup!` commit, because the autosquash rebase in
-   `GIT_COMMANDS.md` was never run.
+2. `f2c0b1f` is still a `fixup!` commit, because the planned autosquash
+   rebase was never run. (It was to live in a `GIT_COMMANDS.md`; that file was
+   never created.)
 
 ---
 

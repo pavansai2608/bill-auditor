@@ -4,8 +4,9 @@ This file replaces `CLAUDE_CODE_PROMPT_v2.md`, which was never committed to the
 repo. `CLAUDE.md` must point here.
 
 **Read this file in full before doing anything.** If your context was lost and you
-are picking this project up cold, this file plus `CLAUDE.md`, `README.md`,
-`eval/results.md` and `KNOWN_LIMITATIONS.md` are enough to continue without asking.
+are picking this project up cold, this file plus `CLAUDE.md` (operating rules),
+`ENGINEERING.md` (how the system works and why), `README.md`, `eval/results.md`
+and `KNOWN_LIMITATIONS.md` are enough to continue without asking.
 
 ---
 
@@ -20,10 +21,11 @@ Output them as text.
 committed while you work. Everything you write simply sits in the working tree
 until I return and run the whole thing in one go. Plan for that:
 
-- **`GIT_COMMANDS.md` is a single script I will run top to bottom.** Append to it
-  as you finish each phase, under a heading for that phase, in the exact order the
-  commands must run. Do not scatter commands across other files or rely on me
-  remembering anything from your replies.
+- **Git commands are delivered in the reply, under a `GIT COMMANDS` heading,
+  and I run them.** They are not accumulated into a file; each reply's block is
+  self-contained and in the exact order the commands must run. An earlier plan
+  collected them in a `GIT_COMMANDS.md`; that file was never created and the
+  working rule in `CLAUDE.md` is what actually governs.
 - **Every command must still be valid when run long after the files were written.**
   All the files already exist on disk by then, so each block is: create the branch,
   `git add` only that phase's files, commit, and merge. Never `git add .` — it
@@ -67,7 +69,7 @@ clever it is.
 
 **FILES CHANGED** — created / modified / deleted, one per line.
 
-**GIT COMMANDS** — for me to run. Also appended to `GIT_COMMANDS.md`.
+**GIT COMMANDS** — for me to run, complete in the reply itself.
 
 **VERIFY IT WORKED** — the exact command, the expected output, and what a
 specific failure would mean. Not "check it works" — name the test class and say
@@ -77,8 +79,8 @@ what its failure implies about the system.
 
 I am away and cannot answer questions. So:
 
-- **Do not wait for me between phases.** Finish a phase, write its four blocks
-  into `PROGRESS.md`, then start the next one.
+- **Do not wait for me between phases.** Finish a phase, record it in the
+  **Current state** block of `CLAUDE.md`, then start the next one.
 - **When you need a decision I would normally make, make it**, then record it in
   `DECISIONS.md` with: what the choice was, what you picked, why, and what would
   have to be true for the other option to be better. Keep going.
@@ -101,9 +103,9 @@ better dishonestly, so:
   mark it withdrawn and say why, next to the corrected one.
 - **Never change what counts as a fabricated citation.** That metric must stay
   at 0 and must stay strictly defined.
-- If a change makes a score **drop**, do not hide it. Record the drop, diagnose
-  it in `PROGRESS.md`, and either fix it or write it into `KNOWN_LIMITATIONS.md`
-  before moving on.
+- If a change makes a score **drop**, do not hide it. Record the drop in
+  `eval/results.md`, diagnose it in the **Current state** block of `CLAUDE.md`,
+  and either fix it or write it into `KNOWN_LIMITATIONS.md` before moving on.
 
 ## 0.6 End of every phase
 
@@ -111,8 +113,8 @@ better dishonestly, so:
    `uv run python eval/evaluate.py --quick --agent --second-pass --version vN --write`
 2. Update the **Current state** block in `CLAUDE.md`: what is built, what is not,
    latest version and score, and which phase is next.
-3. Append the four blocks to `PROGRESS.md`.
-4. Append the git commands to `GIT_COMMANDS.md`.
+3. Output the four blocks in the reply. The durable record is the **Current
+   state** block in `CLAUDE.md`, updated in step 2.
 5. Run the full test suite. It must pass before you start the next phase. If it
    does not, fix it before moving on — a failing suite carried into the next
    phase makes every later failure ambiguous.
@@ -153,11 +155,28 @@ index is rejected outright.
 
 Phases 1-7 are complete plus two accuracy passes. 185 tests pass.
 
-| Version | What was added | Line accuracy |
+> **This table is the 10-bill subset ladder, and it is superseded. No row in it
+> is the headline figure.**
+>
+> The headline is **55.2% line accuracy over the full 44-bill set**, recorded as
+> row `v11` in `eval/results.md`. That file is the only place a number in this
+> repository is authoritative; everything here is history.
+>
+> These rows are 10 bills / 82 lines, a denominator held constant so that one
+> version could be compared with the next. The ten are easier than the
+> forty-four, so a figure here is **not comparable** with the headline and must
+> never be quoted beside it.
+>
+> **v2 and v3 are not reproducible.** `eval/results.md` holds no row for either,
+> so 51.2% and 54.9% cannot be checked against the current code fingerprint.
+> They are left here as a record of what was believed at the time, not as
+> results. `PROGRESS.md`, which repeated the same two figures, was removed.
+
+| Version | What was added | Line accuracy (10 bills — **not** the headline) |
 |---|---|---|
 | v0 | Naive: one search, one judge call, no retry | 24.4% |
-| v2 | LangGraph agent loop with retry on low confidence | 51.2% |
-| v3 | Proportionate-deduction second pass | 54.9% |
+| v2 | LangGraph agent loop with retry on low confidence | 51.2% — **not reproducible** |
+| v3 | Proportionate-deduction second pass | 54.9% — **not reproducible** |
 | v4 | Room limit read from the table, not the model | 59.8% |
 | v5 | Waiting periods decided from dates, not the model | 68.3% |
 
@@ -232,7 +251,7 @@ DID block that you did:
 | `.gitattributes` | Already present; keep it correct |
 | Git hooks | Already present in `.githooks`; keep the ticket check working |
 
-Since I run the commands, put them in `GIT_COMMANDS.md` with a one-line comment
+Since I run the commands, put them in the reply's GIT COMMANDS block with a one-line comment
 above each block saying what it does and why.
 
 ---
@@ -526,30 +545,29 @@ These have all bitten this project once. Do not reintroduce them.
 - [ ] `docker-compose up` starts all six services
 - [ ] `kubectl apply -f k8s/` deploys on minikube
 - [ ] `Jenkinsfile` present and `JENKINS_SETUP.md` followable by a beginner
-- [ ] Annotated tags v0-v5 and v1.0.0 in `GIT_COMMANDS.md`
+- [ ] Annotated tags v0-v5 and v1.0.0 exist in the repository
 - [ ] The git history shows GitFlow branches, a squash, a rebase, a cherry-pick,
       a revert, and the tags
 - [ ] Every commit message carries a `[BA-XX]` ticket
 - [ ] No AI attribution anywhere in the repo
 - [ ] README leads with the results table
 - [ ] README has "Where it still fails" and "What this doesn't do"
-- [ ] `PROGRESS.md`, `DECISIONS.md`, `GIT_COMMANDS.md` are current
-- [ ] `GIT_COMMANDS.md` runs top to bottom as one script, with checkpoints
-      between phases and a comment above every block
-- [ ] No `git add .` anywhere in it — every block adds only its own files
+- [ ] `CLAUDE.md` (Current state) and `DECISIONS.md` are current
+- [ ] No `git add .` in any recorded command — every block adds only its own files
 - [ ] `BLOCKED.md` lists everything that needs me, or says there is nothing
 
 ---
 
 # PART 13 — IF YOUR CONTEXT WAS LOST
 
-Read, in this order: `CLAUDE.md` (Current state), this file, `PROGRESS.md`
-(what has been done), `DECISIONS.md` (choices already made — do not relitigate
-them), `BLOCKED.md` (what needs me), `eval/results.md` (the scores),
+Read, in this order: `CLAUDE.md` (Current state — what has been done),
+this file, `ENGINEERING.md` (why the system is built as it is),
+`DECISIONS.md` (choices already made — do not relitigate them),
+`BLOCKED.md` (what needs me), `eval/results.md` (the scores),
 `KNOWN_LIMITATIONS.md` (known-broken things that are not yours to fix).
 
 Then say what you found, what phase you believe is next, and carry on. Do not
-start over. Do not re-run phases already recorded in `PROGRESS.md`.
+start over. Do not re-run phases already recorded in `CLAUDE.md`.
 
 ---
 
