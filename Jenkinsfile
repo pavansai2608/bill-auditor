@@ -408,8 +408,32 @@ pipeline {
           // are separate: an image removed from one is untouched in the other,
           // which is the same separation that made Deploy silently no-op.
           // The script skips minikube on its own if no profile is running.
-          sh "uv run python ci/prune_images.py --build-number ${BUILD_NUMBER}"
-          gatePassed('Prune')
+          // returnStatus, not a bare sh. A bare `sh` throws on a non-zero exit
+          // and that would turn a build which deployed and verified into a
+          // FAILURE over disk cleanup - the deployment is already done and
+          // correct, and reporting it as failed would send someone looking for
+          // a broken rollout that is not broken.
+          //
+          // The pruner is careful about this itself: an unreadable cluster
+          // keeps everything and exits 0, and a tag that will not delete is
+          // reported and exits 0. The only non-zero it returns deliberately is
+          // 2, for a missing --build-number, which cannot happen here because
+          // the line below always passes one. So a non-zero here means the
+          // pruner crashed, and that is worth seeing - as yellow, not red.
+          def status = sh(
+            returnStatus: true,
+            script: "uv run python ci/prune_images.py --build-number ${BUILD_NUMBER}",
+          )
+          if (status == 0) {
+            gatePassed('Prune')
+          } else {
+            gateBlocked('Prune', "the pruner exited ${status}")
+            echo "Prune failed (exit ${status}). Images were left in place."
+            echo 'The deployment is unaffected: it was verified before this ran,'
+            echo 'and nothing here can undo it. Disk was not reclaimed; the next'
+            echo 'green build prunes.'
+            unstable("Prune failed (exit ${status}); the deployment stands.")
+          }
         }
       }
     }
