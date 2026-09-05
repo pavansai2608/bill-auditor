@@ -1,57 +1,162 @@
-/* Every value here comes from design/tokens.json. Change it there first. */
-:root {
-  --colour-ink: #0b1f2a;
-  --colour-ink-muted: #55707e;
-  /* #8aa2ae measured 2.54:1 on the paper ground - it failed WCAG AA on 19
-     user-facing text nodes across both screens. Same hue, darkened until it
-     passes at exactly 4.50:1. */
-  --colour-ink-faint: #5c7785;
-  --colour-surface: #ffffff;
-  --colour-surface-sunken: #f4f7f8;
-  --colour-surface-raised: #fbfcfd;
-  --colour-border: #dde6ea;
-  --colour-border-strong: #c3d2d9;
-  --colour-accent: #0e7c7b;
-  --colour-accent-hover: #0a5f5e;
-  --colour-accent-soft: #e4f2f1;
-  --colour-accent-ink: #ffffff;
-  --colour-flag: #9a6410;
-  --colour-flag-soft: #fdf4e5;
-  --colour-flag-border: #ead5ae;
-  --colour-deduct: #8c2f2f;
-  --colour-deduct-soft: #fbf0f0;
-  --colour-focus: #0e7c7b;
+/* The three faces, in one request.
+ *
+ * An @import rather than a <link> because index.html is outside this
+ * directory: see the note in the agent report. It costs one round trip, which
+ * display=swap and the real fallback stacks below make survivable.
+ *
+ * Fraunces for display, asked for on its optical-size and weight axes only,
+ * which leaves its SOFT and WONK axes at their defaults of zero - the sober
+ * cut, not the playful one. Inter for the interface. JetBrains Mono for the
+ * bill, the trace and every clause id.
+ *
+ * index.html still requests Instrument Serif, which nothing uses any more, and
+ * Inter without its 700 weight. That <link> should be replaced with this URL. */
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
 
+/* Bill Auditor - the design system, and everything both screens share.
+ *
+ * The :root block below is the palette of record for this redesign.
+ * design/tokens.json still holds the previous one - warm paper, a single teal
+ * accent - and has not been regenerated from here; it is a record file outside
+ * this directory. Regenerate it from this block before treating it as the
+ * source again, or the two will disagree silently.
+ *
+ * ---------------------------------------------------------------------------
+ * The idea: a bill, lit, against the policy.
+ *
+ * The person using this is holding a hospital bill and a settlement letter
+ * that took money off it, and they want to know which of those deductions is
+ * a rule and which is a mistake. So the product's whole job is evidence, and
+ * the design says so three ways:
+ *
+ *   - Deep navy is the policy - the document nobody reads, the thing the
+ *     money disappears into. It is the ground of the front door and of the
+ *     masthead on every screen.
+ *   - Paper is the bill. White sheets, lifted off the navy with real
+ *     elevation, are the only bright things in the hero, because the bill is
+ *     what the visitor brought.
+ *   - Colour is a verdict, never decoration. Green is money kept, crimson is
+ *     money taken, amber is a line no clause covered. Blue is the system
+ *     speaking - links, focus, and the clause citations that are the point of
+ *     the whole thing. Nothing else on either screen is coloured.
+ *
+ * Every colour pair below was computed against WCAG AA before it was written,
+ * not adjusted afterwards; the ratios are recorded next to the tokens that
+ * needed the argument.
+ * ---------------------------------------------------------------------------
+ */
+
+:root {
+  /* --- ink ---------------------------------------------------------------
+     Three steps, each measured against the darkest surface it is allowed to
+     sit on (--colour-sunken), so a token can never be legal in one place and
+     illegal in another. */
+  --colour-ink: #0a1b2a; /* 14.81:1 on sunken */
+  --colour-ink-muted: #3e5a70; /* 6.20:1 on sunken */
+  /* #8aa2ae measured 2.54:1 on the old paper ground - it failed WCAG AA on 19
+     user-facing text nodes across both screens. It was darkened to #5c7785,
+     which passed at exactly 4.50:1 there. This palette's ground is cooler and
+     one step darker, and #5c7785 fell back to 4.33:1 on it, so the same hue is
+     darkened again: 4.75:1 on --colour-sunken, 5.54:1 on card. The fix is not
+     undone, it is re-measured. */
+  --colour-ink-faint: #526c7b;
+
+  /* --- light surfaces, in the order they stack --------------------------- */
+  --colour-page: #f3f6fa;
+  --colour-veil: #fbfcfe;
+  --colour-card: #ffffff;
+  --colour-sunken: #e8eef6;
+
+  /* --- deep surfaces -----------------------------------------------------
+     The hero, the masthead and the closing band. Not a dark theme: a
+     deliberate second ground the light one is set against. */
+  --colour-deep: #08203a;
+  --colour-deep-raised: #0e3054;
+  --colour-on-deep: #eaf2fa; /* 14.28:1 */
+  --colour-on-deep-muted: #a8c2da; /* 8.92:1 */
+  --colour-on-deep-faint: #7e9cba; /* 5.75:1 */
+  --colour-deep-hairline: rgba(234, 242, 250, 0.16);
+  --colour-deep-rule: rgba(234, 242, 250, 0.07);
+  /* The pools of light on the navy. Not decoration: they mark where the two
+     sheets of paper sit, which is why they are warm blue rather than a wash. */
+  --glow-brand: rgba(11, 95, 203, 0.42);
+  --glow-brand-soft: rgba(11, 95, 203, 0.38);
+  --glow-lift: rgba(138, 189, 240, 0.12);
+
+  /* --- brand: the system speaking ---------------------------------------
+     Links, focus, citations, the primary action. Trust blue, per the
+     Insurance Platform palette (#0066CC), moved to #0b5fcb so that it clears
+     AA as *text* on white (5.98:1) rather than only as a fill. */
+  --colour-brand: #0b5fcb;
+  --colour-brand-strong: #0a4ca3; /* 8.15:1 on white - hover, and text on brand-soft */
+  --colour-brand-deep: #08356f;
+  --colour-brand-soft: #e5edfb;
+  --colour-brand-soft-hover: #d9e6fa; /* 13.84:1 with ink, 6.46:1 with brand-strong */
+  --colour-brand-edge: rgba(11, 95, 203, 0.22); /* the hairline round a citation */
+  --colour-brand-lift: #8abdf0; /* 8.31:1 on deep - the blue that survives the navy */
+  --colour-on-brand: #ffffff;
+
+  /* --- verdicts ----------------------------------------------------------
+     One hue per outcome, and every outcome also carries words, because
+     colour alone is not an answer for someone who cannot see it. */
+  --colour-paid: #0b7047; /* 6.14:1 on card - allowed in full */
+  --colour-paid-soft: #e1f1e8;
+  --colour-paid-line: #7fc5a2; /* non-text: bar segments and rules */
+  --colour-cut: #a61f1f; /* 7.40:1 on card - money removed */
+  --colour-cut-soft: #fbeae9;
+  --colour-cut-line: #d98a86;
+  --colour-flag: #8a5a00; /* 5.93:1 on card - no clause clearly applied */
+  --colour-flag-soft: #fbf1dd;
+  --colour-flag-line: #d9b268;
+
+  /* --- structure --------------------------------------------------------- */
+  --colour-hairline: rgba(10, 27, 42, 0.1);
+  --colour-hairline-strong: rgba(10, 27, 42, 0.18);
+  --colour-focus: #0b5fcb;
+  --colour-focus-halo: rgba(11, 95, 203, 0.24);
+  --colour-selection: #cfe0fa;
+
+  /* --- type -------------------------------------------------------------
+     Eight steps with real gaps between them. The old scale ran 12/13/15/17/22
+     - five sizes inside ten pixels - so nothing on the page could be more
+     important than anything else. */
+  --text-micro: 0.6875rem;
   --text-caption: 0.75rem;
   --text-small: 0.8125rem;
   --text-body: 0.9375rem;
-  --text-lead: 1.0625rem;
-  --text-heading: 1.375rem;
-  --text-title: 1.75rem;
-  --text-figure: 2rem;
-  --text-display: 3rem;
+  --text-lead: 1.125rem;
+  --text-h3: 1.25rem;
+  --text-h2: 1.625rem;
+  --text-figure: 2.25rem;
+  --text-h1: 2.5rem;
+  --text-display: 3.5rem;
+  --text-display-lg: 5rem;
 
-  /* tokens.json carries these; the stylesheet did not, so anything using
-     var(--leading-tight) was quietly falling back to its own guess. */
-  /* The landing page's warm ground and hairline borders. They live here, with
-     everything else, so there is one palette rather than two that drift. */
-  --colour-paper: #faf9f7;
-  --colour-paper-raised: #ffffff;
-  --colour-paper-sunken: #f2f0ec;
-  --colour-hairline: rgba(11, 31, 42, 0.1);
-  --colour-hairline-strong: rgba(11, 31, 42, 0.16);
+  /* The three fluid steps. Named, because a clamp() repeated in three files
+     is three different headlines the first time one of them is edited. */
+  --text-hero: clamp(2.25rem, 4.6vw, 4.25rem);
+  --text-section: clamp(2rem, 3.6vw, 3.25rem);
+  --text-page-title: clamp(2rem, 3.2vw, 3rem);
 
-  --text-display-lg: 5.5rem;
-  --text-display-md: 4rem;
-
-  --leading-tight: 1.2;
+  --leading-tight: 1.05;
+  --leading-snug: 1.25;
   --leading-normal: 1.5;
   --leading-loose: 1.65;
+  /* Monospaced blocks need more air than prose: the bill is read a figure at
+     a time, not a sentence at a time. */
+  --leading-mono: 1.9;
+
+  --tracking-tight: -0.022em;
+  --tracking-display: -0.03em;
+  --tracking-label: 0.09em;
+  --underline-offset: 0.22em;
 
   --weight-regular: 400;
   --weight-medium: 500;
   --weight-semibold: 600;
+  --weight-bold: 700;
 
+  /* --- space ------------------------------------------------------------- */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -60,45 +165,158 @@
   --space-6: 32px;
   --space-7: 48px;
   --space-8: 64px;
+  --space-9: 96px;
+  --space-10: 128px;
 
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
+  /* --- radius ------------------------------------------------------------
+     Tightened. Swiss geometry wants corners that read as construction rather
+     than as softness; 14px on a form field looked like a toy. */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 18px;
   --radius-pill: 999px;
 
-  --shadow-card: 0 1px 2px rgba(11, 31, 42, 0.04), 0 1px 3px rgba(11, 31, 42, 0.06);
-  --shadow-raised: 0 2px 8px rgba(11, 31, 42, 0.08);
+  /* --- elevation ---------------------------------------------------------
+     Every shadow carries a vertical offset and a soft blur - light comes from
+     above, so a symmetrical halo is a glow and not a shadow. */
+  --shadow-1: 0 1px 2px rgba(10, 27, 42, 0.06), 0 2px 6px rgba(10, 27, 42, 0.05);
+  --shadow-2: 0 2px 4px rgba(10, 27, 42, 0.05), 0 10px 24px -8px rgba(10, 27, 42, 0.16);
+  --shadow-3: 0 4px 8px rgba(10, 27, 42, 0.06), 0 24px 48px -14px rgba(10, 27, 42, 0.22);
+  --shadow-deep: 0 10px 20px rgba(2, 10, 20, 0.34), 0 36px 72px -20px rgba(2, 10, 20, 0.66);
+  --shadow-focus: 0 0 0 4px var(--colour-focus-halo);
+  --shadow-inset: inset 0 1px 2px rgba(10, 27, 42, 0.08);
 
-  --page-max: 1120px;
-  --form-max: 720px;
+  /* --- motion ------------------------------------------------------------
+     220ms is the hover band the Swiss/minimal reference asks for (200-250ms);
+     everything longer is an entrance, and every entrance eases out hard so it
+     arrives rather than drifts. */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-std: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-fast: 140ms var(--ease-std);
+  --motion-normal: 220ms var(--ease-out);
+  --motion-slow: 420ms var(--ease-out);
+  --motion-reveal: 620ms var(--ease-out);
+  /* How far a section travels, and how much it is out of focus, on the one
+     entrance this design authors. */
+  --reveal-rise: 18px;
+  --reveal-rise-sm: 14px;
+  --reveal-blur: 6px;
+
+  /* --- layout ------------------------------------------------------------ */
+  --page-max: 1200px;
+  --audit-max: 1360px;
+  --form-max: 760px;
   /* 44px, not 42: every select and date input is a pointer target, and 42
      sat just under the comfortable minimum on both screens. */
   --control-height: 44px;
+  --cta-height: 54px;
+  /* The ledger rule: the pitch of the lines behind the hero, behind the
+     closing band, and inside the bill document on the audit screen. One
+     value, so the three read as the same paper. */
+  --rule-pitch: 32px;
+  --bar-height: 14px;
+  --bar-height-sm: 8px;
+  --icon-sm: 14px;
+  --icon-md: 16px;
+  --icon-lg: 20px;
+  --scrollbar: 12px;
 
-  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-display: "Instrument Serif", Georgia, "Times New Roman", serif;
-  --font-mono: "SF Mono", ui-monospace, "JetBrains Mono", Menlo, monospace;
-
-  --motion-fast: 120ms ease;
-  --motion-normal: 200ms ease;
-  --motion-reveal: 520ms cubic-bezier(0.22, 0.61, 0.36, 1);
-  --cta-height: 52px;
+  /* --- faces -------------------------------------------------------------
+     Fraunces for display: a variable Scotch-roman with a real weight range,
+     served with its SOFT and WONK axes at their sober defaults. Inter for the
+     interface. JetBrains Mono for the bill, the trace and every clause id -
+     data and measurement, never decoration. Each has a fallback that is a
+     face and not a category. */
+  --font-display: "Fraunces", "Iowan Old Style", Georgia, "Times New Roman", serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
 }
 
-* { box-sizing: border-box; }
+/* ===========================================================================
+   Base
+   =========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* The scrollbar belongs to the design too. */
+  scrollbar-color: var(--colour-hairline-strong) transparent;
+}
 
 body {
   margin: 0;
   font-family: var(--font-sans);
   font-size: var(--text-body);
-  line-height: 1.5;
+  line-height: var(--leading-normal);
   color: var(--colour-ink);
-  background: var(--colour-surface-sunken);
+  background: var(--colour-page);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  caret-color: var(--colour-brand);
+  font-feature-settings: "cv05" 1, "ss01" 1;
 }
 
-h1, h2, h3 { margin: 0; line-height: 1.2; font-weight: var(--weight-semibold); }
-p { margin: 0; }
+/* The parts nobody draws still carry the design. */
+::selection {
+  background: var(--colour-selection);
+  color: var(--colour-ink);
+}
+
+::-webkit-scrollbar {
+  width: var(--scrollbar);
+  height: var(--scrollbar);
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border: var(--space-1) solid transparent;
+  border-radius: var(--radius-pill);
+  background: var(--colour-hairline-strong);
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--colour-ink-faint);
+  background-clip: content-box;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  line-height: var(--leading-snug);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-tight);
+  text-wrap: balance;
+}
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+a {
+  color: var(--colour-brand);
+  text-decoration-thickness: 1px;
+  text-underline-offset: var(--underline-offset);
+  transition: color var(--motion-normal);
+}
+
+a:hover {
+  color: var(--colour-brand-strong);
+}
 
 :focus-visible {
   outline: 2px solid var(--colour-focus);
@@ -106,47 +324,235 @@ p { margin: 0; }
   border-radius: var(--radius-sm);
 }
 
-.page { max-width: var(--page-max); margin: 0 auto; padding: var(--space-7) var(--space-5) var(--space-8); }
-.page--narrow { max-width: var(--form-max); }
-
-.masthead { display: flex; align-items: baseline; gap: var(--space-3); flex-wrap: wrap; margin-bottom: var(--space-2); }
-.masthead h1 { font-size: var(--text-title); letter-spacing: -0.01em; }
-.masthead .mark {
-  width: 10px; height: 10px; border-radius: var(--radius-pill);
-  background: var(--colour-accent); display: inline-block;
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
-.explainer { color: var(--colour-ink-muted); font-size: var(--text-lead); margin-bottom: var(--space-6); max-width: 60ch; }
+
+.tabular,
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+.num {
+  text-align: right;
+}
+
+/* The display voice. One class, so the face and its tracking never drift. */
+.display {
+  font-family: var(--font-display);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-display);
+  line-height: var(--leading-tight);
+  font-optical-sizing: auto;
+}
+
+/* A section label. Small, spaced, never a heading - and never an eyebrow
+   sitting above one. */
+.label,
+.field > label,
+.submitted-detail dt {
+  font-size: var(--text-micro);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--colour-ink-faint);
+}
+
+/* ===========================================================================
+   Page frame
+   =========================================================================== */
+
+.page {
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: var(--space-7) var(--space-5) var(--space-9);
+}
+
+.page--narrow {
+  max-width: var(--form-max);
+}
+
+/* The masthead once the form is gone and a report is on screen. */
+.masthead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding-bottom: var(--space-5);
+  border-bottom: 1px solid var(--colour-hairline);
+  margin-bottom: var(--space-6);
+}
+
+.masthead h1 {
+  font-size: var(--text-h3);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0;
+}
+
+.masthead-home {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  text-decoration: none;
+  color: var(--colour-ink);
+  border-radius: var(--radius-sm);
+  transition: color var(--motion-normal);
+}
+
+.masthead-home:hover {
+  color: var(--colour-brand);
+}
+
+.masthead-home:focus-visible {
+  outline: 2px solid var(--colour-focus);
+  outline-offset: 4px;
+}
+
+/* The mark: a sheet with two lines on it and one of them struck through -
+   a bill with a deduction, which is the whole product. Drawn as an SVG in
+   components/icons.tsx, so the rule below only sizes and colours it. */
+.mark {
+  flex: none;
+  display: block;
+  width: var(--icon-lg);
+  height: var(--icon-lg);
+  color: var(--colour-brand);
+  transition:
+    transform var(--motion-normal),
+    color var(--motion-normal);
+}
+
+.masthead-home:hover .mark {
+  transform: translateY(-1px);
+}
+
+.explainer {
+  color: var(--colour-ink-muted);
+  font-size: var(--text-lead);
+  line-height: var(--leading-loose);
+  margin-bottom: var(--space-7);
+  max-width: 62ch;
+}
+
+/* ===========================================================================
+   Panels
+   =========================================================================== */
 
 .panel {
-  background: var(--colour-surface);
-  border: 1px solid var(--colour-border);
+  background: var(--colour-card);
+  border: 1px solid var(--colour-hairline);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
-  padding: var(--space-5);
+  box-shadow: var(--shadow-1);
+  padding: var(--space-6);
   margin-bottom: var(--space-5);
 }
-.panel > h2 { font-size: var(--text-heading); margin-bottom: var(--space-1); }
-.panel .panel-note { color: var(--colour-ink-muted); font-size: var(--text-small); margin-bottom: var(--space-4); }
 
-.field { display: flex; flex-direction: column; gap: var(--space-2); margin-bottom: var(--space-4); }
-.field > label { font-size: var(--text-caption); text-transform: uppercase; letter-spacing: 0.06em; color: var(--colour-ink-muted); font-weight: var(--weight-semibold); }
-.field .help { font-size: var(--text-small); color: var(--colour-ink-muted); }
+.panel > h2 {
+  font-size: var(--text-h2);
+  font-family: var(--font-display);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-tight);
+  margin-bottom: var(--space-2);
+}
 
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
+.panel .panel-note {
+  color: var(--colour-ink-muted);
+  font-size: var(--text-small);
+  line-height: var(--leading-loose);
+  max-width: 72ch;
+  margin-bottom: var(--space-5);
+}
 
-input[type="text"], input[type="date"], input[type="number"], select, textarea {
+/* ===========================================================================
+   Controls
+   =========================================================================== */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.field .help {
+  font-size: var(--text-small);
+  color: var(--colour-ink-faint);
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+input[type="text"],
+input[type="date"],
+input[type="number"],
+select,
+textarea {
   font: inherit;
   color: var(--colour-ink);
-  background: var(--colour-surface);
-  border: 1px solid var(--colour-border-strong);
+  background: var(--colour-card);
+  border: 1px solid var(--colour-hairline-strong);
   border-radius: var(--radius-sm);
   padding: 0 var(--space-3);
   height: var(--control-height);
   width: 100%;
-  transition: border-color var(--motion-fast);
+  /* The native pickers, checkboxes and spinners take the brand rather than
+     the browser's own blue. */
+  accent-color: var(--colour-brand);
+  transition:
+    border-color var(--motion-normal),
+    box-shadow var(--motion-normal),
+    background-color var(--motion-normal);
 }
-textarea { height: auto; min-height: 160px; padding: var(--space-3); font-family: var(--font-mono); font-size: var(--text-small); resize: vertical; }
-input:hover, select:hover, textarea:hover { border-color: var(--colour-accent); }
+
+select {
+  /* The default arrow is the one part of a select a stylesheet can reach. */
+  appearance: none;
+  padding-right: var(--space-7);
+  background-image: linear-gradient(45deg, transparent 50%, var(--colour-ink-muted) 50%),
+    linear-gradient(135deg, var(--colour-ink-muted) 50%, transparent 50%);
+  /* The caret, drawn as two half-squares. These are glyph coordinates, like
+     the path data in components/icons.tsx, not spacing values. */
+  background-position:
+    calc(100% - 22px) calc(50% + 2px),
+    calc(100% - 16px) calc(50% + 2px);
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+}
+
+textarea {
+  height: auto;
+  min-height: 160px;
+  padding: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--text-small);
+  resize: vertical;
+}
+
+input:hover,
+select:hover,
+textarea:hover {
+  border-color: var(--colour-brand);
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--colour-focus);
+  outline-offset: 1px;
+  border-color: var(--colour-brand);
+}
+
+::placeholder {
+  color: var(--colour-ink-faint);
+  opacity: 1;
+}
 
 button {
   font: inherit;
@@ -156,294 +562,569 @@ button {
   height: var(--control-height);
   padding: 0 var(--space-5);
   cursor: pointer;
-  transition: background var(--motion-fast), border-color var(--motion-fast);
-}
-button:disabled { cursor: not-allowed; opacity: 0.5; }
-.btn-primary { background: var(--colour-accent); color: var(--colour-accent-ink); }
-.btn-primary:hover:not(:disabled) { background: var(--colour-accent-hover); }
-.btn-secondary { background: var(--colour-surface); color: var(--colour-ink); border-color: var(--colour-border-strong); }
-.btn-secondary:hover:not(:disabled) { border-color: var(--colour-accent); color: var(--colour-accent); }
-.btn-link { background: none; border: none; color: var(--colour-accent); padding: 0; height: auto; text-decoration: underline; }
-
-.dropzone {
-  border: 1px dashed var(--colour-border-strong);
-  border-radius: var(--radius-md);
-  background: var(--colour-surface-raised);
-  padding: var(--space-6) var(--space-5);
-  text-align: center;
-  color: var(--colour-ink-muted);
-  transition: border-color var(--motion-fast), background var(--motion-fast);
-}
-.dropzone.is-over { border-color: var(--colour-accent); background: var(--colour-accent-soft); }
-.dropzone strong { color: var(--colour-ink); display: block; margin-bottom: var(--space-1); }
-.dropzone input[type="file"] { display: block; margin: var(--space-3) auto 0; width: auto; }
-
-.actions { display: flex; gap: var(--space-3); align-items: center; flex-wrap: wrap; }
-.actions--end { justify-content: flex-end; }
-
-/* --- summary band: the deducted figure is the emotional centre --- */
-.summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-5); align-items: end; }
-.summary .cell .label { font-size: var(--text-caption); text-transform: uppercase; letter-spacing: 0.06em; color: var(--colour-ink-muted); font-weight: var(--weight-semibold); }
-.summary .cell .value { font-size: var(--text-figure); font-weight: var(--weight-semibold); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
-.summary .cell--deducted .value { font-size: var(--text-display); color: var(--colour-deduct); line-height: 1.1; }
-.summary .cell--flagged .value { font-size: var(--text-figure); color: var(--colour-flag); }
-
-.assumptions { background: var(--colour-accent-soft); border-color: transparent; }
-.assumptions li { margin-bottom: var(--space-3); }
-.assumptions .because { color: var(--colour-ink-muted); font-size: var(--text-small); }
-.assumptions ul { margin: 0; padding-left: var(--space-5); }
-
-table.lines { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
-table.lines caption { text-align: left; color: var(--colour-ink-muted); font-size: var(--text-small); padding-bottom: var(--space-3); }
-table.lines th { text-align: left; font-size: var(--text-caption); text-transform: uppercase; letter-spacing: 0.06em; color: var(--colour-ink-muted); border-bottom: 1px solid var(--colour-border); padding: var(--space-2) var(--space-3); }
-table.lines td { padding: var(--space-3); border-bottom: 1px solid var(--colour-border); vertical-align: top; }
-table.lines td.num, table.lines th.num { text-align: right; }
-table.lines tr.flagged td { background: var(--colour-flag-soft); }
-table.lines tr.flagged td:first-child { box-shadow: inset 3px 0 0 var(--colour-flag-border); }
-.reason { color: var(--colour-ink-muted); font-size: var(--text-small); max-width: 46ch; }
-.chip { display: inline-block; background: var(--colour-accent-soft); color: var(--colour-accent-hover); border-radius: var(--radius-pill); padding: 2px var(--space-3); font-size: var(--text-small); font-weight: var(--weight-medium); white-space: nowrap; }
-.chip--none { background: var(--colour-surface-sunken); color: var(--colour-ink-faint); }
-.chip--flag { background: var(--colour-flag-soft); color: var(--colour-flag); border: 1px solid var(--colour-flag-border); }
-.row-toggle { background: none; border: 1px solid var(--colour-border-strong); border-radius: var(--radius-sm); width: 28px; height: 28px; padding: 0; color: var(--colour-ink-muted); }
-.trace { background: var(--colour-surface-sunken); font-family: var(--font-mono); font-size: var(--text-caption); padding: var(--space-4); border-radius: var(--radius-md); overflow-x: auto; }
-.trace div { white-space: pre; }
-
-.progress { margin-top: var(--space-4); }
-.progress .bar { height: 6px; background: var(--colour-border); border-radius: var(--radius-pill); overflow: hidden; }
-.progress .bar span { display: block; height: 100%; background: var(--colour-accent); transition: width var(--motion-normal); }
-.progress .caption { font-size: var(--text-small); color: var(--colour-ink-muted); margin-top: var(--space-2); }
-
-.skeleton { background: linear-gradient(90deg, var(--colour-border) 25%, var(--colour-surface-sunken) 37%, var(--colour-border) 63%); background-size: 400% 100%; animation: shimmer 1.4s ease infinite; border-radius: var(--radius-sm); }
-@keyframes shimmer { from { background-position: 100% 0; } to { background-position: 0 0; } }
-@media (prefers-reduced-motion: reduce) { .skeleton { animation: none; } }
-.skeleton-row { height: 18px; margin-bottom: var(--space-3); }
-
-.error { background: var(--colour-flag-soft); border-color: var(--colour-flag-border); }
-.error h2 { color: var(--colour-flag); }
-.error p { margin: var(--space-2) 0 var(--space-4); }
-
-.compare { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); }
-.compare .best { border-color: var(--colour-accent); box-shadow: var(--shadow-raised); }
-
-.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-
-/* --- mobile: the table becomes cards --- */
-@media (max-width: 760px) {
-  .page { padding: var(--space-5) var(--space-4) var(--space-7); }
-  .grid-2, .summary, .compare { grid-template-columns: 1fr; }
-  .summary { gap: var(--space-4); }
-  .summary .cell--deducted .value { font-size: var(--text-title); }
-  table.lines caption { display: block; }
-  table.lines thead { display: none; }
-  table.lines, table.lines tbody, table.lines tr, table.lines td { display: block; width: 100%; }
-  table.lines tr { border: 1px solid var(--colour-border); border-radius: var(--radius-md); margin-bottom: var(--space-3); padding: var(--space-2); background: var(--colour-surface); }
-  table.lines td { border: none; display: flex; justify-content: space-between; gap: var(--space-4); padding: var(--space-2) var(--space-3); }
-  table.lines td::before { content: attr(data-label); font-size: var(--text-caption); text-transform: uppercase; letter-spacing: 0.06em; color: var(--colour-ink-muted); font-weight: var(--weight-semibold); }
-  table.lines td.num { text-align: right; }
-  .reason { max-width: none; text-align: right; }
+  transition:
+    background-color var(--motion-normal),
+    border-color var(--motion-normal),
+    color var(--motion-normal),
+    box-shadow var(--motion-normal),
+    transform var(--motion-normal);
 }
 
-/* The masthead doubles as a link home once there is somewhere to go back to. */
-.masthead-home {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  text-decoration: none;
-  color: inherit;
+button:disabled {
+  cursor: not-allowed;
 }
 
-.masthead-home:focus-visible {
-  outline: 2px solid var(--colour-focus);
-  outline-offset: 4px;
-  border-radius: var(--radius-sm);
+.btn-primary {
+  background: var(--colour-brand);
+  color: var(--colour-on-brand);
+  border-color: var(--colour-brand);
+  box-shadow: var(--shadow-1);
 }
 
-/* ---------------------------------------------------------------------------
-   The audit screen, dressed like the landing page.
-
-   Same warm paper ground, same display serif, same hairlines. The two heavy
-   white cards are gone: a form is one thing a person works down, and drawing a
-   box round each half made it read as two. Hairline rules separate the groups
-   instead.
-   --------------------------------------------------------------------------- */
-
-body:has(.audit-page) {
-  background: var(--colour-paper);
+.btn-primary:hover:not(:disabled) {
+  background: var(--colour-brand-strong);
+  border-color: var(--colour-brand-strong);
+  box-shadow: var(--shadow-2);
 }
 
-.audit-page .masthead h1 {
-  font-family: var(--font-display);
-  font-size: var(--text-display-md);
-  font-weight: var(--weight-regular);
-  letter-spacing: -0.02em;
-  line-height: 1.05;
+.btn-primary:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: var(--shadow-1);
 }
 
-.audit-page .masthead {
-  align-items: center;
-  margin-bottom: var(--space-3);
-}
-
-.audit-page .explainer {
-  max-width: 54ch;
-  margin-bottom: var(--space-7);
-}
-
-.form-group {
-  padding: var(--space-7) 0;
-  border-top: 1px solid var(--colour-hairline);
-}
-
-.form-group:first-child {
-  border-top: 0;
-  padding-top: 0;
-}
-
-.form-group-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--space-4);
-  margin-bottom: var(--space-5);
-}
-
-.form-group-head h2 {
-  font-size: var(--text-heading);
-  letter-spacing: -0.01em;
-}
-
-.form-note {
-  margin-top: var(--space-2);
-  color: var(--colour-ink-muted);
-  font-size: var(--text-small);
-  max-width: 52ch;
-}
-
-/* Present but never competing with the primary action. */
-.btn-quiet {
-  flex: none;
-  height: auto;
-  padding: var(--space-2) var(--space-4);
-  background: var(--colour-paper-raised);
-  border: 1px solid var(--colour-hairline-strong);
-  color: var(--colour-accent);
-  font-size: var(--text-small);
-}
-
-.btn-quiet:hover {
-  border-color: var(--colour-accent);
-  background: var(--colour-accent-soft);
-}
-
-.audit-page .field > label {
-  color: var(--colour-ink-muted);
-}
-
-.audit-page input[type="text"],
-.audit-page input[type="date"],
-.audit-page input[type="number"],
-.audit-page select,
-.audit-page textarea {
-  background: var(--colour-paper-raised);
+.btn-primary:disabled {
+  background: var(--colour-sunken);
   border-color: var(--colour-hairline-strong);
+  color: var(--colour-ink-faint);
+  box-shadow: none;
 }
 
-.audit-page input[aria-invalid="true"] {
-  border-color: var(--colour-deduct);
+.btn-secondary {
+  background: var(--colour-card);
+  color: var(--colour-ink);
+  border-color: var(--colour-hairline-strong);
+  box-shadow: var(--shadow-1);
 }
 
-/* One line saying why the pair below is being asked for at all. */
-.field-lede {
-  margin-bottom: var(--space-3);
-  font-size: var(--text-small);
-  color: var(--colour-ink-muted);
+.btn-secondary:hover:not(:disabled) {
+  border-color: var(--colour-brand);
+  color: var(--colour-brand-strong);
+  box-shadow: var(--shadow-2);
 }
 
-.field-error {
-  margin: calc(var(--space-2) * -1) 0 var(--space-4);
-  font-size: var(--text-small);
-  color: var(--colour-deduct);
-}
-
-/* The whole area is the control: the native file button is small, ugly and
-   permanently says "No file chosen" beside itself. */
-.audit-page .dropzone {
-  display: block;
-  position: relative;
-  border: 1px dashed var(--colour-hairline-strong);
-  border-radius: var(--radius-lg);
-  background: var(--colour-paper-raised);
-  padding: var(--space-8) var(--space-5);
-  cursor: pointer;
-}
-
-.audit-page .dropzone:hover {
-  border-color: var(--colour-accent);
-  background: var(--colour-accent-soft);
-}
-
-.audit-page .dropzone:focus-within {
-  outline: 2px solid var(--colour-focus);
-  outline-offset: 2px;
-}
-
-.audit-page .dropzone strong {
-  font-size: var(--text-lead);
-  font-weight: var(--weight-medium);
-}
-
-.audit-page .dropzone span {
-  font-size: var(--text-small);
-}
-
-/* Covers the dropzone, invisible, still focusable and still a file input. */
-.audit-page .dropzone input[type="file"] {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  opacity: 0;
-  cursor: pointer;
-}
-
-.help .why {
-  display: inline;
-}
-
-.help .why > summary {
-  display: inline;
-  color: var(--colour-accent);
-  cursor: pointer;
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--colour-brand);
+  padding: 0 var(--space-2);
+  height: auto;
   text-decoration: underline;
+  text-underline-offset: var(--underline-offset);
 }
 
-.help .why > p {
-  margin-top: var(--space-2);
-  max-width: 60ch;
+.btn-link:hover {
+  color: var(--colour-brand-strong);
 }
 
-.audit-form .actions {
+.actions {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
   gap: var(--space-3);
-  padding-top: var(--space-6);
-  border-top: 1px solid var(--colour-hairline);
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: var(--space-6);
 }
 
-/* A disabled button that does not say why is a dead end. */
 .actions-note {
   font-size: var(--text-small);
   color: var(--colour-ink-muted);
 }
 
-/* --- what was sent ------------------------------------------------------- */
+/* ===========================================================================
+   The verdict band
+   ---------------------------------------------------------------------------
+   What replaced four numbers in four boxes.
+
+   The four figures were the same size, the same weight and the same distance
+   apart, so the one thing a person opens this report to see - how much of the
+   bill survived - had to be worked out by reading all four and subtracting.
+   The bar states it: the charged total, drawn to scale, split into what is
+   payable, what was taken off with a clause behind it, and what no clause
+   covered. Each segment carries its figure in words as well as its colour.
+   =========================================================================== */
+
+.verdict {
+  border: 1px solid var(--colour-hairline);
+  border-radius: var(--radius-lg);
+  background: var(--colour-card);
+  box-shadow: var(--shadow-2);
+  padding: var(--space-6);
+  margin-bottom: var(--space-5);
+  overflow: hidden;
+}
+
+.verdict-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-5);
+}
+
+.verdict-charged {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+/* Context, not the answer: what the hospital asked for. It is set below the
+   deducted figure on purpose - the report exists to say what came off, and a
+   reader who meets the largest number first reads the bill rather than the
+   verdict. tests/e2e/browser_flow.py measures exactly that relationship. */
+.verdict-charged .value {
+  font-size: var(--text-lead);
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+
+.verdict-policy {
+  font-size: var(--text-small);
+  color: var(--colour-ink-faint);
+}
+
+/* The bar. Segments are sized from the report and handed here as inline
+   flex-basis percentages - the only inline values on the page, because they
+   are data and not style. */
+.verdict-bar {
+  display: flex;
+  height: var(--bar-height);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  background: var(--colour-sunken);
+  box-shadow: var(--shadow-inset);
+}
+
+.verdict-bar span {
+  display: block;
+  min-width: var(--space-1);
+}
+
+.verdict-bar .seg-paid {
+  background: var(--colour-paid);
+}
+
+.verdict-bar .seg-cut {
+  background: var(--colour-cut);
+}
+
+.verdict-bar .seg-flag {
+  background: var(--colour-flag);
+}
+
+.verdict-key {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-5);
+  margin-top: var(--space-5);
+}
+
+.verdict-key > div {
+  padding-top: var(--space-4);
+  border-top: 2px solid var(--colour-hairline);
+}
+
+.verdict-key .key-paid {
+  border-top-color: var(--colour-paid);
+}
+
+.verdict-key .key-cut {
+  border-top-color: var(--colour-cut);
+}
+
+.verdict-key .key-flag {
+  border-top-color: var(--colour-flag);
+}
+
+.verdict-key .value {
+  display: block;
+  margin-top: var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--text-h2);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-tight);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+/* The emotional centre of the report, and the only figure allowed to be the
+   largest thing on the screen. */
+.verdict-key .key-cut .value {
+  font-size: var(--text-figure);
+}
+
+.verdict-key .key-paid .value {
+  color: var(--colour-paid);
+}
+
+.verdict-key .key-cut .value {
+  color: var(--colour-cut);
+}
+
+.verdict-key .key-flag .value {
+  color: var(--colour-flag);
+}
+
+.verdict-key .note {
+  display: block;
+  margin-top: var(--space-2);
+  font-size: var(--text-small);
+  color: var(--colour-ink-faint);
+}
+
+/* ===========================================================================
+   Assumptions
+   =========================================================================== */
+
+.assumptions {
+  background: var(--colour-brand-soft);
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.assumptions > h2 {
+  color: var(--colour-brand-deep);
+}
+
+.assumptions ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.assumptions li {
+  padding: var(--space-4) 0;
+  border-top: 1px solid var(--colour-hairline);
+}
+
+.assumptions li:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.assumptions .because {
+  margin-top: var(--space-1);
+  color: var(--colour-ink-muted);
+  font-size: var(--text-small);
+}
+
+/* ===========================================================================
+   The line table
+   =========================================================================== */
+
+table.lines {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+table.lines caption {
+  text-align: left;
+  color: var(--colour-ink-faint);
+  font-size: var(--text-small);
+  padding-bottom: var(--space-3);
+}
+
+table.lines th {
+  text-align: left;
+  font-size: var(--text-micro);
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-label);
+  color: var(--colour-ink-faint);
+  border-bottom: 1px solid var(--colour-hairline-strong);
+  padding: var(--space-2) var(--space-3);
+}
+
+table.lines td {
+  padding: var(--space-4) var(--space-3);
+  border-bottom: 1px solid var(--colour-hairline);
+  vertical-align: top;
+  transition: background-color var(--motion-normal);
+}
+
+table.lines tbody tr:hover td {
+  background: var(--colour-veil);
+}
+
+table.lines td.num,
+table.lines th.num {
+  text-align: right;
+}
+
+.line-item {
+  font-weight: var(--weight-medium);
+}
+
+/* The allowed figure, in the colour of what happened to it, with the change
+   spelled out underneath in words. Colour is the fast read; the words are the
+   answer for anyone the colour does not reach. */
+/* The figure and what it means, as one block, so the card layout below 760px
+   keeps them together on the right of the row instead of pushing the figure
+   into the middle of it. */
+.allowed-cell {
+  display: block;
+}
+
+.allowed {
+  display: block;
+  font-size: var(--text-lead);
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.allowed--paid {
+  color: var(--colour-paid);
+}
+
+.allowed--cut {
+  color: var(--colour-cut);
+}
+
+.delta {
+  display: block;
+  margin-top: var(--space-1);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-medium);
+  color: var(--colour-cut);
+  white-space: nowrap;
+}
+
+.delta--paid {
+  color: var(--colour-ink-faint);
+  font-weight: var(--weight-regular);
+}
+
+table.lines tr.flagged td {
+  background: var(--colour-flag-soft);
+}
+
+table.lines tbody tr.flagged:hover td {
+  background: var(--colour-flag-soft);
+}
+
+.reason {
+  color: var(--colour-ink-muted);
+  font-size: var(--text-small);
+  line-height: var(--leading-loose);
+  max-width: 46ch;
+}
+
+/* A clause id is the evidence the whole report rests on: set as a citation,
+   in the system's own blue, never as decoration. */
+.chip {
+  display: inline-block;
+  border: 1px solid var(--colour-brand-edge);
+  background: var(--colour-brand-soft);
+  color: var(--colour-brand-strong);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-medium);
+  white-space: nowrap;
+}
+
+.chip--none {
+  background: var(--colour-sunken);
+  border-color: var(--colour-hairline);
+  color: var(--colour-ink-faint);
+  font-family: var(--font-sans);
+}
+
+.chip--flag {
+  background: var(--colour-card);
+  border-color: var(--colour-flag-line);
+  color: var(--colour-flag);
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+}
+
+/* The trace toggle. A drawn chevron that turns, not a plus sign typed into
+   the markup. */
+.row-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1px solid var(--colour-hairline-strong);
+  border-radius: var(--radius-sm);
+  width: var(--space-6);
+  height: var(--space-6);
+  padding: 0;
+  color: var(--colour-ink-muted);
+}
+
+.row-toggle:hover {
+  border-color: var(--colour-brand);
+  color: var(--colour-brand);
+  background: var(--colour-brand-soft);
+}
+
+.row-toggle svg {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+  transition: transform var(--motion-normal);
+}
+
+.row-toggle[aria-expanded="true"] svg {
+  transform: rotate(180deg);
+}
+
+.trace {
+  background: var(--colour-deep);
+  color: var(--colour-on-deep-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+  line-height: var(--leading-loose);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+}
+
+.trace div {
+  white-space: pre;
+}
+
+/* ===========================================================================
+   Progress, skeletons, errors
+   =========================================================================== */
+
+.progress {
+  margin-top: var(--space-5);
+}
+
+.progress .bar {
+  height: var(--bar-height-sm);
+  background: var(--colour-sunken);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+/* Scaled, not resized. Animating width relayouts the bar on every poll;
+   a transform runs on the compositor and cannot thrash. */
+.progress .bar span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-origin: left center;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(90deg, var(--colour-brand-strong), var(--colour-brand));
+  transition: transform var(--motion-slow);
+}
+
+.progress .caption {
+  font-size: var(--text-small);
+  color: var(--colour-ink-muted);
+  margin-top: var(--space-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--colour-sunken) 25%,
+    var(--colour-veil) 37%,
+    var(--colour-sunken) 63%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+  border-radius: var(--radius-sm);
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+
+.skeleton-row {
+  height: 18px;
+  margin-bottom: var(--space-3);
+}
+
+.error {
+  background: var(--colour-cut-soft);
+  border-color: var(--colour-cut-line);
+}
+
+.error h2 {
+  color: var(--colour-cut);
+}
+
+.error p {
+  margin: var(--space-2) 0 var(--space-5);
+  color: var(--colour-ink-muted);
+}
+
+/* ===========================================================================
+   Compare
+   =========================================================================== */
+
+.compare {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.compare .panel {
+  margin-bottom: 0;
+  transition:
+    border-color var(--motion-normal),
+    box-shadow var(--motion-normal);
+}
+
+.compare .panel .label {
+  display: block;
+  margin-bottom: var(--space-2);
+}
+
+.compare .panel .value {
+  font-family: var(--font-display);
+  font-size: var(--text-figure);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-tight);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.compare .panel .panel-note {
+  margin: var(--space-3) 0 0;
+}
+
+.compare .best {
+  border-color: var(--colour-paid);
+  box-shadow: var(--shadow-2);
+}
+
+.compare .best .value {
+  color: var(--colour-paid);
+}
+
+/* ===========================================================================
+   What was sent
+   =========================================================================== */
 
 .submitted {
   border: 1px solid var(--colour-hairline);
   border-radius: var(--radius-lg);
-  background: var(--colour-paper-raised);
+  background: var(--colour-card);
+  box-shadow: var(--shadow-1);
   margin-bottom: var(--space-5);
 }
 
@@ -455,6 +1136,11 @@ body:has(.audit-page) {
   padding: var(--space-4) var(--space-5);
   cursor: pointer;
   font-size: var(--text-small);
+  border-radius: var(--radius-lg);
+}
+
+.submitted > summary:hover .submitted-more {
+  color: var(--colour-brand-strong);
 }
 
 .submitted-line {
@@ -463,67 +1149,140 @@ body:has(.audit-page) {
 }
 
 .submitted-more {
-  color: var(--colour-accent);
+  color: var(--colour-brand);
   white-space: nowrap;
+  transition: color var(--motion-normal);
 }
 
 .submitted-detail {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--space-4);
+  gap: var(--space-5);
   margin: 0;
-  padding: 0 var(--space-5) var(--space-5);
+  padding: var(--space-5);
   border-top: 1px solid var(--colour-hairline);
-  padding-top: var(--space-5);
-}
-
-.submitted-detail dt {
-  font-size: var(--text-caption);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--colour-ink-faint);
 }
 
 .submitted-detail dd {
-  margin: var(--space-1) 0 0;
+  margin: var(--space-2) 0 0;
   font-size: var(--text-small);
   color: var(--colour-ink);
-}
-
-.tabular {
-  font-variant-numeric: tabular-nums;
 }
 
 .submitted-bill {
   margin: 0 var(--space-5) var(--space-5);
   padding: var(--space-4);
-  border-radius: var(--radius-sm);
-  background: var(--colour-paper-sunken);
+  border-radius: var(--radius-md);
+  background: var(--colour-deep);
+  color: var(--colour-on-deep-muted);
   font-family: var(--font-mono);
   font-size: var(--text-caption);
-  line-height: 1.8;
-  color: var(--colour-ink-muted);
+  line-height: var(--leading-mono);
   overflow-x: auto;
 }
 
+/* ===========================================================================
+   Below 760px: the table becomes cards
+   =========================================================================== */
+
 @media (max-width: 760px) {
-  .audit-page .masthead h1 {
-    font-size: 2rem;
+  .page {
+    padding: var(--space-5) var(--space-4) var(--space-8);
   }
 
-  .form-group-head {
-    flex-direction: column;
-  }
-
-  .btn-quiet {
-    width: 100%;
-  }
-
-  .audit-form .actions .btn-primary {
-    width: 100%;
-  }
-
+  .grid-2,
+  .compare,
+  .verdict-key,
   .submitted-detail {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
+  }
+
+  .verdict-key {
+    gap: var(--space-4);
+  }
+
+  .verdict-key .key-cut .value {
+    font-size: var(--text-h2);
+  }
+
+  .verdict-key .value {
+    font-size: var(--text-h3);
+  }
+
+  table.lines caption {
+    display: block;
+  }
+
+  table.lines thead {
+    display: none;
+  }
+
+  table.lines,
+  table.lines tbody,
+  table.lines tr,
+  table.lines td {
+    display: block;
+    width: 100%;
+  }
+
+  table.lines tr {
+    border: 1px solid var(--colour-hairline);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-3);
+    padding: var(--space-2);
+    background: var(--colour-card);
+    box-shadow: var(--shadow-1);
+  }
+
+  table.lines td {
+    border: none;
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-2) var(--space-3);
+  }
+
+  table.lines td::before {
+    content: attr(data-label);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-label);
+    color: var(--colour-ink-faint);
+    font-weight: var(--weight-semibold);
+  }
+
+  table.lines td.num {
+    text-align: right;
+  }
+
+  .reason {
+    max-width: none;
+    text-align: right;
+  }
+}
+
+/* ===========================================================================
+   Reduced motion
+   ---------------------------------------------------------------------------
+   Everything this stylesheet animates is removed here, not shortened.
+   =========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .skeleton {
+    animation: none;
+    background: var(--colour-sunken);
   }
 }

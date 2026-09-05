@@ -37,7 +37,18 @@ export function downloadCsv(report: AuditReport): void {
   URL.revokeObjectURL(url);
 }
 
+/**
+ * A rupee figure, as a reader of a bill writes one.
+ *
+ * No paise. Every amount on this screen is a whole rupee, and a trailing
+ * ".00" on twenty of them in a column is noise that makes the figures harder
+ * to compare, not more precise.
+ */
 export function rupees(value: number | null): string {
   if (value === null) return "—";
-  return value.toLocaleString("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 2 });
+  return value.toLocaleString("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  });
 }

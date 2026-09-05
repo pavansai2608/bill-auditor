@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import "./audit.css";
 
 import { BillForm } from "../components/BillForm";
+import { Mark } from "../components/icons";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { RunningPanel } from "../components/RunningPanel";
 import { SubmittedSummary } from "../components/SubmittedSummary";
@@ -30,7 +31,7 @@ export default function AuditPage() {
     <div className={filling ? "audit-shell" : "page audit-page"}>
       <header className={filling ? "audit-masthead" : "masthead"}>
         <Link to="/" className={filling ? "audit-home" : "masthead-home"}>
-          <span className="mark" aria-hidden="true" />
+          <Mark />
           {filling ? (
             <span className="audit-wordmark">Bill Auditor</span>
           ) : (

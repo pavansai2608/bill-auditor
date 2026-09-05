@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 
+import { ArrowRight, Chevron, Mark } from "../components/icons";
 import { useCountUp, useReveal } from "../hooks/useReveal";
 import "./landing.css";
 
@@ -201,7 +202,7 @@ export default function Landing() {
       </a>
 
       <header className="landing-masthead">
-        <span className="mark" aria-hidden="true" />
+        <Mark />
         <span className="landing-wordmark">Bill Auditor</span>
       </header>
 
@@ -221,6 +222,7 @@ export default function Landing() {
               </p>
               <Link className="landing-cta" to="/audit">
                 Audit a bill
+                <ArrowRight />
               </Link>
               <p className="landing-cta-note">
                 No account, no email address. Three policies built in. The claim does not have to
@@ -279,7 +281,11 @@ export default function Landing() {
                         )}
                       </td>
                       <td>
-                        <span className="clause">{line.clause ?? "—"}</span>
+                        {line.clause ? (
+                          <span className="clause">{line.clause}</span>
+                        ) : (
+                          <span className="clause--none">no clause</span>
+                        )}
                       </td>
                     </tr>
                   ))}
@@ -293,7 +299,10 @@ export default function Landing() {
           </div>
 
           <details className="example-detail" open>
-            <summary>Why the room rent came down by Rs 15,000</summary>
+            <summary>
+              <Chevron />
+              Why the room rent came down by Rs 15,000
+            </summary>
             <div className="example-detail-body">
               <p className="clause-quote">
                 <span className="clause-id">Star Health II.1</span> — the room rent table, read at
@@ -415,6 +424,7 @@ export default function Landing() {
           </p>
           <Link className="landing-cta" to="/audit">
             Audit a bill
+            <ArrowRight />
           </Link>
         </Reveal>
       </main>

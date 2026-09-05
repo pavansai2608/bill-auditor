@@ -1,10 +1,9 @@
 /* The audit screen.
  *
- * Same tokens as the landing page, deliberately: warm paper ground, serif
- * headings, one accent, depth from layered surfaces and hairline borders
- * rather than drop shadows. This is one product, not two that resemble each
- * other, so there are no new values invented here - everything resolves to
- * design/tokens.json.
+ * Same tokens as the landing page, deliberately: the navy masthead, the same
+ * display face, the same three verdict colours. This is one product, not two
+ * that resemble each other, so there are no new values invented here -
+ * everything resolves to the :root block in styles.css.
  *
  * The screen is built for a 1440px laptop in Chrome. Two columns, the bill
  * wider than the policy, because the bill is what the person came to have
@@ -15,28 +14,34 @@
  * sees the landing page never downloads it.
  */
 
+/* Full width, so the masthead band can reach the edges; the reading column is
+   re-established on each block inside it. */
 .audit-shell {
-  --audit-max: 1360px;
-  max-width: var(--audit-max);
-  margin: 0 auto;
-  padding: 0 var(--space-6) var(--space-8);
+  width: 100%;
+  padding-bottom: var(--space-9);
 }
 
-/* The ground is the page, not a box on it - the same rule the landing uses. */
-body:has(.audit-shell) {
-  background: var(--colour-paper);
+.audit-head,
+.audit-columns {
+  max-width: calc(var(--audit-max) + var(--space-6) * 2);
+  margin-inline: auto;
+  padding-inline: var(--space-6);
 }
 
-/* --- masthead ---------------------------------------------------------- */
+/* --- masthead -----------------------------------------------------------
+   The same navy band the front door opens with, one line high. It is what
+   makes the two screens the same product without repeating the hero. */
 
 .audit-masthead {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
-  padding: var(--space-5) 0;
-  border-bottom: 1px solid var(--colour-hairline);
-  margin-bottom: var(--space-7);
+  padding-block: var(--space-4);
+  padding-inline: max(var(--space-6), calc((100% - var(--audit-max)) / 2));
+  margin-bottom: var(--space-8);
+  background: var(--colour-deep);
+  color: var(--colour-on-deep);
 }
 
 .audit-home {
@@ -44,23 +49,29 @@ body:has(.audit-shell) {
   align-items: center;
   gap: var(--space-3);
   text-decoration: none;
-  color: var(--colour-ink);
+  color: var(--colour-on-deep);
   border-radius: var(--radius-sm);
   /* 44px of target on a link that is only 20px of text. */
   padding: var(--space-3) var(--space-2);
   margin: calc(var(--space-3) * -1) calc(var(--space-2) * -1);
+  transition: color var(--motion-normal);
 }
 
 .audit-home .mark {
-  width: 10px;
-  height: 10px;
-  border-radius: 2px;
-  background: var(--colour-accent);
-  transition: transform var(--motion-fast);
+  color: var(--colour-brand-lift);
+}
+
+.audit-home:hover {
+  color: var(--colour-brand-lift);
 }
 
 .audit-home:hover .mark {
-  transform: rotate(45deg);
+  transform: translateY(-1px);
+}
+
+.audit-home:focus-visible {
+  outline: 2px solid var(--colour-brand-lift);
+  outline-offset: 2px;
 }
 
 .audit-wordmark {
@@ -71,31 +82,33 @@ body:has(.audit-shell) {
 
 .audit-back {
   font-size: var(--text-small);
-  color: var(--colour-ink-muted);
+  color: var(--colour-on-deep-muted);
   text-decoration: none;
   padding: var(--space-3) var(--space-2);
   border-radius: var(--radius-sm);
+  transition: color var(--motion-normal);
 }
 
 .audit-back:hover {
-  color: var(--colour-accent);
+  color: var(--colour-brand-lift);
 }
 
-/* --- page head --------------------------------------------------------- */
+/* --- page head ----------------------------------------------------------- */
 
 .audit-head {
-  margin-bottom: var(--space-7);
-  max-width: 46ch;
+  margin-bottom: var(--space-8);
 }
 
 .audit-head h1 {
-  margin: 0 0 var(--space-3);
+  margin: 0 0 var(--space-4);
   font-family: var(--font-display);
-  font-size: clamp(2rem, 3.4vw, 3rem);
-  line-height: 1.05;
-  font-weight: var(--weight-regular);
-  letter-spacing: -0.02em;
+  font-size: var(--text-page-title);
+  line-height: 1.04;
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-display);
   color: var(--colour-ink);
+  font-optical-sizing: auto;
+  max-width: 18ch;
 }
 
 .audit-head p {
@@ -103,13 +116,13 @@ body:has(.audit-shell) {
   font-size: var(--text-lead);
   line-height: var(--leading-loose);
   color: var(--colour-ink-muted);
-  text-wrap: pretty;
+  max-width: 56ch;
 }
 
-/* --- the two columns --------------------------------------------------- */
-
-/* 55/45, the bill wider. The old single column left two thirds of a laptop
+/* --- the two columns -----------------------------------------------------
+   55/45, the bill wider. The old single column left two thirds of a laptop
    screen as margin and made a ten-field form scroll for no reason. */
+
 .audit-columns {
   display: grid;
   grid-template-columns: minmax(0, 55fr) minmax(0, 45fr);
@@ -123,12 +136,17 @@ body:has(.audit-shell) {
     gap: var(--space-6);
   }
 
-  .audit-shell {
-    padding: 0 var(--space-4) var(--space-7);
+  .audit-head,
+  .audit-columns {
+    padding-inline: var(--space-4);
+  }
+
+  .audit-masthead {
+    padding-inline: var(--space-4);
   }
 }
 
-/* --- the bill: the hero of this screen --------------------------------- */
+/* --- the bill: the hero of this screen ----------------------------------- */
 
 .bill-panel {
   display: flex;
@@ -147,23 +165,26 @@ body:has(.audit-shell) {
 .bill-panel-head h2 {
   margin: 0;
   font-family: var(--font-display);
-  font-size: var(--text-title);
-  font-weight: var(--weight-regular);
-  letter-spacing: -0.01em;
+  font-size: var(--text-h2);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-tight);
   color: var(--colour-ink);
 }
 
 /* The document.
  *
- * A tinted card with a ruled interior and a lifted edge, so the box looks like
- * the piece of paper the person is holding rather than a form control. The
- * rules are a repeating gradient locked to the same line-height as the text
- * inside it, which is what makes them read as a ledger instead of a texture. */
+ * A sheet of ruled paper, lifted off the page, so the box looks like the
+ * thing the person is holding rather than a form control. The rules are a
+ * repeating gradient locked to the same line-height as the text inside it,
+ * which is what makes them read as a ledger instead of a texture. */
 .bill-doc {
-  --rule: 24px;
+  /* The bill is set at 13px mono; 32px rules would leave it swimming, so the
+     document uses the tighter pitch and the text is locked to it below. */
+  --rule: var(--space-5);
   position: relative;
-  border: 1px solid var(--colour-hairline-strong);
-  border-radius: var(--radius-md);
+  border: 1px solid var(--colour-hairline);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-2);
   background:
     repeating-linear-gradient(
       to bottom,
@@ -172,23 +193,24 @@ body:has(.audit-shell) {
       var(--colour-hairline) calc(var(--rule) - 1px),
       var(--colour-hairline) var(--rule)
     ),
-    var(--colour-paper-sunken);
+    var(--colour-card);
   transition:
     border-color var(--motion-normal),
+    box-shadow var(--motion-normal),
     background-color var(--motion-normal);
 }
 
-/* The lifted edge: a second sheet just behind the first. Layered surface, not
-   a drop shadow. */
+/* The lifted edge: a second sheet just behind the first. Layered surface, in
+   addition to the shadow rather than instead of it. */
 .bill-doc::after {
   content: "";
   position: absolute;
-  inset: auto 6px -5px 6px;
-  height: 5px;
+  inset: auto var(--space-2) calc(var(--space-1) * -1.5) var(--space-2);
+  height: var(--space-1);
   border: 1px solid var(--colour-hairline);
   border-top: 0;
-  border-radius: 0 0 var(--radius-md) var(--radius-md);
-  background: var(--colour-paper-raised);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  background: var(--colour-veil);
   pointer-events: none;
 }
 
@@ -197,22 +219,23 @@ body:has(.audit-shell) {
    the audit probe found no indicator at all on the most important control on
    the page. */
 .bill-doc:focus-within {
-  border-color: var(--colour-accent);
+  border-color: var(--colour-brand);
   outline: 2px solid var(--colour-focus);
   outline-offset: 2px;
 }
 
 .bill-doc.is-over {
-  border-color: var(--colour-accent);
+  border-color: var(--colour-brand);
+  box-shadow: var(--shadow-3);
   background:
     repeating-linear-gradient(
       to bottom,
       transparent,
       transparent calc(var(--rule) - 1px),
-      var(--colour-hairline) calc(var(--rule) - 1px),
-      var(--colour-hairline) var(--rule)
+      var(--colour-brand-edge) calc(var(--rule) - 1px),
+      var(--colour-brand-edge) var(--rule)
     ),
-    var(--colour-accent-soft);
+    var(--colour-brand-soft);
 }
 
 .bill-doc textarea {
@@ -235,15 +258,16 @@ body:has(.audit-shell) {
   tab-size: 4;
 }
 
-.bill-doc textarea:focus {
+.bill-doc textarea:focus,
+.bill-doc textarea:focus-visible {
   outline: none;
 }
 
-.bill-doc textarea::placeholder {
-  color: var(--colour-ink-muted);
+.bill-doc textarea:hover {
+  border-color: transparent;
 }
 
-/* --- under the document ------------------------------------------------ */
+/* --- under the document -------------------------------------------------- */
 
 .bill-foot {
   display: flex;
@@ -252,10 +276,14 @@ body:has(.audit-shell) {
   gap: var(--space-4);
   flex-wrap: wrap;
   /* Clears the lifted edge below the document. */
-  margin-top: var(--space-2);
+  margin-top: var(--space-3);
 }
 
 /* "10 items, Rs 2,36,000" - the system saying it understood, immediately. */
+.bill-count-wrap {
+  margin: 0;
+}
+
 .bill-count {
   display: inline-flex;
   align-items: baseline;
@@ -265,8 +293,11 @@ body:has(.audit-shell) {
 }
 
 .bill-count strong {
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--colour-paid-soft);
+  color: var(--colour-paid);
   font-weight: var(--weight-semibold);
-  color: var(--colour-ink);
   font-variant-numeric: tabular-nums;
 }
 
@@ -284,7 +315,7 @@ body:has(.audit-shell) {
 }
 
 .bill-count.is-changing strong {
-  animation: count-settle 220ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  animation: count-settle 220ms var(--ease-out);
 }
 
 /* The example. The most valuable control on the page for a first-time
@@ -293,44 +324,50 @@ body:has(.audit-shell) {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  min-height: 44px;
+  min-height: var(--control-height);
   padding: 0 var(--space-5);
-  border: 1px solid var(--colour-accent);
+  border: 1px solid var(--colour-brand-edge);
   border-radius: var(--radius-sm);
-  background: var(--colour-accent-soft);
-  color: var(--colour-accent-hover);
+  background: var(--colour-brand-soft);
+  color: var(--colour-brand-strong);
   font: inherit;
   font-size: var(--text-small);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
   cursor: pointer;
   transition:
-    background-color var(--motion-fast),
-    border-color var(--motion-fast);
+    background-color var(--motion-normal),
+    border-color var(--motion-normal),
+    color var(--motion-normal),
+    box-shadow var(--motion-normal);
 }
 
 .bill-example:hover {
-  background: var(--colour-accent);
-  color: var(--colour-accent-ink);
+  background: var(--colour-brand);
+  border-color: var(--colour-brand);
+  color: var(--colour-on-brand);
+  box-shadow: var(--shadow-2);
 }
 
 .bill-choose {
   font-size: var(--text-small);
-  color: var(--colour-ink-muted);
+  color: var(--colour-ink-faint);
 }
 
 /* The file picker, as a word rather than a native control. The native input
    is a small grey button that says "No file chosen" beside itself forever. */
 .bill-file-label {
-  color: var(--colour-accent);
+  color: var(--colour-brand);
   text-decoration: underline;
-  text-underline-offset: 3px;
+  text-underline-offset: var(--underline-offset);
   cursor: pointer;
   border-radius: var(--radius-sm);
   padding: var(--space-2) var(--space-1);
+  font-size: var(--text-small);
+  transition: color var(--motion-normal);
 }
 
 .bill-file-label:hover {
-  color: var(--colour-accent-hover);
+  color: var(--colour-brand-strong);
 }
 
 /* The input is 1x1 and invisible, so its own focus ring would be too. The
@@ -348,12 +385,13 @@ body:has(.audit-shell) {
   pointer-events: none;
 }
 
-/* --- the policy column ------------------------------------------------- */
+/* --- the policy column --------------------------------------------------- */
 
 .policy-panel {
   border: 1px solid var(--colour-hairline);
-  border-radius: var(--radius-lg);
-  background: var(--colour-paper-raised);
+  border-radius: var(--radius-xl);
+  background: var(--colour-card);
+  box-shadow: var(--shadow-2);
   padding: var(--space-6);
   display: flex;
   flex-direction: column;
@@ -363,8 +401,9 @@ body:has(.audit-shell) {
 .policy-panel > h2 {
   margin: 0;
   font-family: var(--font-display);
-  font-size: var(--text-heading);
-  font-weight: var(--weight-regular);
+  font-size: var(--text-h2);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-tight);
   color: var(--colour-ink);
 }
 
@@ -372,19 +411,30 @@ body:has(.audit-shell) {
    questions get answered in - so the numerals earn their place. */
 .step {
   display: grid;
-  grid-template-columns: 1.75rem minmax(0, 1fr);
+  grid-template-columns: var(--space-6) minmax(0, 1fr);
   gap: var(--space-4);
   align-items: start;
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--colour-hairline);
+}
+
+.step:first-of-type {
+  padding-top: 0;
+  border-top: 0;
 }
 
 .step-n {
-  font-family: var(--font-display);
-  font-size: var(--text-heading);
-  line-height: 1;
-  color: var(--colour-accent);
-  font-variant-numeric: lining-nums;
-  /* Optically aligned with the label's cap height rather than its box. */
-  padding-top: 1px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--space-6);
+  height: var(--space-6);
+  border-radius: var(--radius-pill);
+  background: var(--colour-brand-soft);
+  color: var(--colour-brand-strong);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: lining-nums tabular-nums;
 }
 
 .step-body {
@@ -392,12 +442,14 @@ body:has(.audit-shell) {
   flex-direction: column;
   gap: var(--space-3);
   min-width: 0;
+  padding-top: var(--space-1);
 }
 
 .step-body > h3 {
   margin: 0;
-  font-size: var(--text-body);
+  font-size: var(--text-h3);
   font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-tight);
   color: var(--colour-ink);
 }
 
@@ -414,13 +466,30 @@ body:has(.audit-shell) {
   gap: var(--space-4);
 }
 
+.step .field {
+  margin-bottom: 0;
+}
+
 @media (max-width: 480px) {
   .step-pair {
     grid-template-columns: minmax(0, 1fr);
   }
 }
 
-/* --- the sticky submit ------------------------------------------------- */
+.field-error {
+  margin: 0;
+  font-size: var(--text-small);
+  font-weight: var(--weight-medium);
+  color: var(--colour-cut);
+}
+
+.audit-page input[aria-invalid="true"],
+.audit-columns input[aria-invalid="true"] {
+  border-color: var(--colour-cut);
+  background: var(--colour-cut-soft);
+}
+
+/* --- the sticky submit --------------------------------------------------- */
 
 .policy-submit {
   position: sticky;
@@ -428,40 +497,19 @@ body:has(.audit-shell) {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  padding-top: var(--space-5);
   margin: 0 calc(var(--space-6) * -1) calc(var(--space-6) * -1);
   padding: var(--space-5) var(--space-6) var(--space-6);
   border-top: 1px solid var(--colour-hairline);
-  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-  background: var(--colour-paper-raised);
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+  background: var(--colour-card);
 }
 
 .policy-submit button[type="submit"] {
   width: 100%;
   min-height: var(--cta-height);
-  border: 1px solid var(--colour-accent);
-  border-radius: var(--radius-sm);
-  background: var(--colour-accent);
-  color: var(--colour-accent-ink);
-  font: inherit;
-  font-size: var(--text-body);
-  font-weight: var(--weight-medium);
-  cursor: pointer;
-  transition:
-    background-color var(--motion-fast),
-    border-color var(--motion-fast);
-}
-
-.policy-submit button[type="submit"]:hover:not(:disabled) {
-  background: var(--colour-accent-hover);
-  border-color: var(--colour-accent-hover);
-}
-
-.policy-submit button[type="submit"]:disabled {
-  background: var(--colour-paper-sunken);
-  border-color: var(--colour-hairline-strong);
-  color: var(--colour-ink-muted);
-  cursor: not-allowed;
+  font-size: var(--text-lead);
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.01em;
 }
 
 /* What is still missing, updating as they fill it in. A dead button that does
@@ -473,16 +521,16 @@ body:has(.audit-shell) {
   text-align: center;
 }
 
-/* --- reveal ------------------------------------------------------------ */
+/* --- reveal --------------------------------------------------------------
+   The two panels rise as the page settles. Armed only once the hook runs, so
+   the content is never withheld pending JavaScript. */
 
-/* Sections rise as the page settles. Armed only once the hook runs, so the
-   content is never withheld pending JavaScript. */
 .audit-reveal.is-armed {
   opacity: 0;
-  transform: translateY(12px);
+  transform: translateY(var(--reveal-rise-sm));
   transition:
-    opacity 400ms cubic-bezier(0.22, 0.61, 0.36, 1) var(--reveal-delay, 0ms),
-    transform 400ms cubic-bezier(0.22, 0.61, 0.36, 1) var(--reveal-delay, 0ms);
+    opacity var(--motion-slow) var(--reveal-delay, 0ms),
+    transform var(--motion-slow) var(--reveal-delay, 0ms);
 }
 
 .audit-reveal.is-armed.is-shown {
@@ -503,25 +551,82 @@ body:has(.audit-shell) {
   }
 }
 
-/* --- the "why?" disclosure --------------------------------------------- */
+/* --- the "why?" disclosure ----------------------------------------------- */
 
-/* 32x16 as a bare <summary>, which is under the 24px minimum for a pointer
-   target. Padding rather than a min-height, so the hit area grows around the
-   text instead of leaving it floating in a tall box. */
-.policy-panel .why > summary {
+.help .why {
+  display: inline;
+}
+
+.help .why > summary {
   display: inline-block;
   padding: var(--space-2) var(--space-1);
   margin: calc(var(--space-2) * -1) calc(var(--space-1) * -1);
   border-radius: var(--radius-sm);
-  color: var(--colour-accent);
+  color: var(--colour-brand);
   cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: var(--underline-offset);
+  transition: color var(--motion-normal);
 }
 
-.policy-panel .why > summary:hover {
-  color: var(--colour-accent-hover);
+.help .why > summary:hover {
+  color: var(--colour-brand-strong);
 }
 
-.policy-panel .why > p {
-  margin: var(--space-2) 0 0;
+.help .why > p {
+  margin: var(--space-3) 0 0;
+  max-width: 60ch;
   color: var(--colour-ink-muted);
+}
+
+/* ===========================================================================
+   After submission
+   ---------------------------------------------------------------------------
+   The form is gone and a report is on screen. One reading column, the same
+   navy wordmark, and nothing else carried over from the two-column layout.
+   =========================================================================== */
+
+.audit-page .masthead h1 {
+  font-family: var(--font-display);
+  font-size: var(--text-h2);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-tight);
+}
+
+/* --- 760px --------------------------------------------------------------- */
+
+@media (max-width: 760px) {
+  .audit-shell {
+    padding-bottom: var(--space-8);
+  }
+
+  .audit-masthead {
+    margin-bottom: var(--space-6);
+  }
+
+  .audit-head {
+    margin-bottom: var(--space-6);
+  }
+
+  .audit-head p {
+    font-size: var(--text-body);
+  }
+
+  .policy-panel {
+    padding: var(--space-5);
+  }
+
+  .policy-submit {
+    margin: 0 calc(var(--space-5) * -1) calc(var(--space-5) * -1);
+    padding: var(--space-4) var(--space-5) var(--space-5);
+  }
+
+  .bill-doc textarea {
+    height: 20rem;
+  }
+
+  .bill-example {
+    width: 100%;
+    justify-content: center;
+  }
 }
