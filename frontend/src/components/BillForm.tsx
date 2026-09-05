@@ -6,6 +6,7 @@ import { prefersReducedMotion } from "../hooks/useReveal";
 import { fetchPolicies, uploadPolicy } from "../lib/api";
 import { readBill, rupees } from "../lib/billStats";
 import { EXAMPLE_BILL } from "../lib/exampleBill";
+import { STATIC_DEMO } from "../lib/staticDemo";
 
 const UPLOAD_OWN = "__upload__";
 
@@ -92,6 +93,53 @@ function Reveal({
   );
 }
 
+/**
+ * What sits under the dead button on the published site.
+ *
+ * The rule the whole project runs on is that it never states something it
+ * cannot support, and a form that posts into nothing breaks that rule at the
+ * front door. So the button is disabled and this says exactly why, what the
+ * missing half actually is, and how to run it - and then offers the one thing
+ * a static file can honestly show: a report the system really produced.
+ */
+function StaticDemoNote({ onShowExample }: { onShowExample: () => void }) {
+  return (
+    <div className="static-note" data-testid="static-note">
+      <h4>This copy cannot run an audit</h4>
+      <p>
+        You are looking at the front end on GitHub Pages — static files, with nothing behind them.
+        The audit is not a service that is switched off: it searches a 402-clause index built from
+        the policy PDFs, reranks the results with a cross-encoder and puts every line to an 8B model.
+        That needs a machine, so it runs on yours, not on a CDN.
+      </p>
+      <p>From a clone of the repository:</p>
+      <pre className="static-note-code">
+        <code>
+          {"uv sync\n"}
+          {"uv run uvicorn api.main:app --reload\n"}
+          {"cd frontend && npm ci && npm run dev"}
+        </code>
+      </pre>
+      <p className="static-note-aside">
+        Ollama has to be running with <code>qwen3:8b</code> pulled. The first audit takes 30–60
+        seconds; every model call is cached to disk after that.
+      </p>
+      <button
+        type="button"
+        className="btn-secondary"
+        data-testid="show-example"
+        onClick={onShowExample}
+      >
+        See a report it produced
+      </button>
+      <p className="static-note-aside">
+        Bill B01 against Star Health, from a recorded evaluation run. Every figure and every clause
+        reference below is that run&rsquo;s own output — nothing on the next screen is illustrative.
+      </p>
+    </div>
+  );
+}
+
 /** Screen 1. A bill, a policy, two dates, and one optional number. */
 export function BillForm() {
   const { form, setForm, job } = useAudit();
@@ -129,7 +177,10 @@ export function BillForm() {
       : null;
 
   const outstanding = missing(hasBill, form.policyStartDate, dateError);
-  const canSubmit = outstanding.length === 0 && !job.isStarting && form.policy !== UPLOAD_OWN;
+  // STATIC_DEMO is the published site, which has no backend to submit to. The
+  // button stays where it is and stays dead, and the panel below it says why.
+  const canSubmit =
+    outstanding.length === 0 && !job.isStarting && form.policy !== UPLOAD_OWN && !STATIC_DEMO;
 
   function loadExample() {
     setFileName(null);
@@ -178,6 +229,10 @@ export function BillForm() {
       data-testid="bill-form"
       onSubmit={(event) => {
         event.preventDefault();
+        // Belt as well as braces. lib/api.ts already refuses without a
+        // backend; this stops the request being attempted at all, including
+        // from an Enter key in a text field, which no disabled button catches.
+        if (STATIC_DEMO) return;
         job.start(form);
       }}
     >
@@ -292,7 +347,10 @@ export function BillForm() {
                         {policy.name}
                       </option>
                     ))}
-                    <option value={UPLOAD_OWN}>upload my own policy…</option>
+                    {/* Indexing a PDF is a server-side job with a model in
+                        it, so on the static build the option is not offered
+                        rather than offered and broken. */}
+                    {!STATIC_DEMO && <option value={UPLOAD_OWN}>upload my own policy…</option>}
                   </select>
                 </div>
 
@@ -419,15 +477,27 @@ export function BillForm() {
             >
               {job.isStarting ? "Starting…" : "Audit this bill"}
             </button>
-            {outstanding.length > 0 && (
-              <p
-                className="actions-note"
-                id={missingId}
-                data-testid="submit-blocked"
-                aria-live="polite"
-              >
-                {sentence(outstanding)}
-              </p>
+            {STATIC_DEMO ? (
+              <StaticDemoNote
+                onShowExample={() => {
+                  // The form is filled with B01's own inputs first, so the
+                  // summary above the report describes the bill the report was
+                  // actually produced from rather than an empty form.
+                  loadExample();
+                  job.showExample();
+                }}
+              />
+            ) : (
+              outstanding.length > 0 && (
+                <p
+                  className="actions-note"
+                  id={missingId}
+                  data-testid="submit-blocked"
+                  aria-live="polite"
+                >
+                  {sentence(outstanding)}
+                </p>
+              )
             )}
           </div>
         </div>

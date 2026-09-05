@@ -85,6 +85,50 @@ class FastPathTest(unittest.TestCase):
         check_non_payable(state)
         self.assertIsNone(state.get("verdict"))
 
+    def test_the_ambulance_journey_is_left_to_the_benefit_clause(self):
+        """List I #67 "Ambulance" names the equipment, not the journey.
+
+        All three policies carry a named ambulance benefit - star_health II.8
+        caps it at Rs 750 per hospitalization, hdfc_ergo covers it under
+        B.1.1.1, niva_bupa under 6.2.4 - and the answer key pays all five
+        ambulance lines in the set. The fast path must not zero them on a name
+        match against the list.
+        """
+        for item in (
+            "Ambulance",  # B21's item text, exactly
+            "Ambulance Charges",
+            "Road Ambulance",
+            "AMBULANCE CHARGES",
+        ):
+            with self.subTest(item=item):
+                state = {"line": BillLine(item=item, amount=1800, qty=1), "trace": []}
+                check_non_payable(state)
+                self.assertIsNone(state.get("verdict"), f"{item!r} was zeroed by the list")
+
+    def test_ambulance_consumables_are_still_zeroed(self):
+        """The other half, and the one a broad match breaks.
+
+        The override used to be a regex run against the bill line before the
+        list was searched, so anything containing "ambulance" skipped the fast
+        path - including #49 "Ambulance Collar" and #50 "Ambulance Equipment",
+        which are genuine List I consumables and must stay at zero. The
+        override is now tested against the matched list ENTRY, so only the bare
+        "Ambulance" entry defers to the benefit clause.
+        """
+        for item, expected_no in (
+            ("Ambulance Collar", 49),
+            ("Ambulance Equipment", 50),
+            ("ambulance equipment charges", 50),
+        ):
+            with self.subTest(item=item):
+                state = {"line": BillLine(item=item, amount=900, qty=1), "trace": []}
+                check_non_payable(state)
+                verdict = state.get("verdict")
+                self.assertIsNotNone(verdict, f"{item!r} escaped the list")
+                self.assertEqual(verdict.allowed, 0.0)
+                self.assertEqual(verdict.clause_id, "IRDAI-List-I")
+                self.assertIn(f"#{expected_no}", verdict.reason)
+
 
 class RoutingTest(unittest.TestCase):
     def test_rule_types(self):

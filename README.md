@@ -232,5 +232,6 @@ re-run many times.
 | `frontend/` | React + TypeScript + Vite |
 | `services/` | the same `core/` split into four containers |
 | `eval/` | 44 bills, the answer key, and `results.md` |
+| `ENGINEERING.md` | Why the splitter, retrieval, guardrails and pipeline work as they do |
 | `ci/` | the image pruner the Jenkins Prune stage calls |
 | `k8s/`, `Jenkinsfile` | deployment and the pipeline |

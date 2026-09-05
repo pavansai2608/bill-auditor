@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useRef, useState } from "react";
 
 import { fetchJob, startAudit, startCompare } from "../lib/api";
+import { loadExampleReport, type ExampleProvenance } from "../lib/staticDemo";
 import type { AuditFormValues, CompareStatus, JobStatus } from "../types";
 
 export const POLL_INTERVAL_MS = 2000;
@@ -18,6 +19,16 @@ export interface AuditJob {
   error: string | null;
   start: (values: AuditFormValues) => void;
   compare: (values: AuditFormValues) => void;
+  /**
+   * Show a report that was recorded rather than run.
+   *
+   * The static build has no backend to run one, so the report screen is fed a
+   * checkpoint from an actual eval run. It goes through the same state as a
+   * live job - same shape, same components - and `recorded` is what lets the
+   * screen say where it came from instead of passing it off as fresh.
+   */
+  showExample: () => void;
+  recorded: ExampleProvenance | null;
   reset: () => void;
 }
 
@@ -34,13 +45,17 @@ export function useAuditJob(): AuditJob {
   const [jobId, setJobId] = useState<string | null>(null);
   const [kind, setKind] = useState<"audit" | "compare">("audit");
   const [error, setError] = useState<string | null>(null);
+  // A report that was loaded, not polled for. While this is set the query is
+  // disabled, so nothing is ever fetched on its behalf.
+  const [recordedStatus, setRecordedStatus] = useState<JobStatus | null>(null);
+  const [recorded, setRecorded] = useState<ExampleProvenance | null>(null);
   const startedAt = useRef<number>(0);
   const queryClient = useQueryClient();
 
   const query = useQuery({
     queryKey: ["job", kind, jobId],
     queryFn: () => fetchJob(kind, jobId as string),
-    enabled: jobId !== null,
+    enabled: jobId !== null && recordedStatus === null,
     refetchInterval: (query) => {
       const data = query.state.data;
       if (!data) return POLL_INTERVAL_MS;
@@ -58,6 +73,8 @@ export function useAuditJob(): AuditJob {
     (nextKind: "audit" | "compare") => (values: AuditFormValues) => {
       setError(null);
       setKind(nextKind);
+      setRecordedStatus(null);
+      setRecorded(null);
       // Drop the previous job id in the same update that changes the kind.
       // Without this there is one render where kind is already "compare" and
       // jobId is still the finished audit's, so the poller asks
@@ -83,13 +100,30 @@ export function useAuditJob(): AuditJob {
     onError: (err: Error) => setError(err.message),
   });
 
+  const showExample = useCallback(() => {
+    setError(null);
+    setKind("audit");
+    void loadExampleReport().then(
+      ({ recorded: provenance, report }) => {
+        setRecorded(provenance);
+        // Set together, so there is never a render where the id is live and
+        // the report is not - which is the frame the poller would fire in.
+        setRecordedStatus({ job_id: provenance.bill_id, status: "done", report });
+        setJobId(provenance.bill_id);
+      },
+      (err: Error) => setError(err.message),
+    );
+  }, []);
+
   const reset = useCallback(() => {
     setJobId(null);
     setError(null);
+    setRecordedStatus(null);
+    setRecorded(null);
     queryClient.removeQueries({ queryKey: ["job"] });
   }, [queryClient]);
 
-  const data = query.data;
+  const data = recordedStatus ?? query.data;
   const timedOut =
     jobId !== null &&
     data !== undefined &&
@@ -119,6 +153,8 @@ export function useAuditJob(): AuditJob {
             : null),
     start: startMutation.mutate,
     compare: compareMutation.mutate,
+    showExample,
+    recorded,
     reset,
   };
 }

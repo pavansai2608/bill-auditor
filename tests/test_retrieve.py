@@ -188,7 +188,7 @@ class EndToEndSearchTest(unittest.TestCase):
             # HDFC's proportionate deduction lives inside "Other Expenses".
             "hdfc_ergo": ("room rent proportionate deduction", "B.1.1.1"),
             # Niva Bupa caps by room category, not per day, so it is asked in
-            # its own vocabulary - see the note in CLAUDE.md.
+            # its own vocabulary - see the note in ENGINEERING.md.
             "niva_bupa": ("room category higher than eligible pro-rated portion", "6.2.4"),
         }
         for policy, (query, clause_id) in expected.items():
