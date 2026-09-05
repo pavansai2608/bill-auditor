@@ -92,6 +92,31 @@ class BrowserTest(unittest.TestCase):
             options.add_argument("--headless=new")
         options.add_argument("--window-size=1440,1000")
         options.add_argument("--no-sandbox")
+        # Reduced motion, and not to make the suite faster.
+        #
+        # BA-208 put `scroll-behavior: smooth` on `html`. WebDriver clicks a
+        # control by scrolling it into view, computing the click point, and
+        # dispatching - in that order, without waiting. Against an animated
+        # scroll the point is computed while the page is still moving, so the
+        # click lands where the control is about to be rather than where it is:
+        #
+        #   element click intercepted at (123, 889)   [load-example]
+        #   element click intercepted at (1226, 1115) [trace-toggle-0]
+        #
+        # Both y values sit below the 857px viewport this window actually gets.
+        # Nothing is covering either control - `document.elementFromPoint` at
+        # the load-example centre returns null before the scroll settles and
+        # the button itself once it has, and there are no armed `.reveal`
+        # elements on this page. The page is not at fault and a user cannot hit
+        # this: a human waits for the scroll to finish.
+        #
+        # So the fix belongs here, and it is this flag rather than a scripted
+        # click or a sleep. styles.css already defines the reduced-motion path
+        # (`scroll-behavior: auto`), so this exercises a real code path the
+        # stylesheet ships, and it makes scroll position deterministic instead
+        # of racing an animation. A scripted click would have hidden any real
+        # overlay that appeared later; this does not.
+        options.add_argument("--force-prefers-reduced-motion")
         cls.driver = webdriver.Chrome(options=options)
         cls.driver.implicitly_wait(0)  # explicit waits only
 
