@@ -4,6 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bill Auditor</title>
+    <!-- Written root-relative on purpose. Vite rewrites it against the build's
+         `base`, so it becomes /bill-auditor/favicon.svg on GitHub Pages and
+         /favicon.svg everywhere else. Without it the browser falls back to
+         asking the domain root for /favicon.ico, which on a project site is
+         not this project's directory at all - a 404 in every visitor's
+         console, and a blank tab icon. -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <!-- The three faces the stylesheet actually asks for: Fraunces for
          display, Inter for the interface, JetBrains Mono for the bill, the
          trace and every clause id. All have real fallback stacks, so a blocked

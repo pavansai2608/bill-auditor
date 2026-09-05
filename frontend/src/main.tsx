@@ -23,7 +23,12 @@ createRoot(document.getElementById("root") as HTMLElement).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <ErrorBoundary>
-        <BrowserRouter>
+        {/* import.meta.env.BASE_URL is whatever `base` the build used: "/"
+            for dev, the nginx image and the E2E stage, "/bill-auditor/" for
+            the GitHub Pages build. Without it every route on Pages resolves
+            against the domain root and 404s. Reading it from the build rather
+            than repeating the literal means the two cannot drift apart. */}
+        <BrowserRouter basename={import.meta.env.BASE_URL}>
           <AuditProvider>
             <App />
           </AuditProvider>

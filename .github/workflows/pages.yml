@@ -1,0 +1,92 @@
+# Publish the front end to GitHub Pages.
+#
+# This is a separate path from Jenkins and does not touch it. Jenkins keeps
+# doing what it does - unit tests, the eval gate, Docker, the browser stage -
+# against a running API and a model. None of that can live on Pages, which
+# serves files.
+#
+# So what ships here is the front end alone, built with `--mode pages`:
+# every URL under /bill-auditor/, index.html copied to 404.html so a deep link
+# survives a refresh, and the audit's submit path disabled with an explanation
+# rather than left posting into nothing. See frontend/.env.pages.
+#
+# THERE ARE NO SECRETS IN THIS WORKFLOW, AND THERE MUST NEVER BE.
+# Everything a Vite build inlines ends up readable in the published bundle -
+# a VITE_ variable is not configuration, it is a string in a file anyone can
+# fetch. BA_GROQ_API_KEY and anything else in .env belong to the machine that
+# runs the audit, and that machine is not this one.
+name: pages
+
+on:
+  push:
+    branches: [main]
+  # So the site can be republished without an empty commit.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  # The two the deploy needs, and nothing else: publish an artifact as a Pages
+  # site, and mint the token that does it.
+  pages: write
+  id-token: write
+
+# One deploy at a time. `cancel-in-progress: false` on purpose - cancelling a
+# half-finished deploy is how a site ends up serving an index.html that names
+# assets from the build that replaced it.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - run: npm ci
+
+      # Typecheck before building. `build:pages` runs tsc itself, but a
+      # separate step names the failure as a type error rather than as a
+      # build that stopped.
+      - run: npm run typecheck
+
+      - run: npm run build:pages
+
+      # Three things the build has to have got right, checked here rather than
+      # trusted, because all three fail only in production: they work perfectly
+      # against a server that serves from the domain root.
+      - name: Check the build is a subpath build
+        run: |
+          set -euo pipefail
+          test -f dist/404.html || { echo "no dist/404.html - a deep link will 404"; exit 1; }
+          cmp -s dist/index.html dist/404.html || { echo "404.html is not index.html"; exit 1; }
+          grep -q '"/bill-auditor/assets/' dist/index.html \
+            || { echo "index.html does not reference assets under /bill-auditor/"; exit 1; }
+          if grep -rn 'localhost\|127\.0\.0\.1\|0\.0\.0\.0' dist/; then
+            echo "a private host reached the published bundle"; exit 1
+          fi
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: frontend/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
