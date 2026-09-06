@@ -894,7 +894,7 @@ def _is_address_noise(clause: Clause) -> bool:
     return len(NOISE_RE.findall(clause.text)) >= NOISE_HITS
 
 
-def _without_the_address_block(clause: Clause) -> Clause | None:
+def _without_the_address_block(clause: Clause, taken: set[str]) -> list[Clause]:
     """Cut an address annexure where the addresses stop, and keep the rest.
 
     **An address list ends; the document does not.** hdfc_ergo's ombudsman
@@ -911,8 +911,17 @@ def _without_the_address_block(clause: Clause) -> Clause | None:
     on purpose instead.
 
     So the clause is cut after the last line carrying an address marker.
-    Everything above it is contact data and goes; everything below stays, under
-    the same id, retitled from what is actually left.
+    Everything above it is contact data and goes; everything below stays,
+    retitled from what is actually left.
+
+    **What is left is then split where the tables stop and the prose starts.**
+    Kept whole it is 12,414 characters - three annexures and a legend welded
+    into one record - and `tests/test_ingest.py` caps a clause at 12,000
+    because three of those in one judge prompt would swamp `num_ctx`. The
+    boundary is not arbitrary: rendered rows and the paragraphs explaining them
+    are different things to retrieve, and "'Not Covered' means that particular
+    benefit is NOT available" is worth finding without dragging 9,748
+    characters of table behind it.
     """
     lines = clause.text.split("\n")
     last_address = max(
@@ -920,12 +929,74 @@ def _without_the_address_block(clause: Clause) -> Clause | None:
         default=None,
     )
     if last_address is None:
-        return None
+        return []
 
     body = "\n".join(lines[last_address + 1 :]).strip()
     if len(body) < MIN_BODY_CHARS:
-        return None
+        return []
 
+    out: list[Clause] = []
+    for part in _table_and_prose_runs(body):
+        if len(part) < MIN_BODY_CHARS:
+            continue
+        clause_id = clause.clause_id if not out else _next_free_sibling(clause.clause_id, taken)
+        taken.add(clause_id)
+        out.append(
+            Clause(
+                clause_id=clause_id,
+                title=_title_for(part, clause.title),
+                text=part,
+                page=clause.page,
+                policy=clause.policy,
+            )
+        )
+    return out
+
+
+def _table_and_prose_runs(body: str) -> list[str]:
+    """Break a body where rendered table rows give way to prose, and back.
+
+    One run per stretch, in document order. A body that is all one kind comes
+    back as a single run, so nothing is split that does not need to be.
+    """
+    runs: list[list[str]] = []
+    previous: bool | None = None
+    for line in body.split("\n"):
+        is_row = line.lstrip().startswith(TABLE_MARKER)
+        if is_row != previous:
+            runs.append([])
+            previous = is_row
+        runs[-1].append(line)
+    return [text for text in ("\n".join(run).strip() for run in runs) if text]
+
+
+def _next_free_sibling(clause_id: str, taken: set[str]) -> str:
+    """The next unused id beside this one: E.2 -> E.3, skipping what exists.
+
+    Continuing the numbering is what the document itself does - the legend that
+    lands in the second part was `E.3` before the splitter fix, under a title
+    lifted from a stray table cell. Inventing a suffix instead would produce an
+    id no reader could look up, and reusing `E.2.1` would point at a clause
+    `KNOWN_LIMITATIONS.md` section 10 discusses as a defect.
+    """
+    head, _, last = clause_id.rpartition(".")
+    if not last.isdigit():
+        return clause_id
+    number = int(last) + 1
+    while (f"{head}.{number}" if head else str(number)) in taken:
+        number += 1
+    return f"{head}.{number}" if head else str(number)
+
+
+def _title_for(body: str, fallback: str) -> str:
+    """The first line of a body that reads like a heading rather than a cell.
+
+    A part that is nothing but rendered rows has no such line, and inheriting
+    the parent's title is worse than having none: the annexure cut out of
+    hdfc_ergo's ombudsman block would be titled "Contact Us", which is both
+    wrong and embedded into the vector alongside the rows. Its first row is at
+    least about the right subject.
+    """
     heading = next(
         (
             line.strip()
@@ -934,15 +1005,12 @@ def _without_the_address_block(clause: Clause) -> Clause | None:
             and _looks_like_title(line.strip())
             and not is_table_debris(line.strip())
         ),
-        clause.title,
+        None,
     )
-    return Clause(
-        clause_id=clause.clause_id,
-        title=heading[:120],
-        text=body,
-        page=clause.page,
-        policy=clause.policy,
-    )
+    if heading is None:
+        first = body.split("\n")[0].strip()
+        heading = first[len(TABLE_MARKER) :].strip() if first.startswith(TABLE_MARKER) else fallback
+    return (heading or fallback)[:120]
 
 
 def _split_definitions(clause: Clause) -> list[Clause]:
@@ -1100,18 +1168,19 @@ def split_pdf(pdf_path: Path, policy: str) -> list[Clause]:
     # An address annexure is cut where the addresses stop rather than dropped
     # whole, because what follows one can be a rule - see
     # `_without_the_address_block`.
+    taken = {clause.clause_id for clause in expanded}
     survivors: list[Clause] = []
     dropped = trimmed = 0
     for clause in expanded:
         if not _is_address_noise(clause):
             survivors.append(clause)
             continue
-        remainder = _without_the_address_block(clause)
-        if remainder is None:
+        remainder = _without_the_address_block(clause, taken)
+        if not remainder:
             dropped += 1
             continue
         trimmed += 1
-        survivors.append(remainder)
+        survivors.extend(remainder)
 
     kept = attach_refs(survivors)
     log.info(
