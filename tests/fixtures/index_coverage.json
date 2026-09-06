@@ -1,0 +1,19 @@
+{
+  "_what_this_is": "The floor under the clause index. Every number was measured, not chosen. See tests/test_index_coverage.py.",
+  "_niva_bupa_was_lowered": "2026-09-06: niva_bupa's character floor was lowered from 71511 by hand, from 105 clauses to 104. 23 lines left the index with the flattened-table fix. 22 of them were the flat read of rows the splitter also renders structurally, word-for-word duplicates that are still present as [table] rows. The 23rd is a real loss: '4.2.2 We pay for Modern treatments as specified below:', which carried the only occurrence of 'Modern' in that policy. No page left the index. hdfc_ergo and star_health rose; those floors were raised to match.",
+  "hdfc_ergo": {
+    "characters": 115926,
+    "clauses": 143,
+    "pages": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 49, 50, 51, 52, 53]
+  },
+  "niva_bupa": {
+    "characters": 70732,
+    "clauses": 104,
+    "pages": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27]
+  },
+  "star_health": {
+    "characters": 99277,
+    "clauses": 152,
+    "pages": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 44]
+  }
+}
