@@ -148,6 +148,12 @@ class ClauseSubChunker(BaseDocumentTransformer):
 
 @lru_cache(maxsize=1)
 def _build_cross_encoder() -> HuggingFaceCrossEncoder:
+    from core.cpu import apply_torch_threads
+
+    # The reranker is ~99% of a search's CPU time, so this is the load that
+    # the thread count actually decides. See core/cpu.py.
+    apply_torch_threads()
+
     from langchain_community.cross_encoders import HuggingFaceCrossEncoder
 
     log.info("loading reranker %s", settings.reranker_model)
