@@ -4,8 +4,15 @@ Audits an Indian health insurance claim bill against the policy that governs it,
 line by line, and names the clause behind every deduction. Where no clause
 clearly applies, the line is flagged for a human rather than guessed at.
 
+**Live at <https://pavansai2608.github.io/bill-auditor/>.** The interface and one
+recorded example report are there, served as static files. The audit itself is
+not publicly hosted: it searches a 399-clause index and puts every line to an 8B
+model, which needs a machine rather than a CDN, so the form on that site is
+disabled and points at the quickstart below.
+
+![The landing page, live on GitHub Pages](docs/site-landing-1440.png)
+
 ![The audit screen](docs/audit-1440.png)
-<!-- SCREENSHOT: the /audit page at 1440. Replace docs/audit-1440.png. -->
 
 ## Results
 
@@ -27,7 +34,15 @@ retrieval on cpu.
 | Dodges (flagged, key has an answer) | 117 |
 | **Fabricated clause citations** | **0** |
 
-**0 fabricated citations across every recorded version, v0 through v11** — all
+**Read [`KNOWN_LIMITATIONS.md`](KNOWN_LIMITATIONS.md) sections 6 and 7 before
+quoting 55.2% anywhere.** It is scored against an answer key that was derived by
+a model rather than written by a human, and the section below says what that
+does and does not let the number mean. The 72 rows most exposed to it were later
+read back against the policy PDFs —
+[`eval/answer_key_verified.md`](eval/answer_key_verified.md), 72 of 72 checked,
+0 changed.
+
+**0 fabricated citations across every recorded version, v0 through v12** — all
 17 rows in `results.md`. A citation naming a clause that does not exist in the
 index is the worst failure this system can produce, because it is the one a
 reader cannot catch by reading. It is tracked as a metric that must stay at
@@ -59,7 +74,7 @@ below the baseline.
 The gate deliberately sits on the subset, not the full set, so it is fast enough
 to run on every push. It is compared only with other subset rows.
 
-**474 tests** (PyUnit, `unittest discover -s tests`, ~100s).
+**478 tests** (PyUnit, `unittest discover -s tests`, ~100s).
 
 ---
 
@@ -77,9 +92,16 @@ substance came from a model reading the same PDFs the judge reads. Worse,
 counts as room rent on both sides of the comparison. **So a misreading shared by
 both scores as correct.** The number measures agreement between two
 implementations that were built from the same reading of the same documents. It
-is not a measurement of correctness against the documents themselves. Closing
-this needs a human with the PDFs; 72 rows across 5 questions are already queued
-for exactly that in `eval/answer_key_todo.md`.
+is not a measurement of correctness against the documents themselves.
+
+Closing it needs a human with the PDFs. The 72 rows most exposed to the problem
+— the ones queued across 5 questions in
+[`eval/answer_key_todo.md`](eval/answer_key_todo.md) — have since been read back
+against the original documents clause by clause, and
+[`eval/answer_key_verified.md`](eval/answer_key_verified.md) records the result:
+**72 of 72 checked, 0 changed.** That is evidence for those rows and no others.
+It does not retire the limitation, because the shared taxonomy still decides the
+categories on both sides for all 328 lines.
 
 **The citation is verified. The figure attached to it is not.** Every verdict's
 `clause_id` is checked against `data/clauses.json`, and a fabricated one is
@@ -93,7 +115,7 @@ larger problem with real false-rejection risk, and it is not built.
 
 ---
 
-## Two things that were broken in ways nothing could see
+## Three things that were broken in ways nothing could see
 
 ### 1. A space glyph painted on top of a letter
 
@@ -128,9 +150,11 @@ be caught by this rule the previous glyph would have to cover it completely,
 which would mean the next word was painted over the last one.
 
 Across all four documents: **50,297 spaces examined, 79 caught, every one in
-star_health.** The index went from 402 clauses to 402 — none added, none
-removed. **26 clause bodies and 6 titles repaired, total character delta −50,
-and every diff is a deletion of whitespace and nothing else.** One `rule_type`
+star_health.** The index held 402 clauses before and 402 after — none added,
+none removed. (402 was its size at the time; the later flattened-table fix
+brought it to the 399 it holds today.) **26 clause bodies and 6 titles repaired,
+total character delta −50, and every diff is a deletion of whitespace and
+nothing else.** One `rule_type`
 changed as a consequence: `III.23` moved from `other` to `non_payable` once its
 title read "Injury/disease caused by…" instead of "I njury/disease".
 
@@ -176,10 +200,27 @@ half-written `dist/`. And neither catches a skipped build pointing at the wrong
 backend.
 
 ![The main pipeline, green](docs/jenkins-main-green.png)
-<!-- SCREENSHOT: the green main stage view. Replace docs/jenkins-main-green.png. -->
 
-![The Eval gate failing](docs/jenkins-eval-red.png)
-<!-- SCREENSHOT: a red Eval stage. Replace docs/jenkins-eval-red.png. -->
+`main` #28: eleven stages, all green — checkout, build, quality, lint, unit,
+eval, E2E, docker, deploy, prune, post actions.
+
+### 3. Stages that reported success without doing the work
+
+Docker, Deploy and Prune decide whether to run from an explicit ledger of which
+gates actually ran and passed, not from `currentBuild.result`. The distinction
+is load-bearing: `catchError` lets a failed stage continue so later stages still
+get their turn, and a build can therefore reach the end with a stage silently
+skipped and its overall status still not red. `main` #21 finished UNSTABLE and
+built five images anyway.
+
+![Prune refusing to delete](docs/jenkins-prune-blocked.png)
+
+The pipeline declining to act. `main` #27 reached Prune with Deploy incomplete,
+and instead of deleting old images on the build-number arithmetic alone it
+stopped and named the gate that had not passed: **`Deploy — kubectl reached no
+cluster, so nothing was rolled out`**. That is the case the ledger exists for.
+Nothing was rolled out, so the cluster may still be serving an image this build
+never replaced, and deleting by build number would have taken the running one.
 
 ---
 
@@ -213,7 +254,7 @@ one breached cap reduce every associated expense on the bill.
 
 ```bash
 uv sync
-uv run python -m unittest discover -s tests     # 474 tests
+uv run python -m unittest discover -s tests     # 478 tests
 uv run uvicorn api.main:app --reload            # API on :8000, docs at /docs
 uv run python eval/evaluate.py --agent          # full 44-bill eval
 uv run python eval/evaluate.py --quick --threshold 0.52   # the CI gate
@@ -231,7 +272,7 @@ The UI is deployed to GitHub Pages at
 `main`. It is a separate path from Jenkins and does not touch it.
 
 **It cannot run an audit, and it says so rather than pretending.** Pages serves
-files; the audit searches a 402-clause index and puts every line to an 8B model
+files; the audit searches a 399-clause index and puts every line to an 8B model
 running locally. The form is therefore disabled, with the quickstart above in
 its place — and the one thing a static file can honestly show is offered
 instead: a report the system really produced, exported from an eval checkpoint
