@@ -506,13 +506,17 @@ retrieved is relevant enough to judge on, and the line abstains.
 **Guardrail 3 — a room cap on a line the cap does not reach** (added in v7):
 
 ```python
-def _room_cap_on_a_non_room_line(output, line, candidates) -> bool:
+def _room_cap_on_a_non_room_line(
+    output: JudgeOutput, line: BillLine, candidates: list[RetrievedClause]
+) -> bool:
     if not any(limit.basis == "per_day" for limit in output.limits):
         return False
     if ROOM_RE.search(line.item):
         return False
-    cited = next((c.clause for c in candidates
-                  if c.clause.clause_id == output.clause_id), None)
+    cited = next(
+        (c.clause for c in candidates if c.clause.clause_id == output.clause_id),
+        None,
+    )
     return cited is not None and governs_room_rent(cited)
 ```
 
@@ -524,11 +528,15 @@ fired on **19 line-attempts across 11 bills** and moved `room_rent_over` from
 (added in v11):
 
 ```python
-def _unsupported_zero_limit(output, candidates) -> Clause | None:
+def _unsupported_zero_limit(
+    output: JudgeOutput, candidates: list[RetrievedClause]
+) -> Clause | None:
     if not any(is_zero(limit) for limit in output.limits):
         return None
-    cited = next((c.clause for c in candidates
-                  if c.clause.clause_id == output.clause_id), None)
+    cited = next(
+        (c.clause for c in candidates if c.clause.clause_id == output.clause_id),
+        None,
+    )
     if cited is None:
         return None  # nothing to inspect; guardrail 2 owns that case
     return None if states_an_exclusion(cited) else cited
