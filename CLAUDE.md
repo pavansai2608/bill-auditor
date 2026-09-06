@@ -9,7 +9,7 @@ are - is `ENGINEERING.md`. The phase plan is `PHASES.md`.
 **Last updated: 2026-09-06. Every phase in `PHASES.md` is built, including
 Jenkins. The recorded eval is `v11` at 55.2% line accuracy over all 44 bills.
 The CI gate runs the 10-bill subset against a 56.1% baseline at
-`--threshold 0.52`. 462 tests.**
+`--threshold 0.52`. 474 tests.**
 
 **Read `KNOWN_LIMITATIONS.md` sections 6 and 7 before quoting any accuracy
 number**, and treat `eval/results.md` as the only authoritative source for one.
@@ -17,6 +17,17 @@ The analysis behind the current figure - what moved between versions, where the
 remaining errors are, and why the version ladder must not be joined to the
 headline - is in `ENGINEERING.md`.
 
+Built and passing:
+
+- `core/` — config, llm (Ollama + disk cache), logging_conf, models, masking,
+  bill, money, assumptions, splitter, ingest, retrieve, `audit.py` (the naive
+  **v0** path), `agent.py` (the **v2** LangGraph retry loop), `second_pass.py`
+  (the **v3** proportionate deduction, wired in as `audit_lines(..., second_pass=True)`
+  and `evaluate.py --second-pass`), `room_limit.py` (the **v4** deterministic
+  room rent lookup - policy + sum insured reads the table row directly, with no
+  judge call; the agent's `room_limit` node is path B beside the non-payable
+  fast path), `waiting.py` (the **v5** waiting periods - two dates and the
+  period the clause states, decided before any line is judged; a bill inside a
   waiting period costs zero model calls).
 - `api/` — FastAPI (Phase 8). `POST /audit` and `POST /compare` return a
   `job_id` immediately and run in a `BackgroundTasks` worker; `GET
@@ -29,7 +40,31 @@ headline - is in `ENGINEERING.md`.
   retrieval, audit, ingestion, gateway. `api/` remains a working monolith for
   local development and the eval; see D-10.
 - Docker, `k8s/`, `build.py` and `Jenkinsfile` (Phase 11). The Jenkins Eval
-  stage fails the build below 0.65 line accuracy.
+  stage fails the build below `--threshold 0.52` on the 10-bill subset. The
+  pipeline records each gate as it passes and Docker, Deploy and Prune refuse to
+  run unless every earlier gate actually ran - see the gate ledger in
+  `ENGINEERING.md`. `k8s/deploy.sh` loads this build's images into minikube,
+  rolls out the BUILD_NUMBER tag and fails if any pod is not on it;
+  `ci/prune_images.py` then deletes stale tags, keeping N, N-1, `latest` and
+  anything the cluster is live on.
+- `.github/workflows/pages.yml` — the front end alone on GitHub Pages at
+  <https://pavansai2608.github.io/bill-auditor/>, on push to `main`. **Separate
+  from Jenkins and does not touch it.** `npm run build:pages` reads
+  `frontend/.env.pages`: base `/bill-auditor/`, `index.html` copied to
+  `404.html`, and `VITE_STATIC_DEMO` disabling the submit path — there is no
+  API on a CDN, so the form explains itself and points at the quickstart
+  instead of posting into nothing. The report screen is fed
+  `frontend/src/data/exampleReport.json`, exported from the v11 B01 checkpoint
+  by `eval/export_example_report.py`; it is a real run, and
+  `tests/test_example_report.py` pins its citations to `data/clauses.json`,
+  because a fabricated citation in a committed file is not covered by the
+  metric that keeps fabrications at zero everywhere else.
+  `tests/e2e/pages_static_check.py` serves `dist/` the way Pages does — the
+  subpath, and `404.html` under a real 404 status — and checks it in a browser,
+  because every one of these fails **only** in production and looks perfect
+  against a dev server at the domain root. **No secret belongs in that
+  workflow, in `.env.pages`, or in the bundle:** a `VITE_` variable is not
+  configuration, it is a string anyone can fetch off the published site.
 - The clause index: 402 clauses in `data/clauses.json` (star_health 153,
   hdfc_ergo 144, niva_bupa 105) plus `non_payable.json`.
 - The eval harness: **44 bills** in `eval/bills/`, an answer key derived
@@ -40,7 +75,7 @@ headline - is in `ENGINEERING.md`.
   `bill_text` and the `lines` array of every bill against each other — the two
   halves of a fixture can drift and nothing else compares them. `--llm` runs
   the same check through `core.bill.parse_bill` instead of the regex.
-- 440 PyUnit tests, all passing, `unittest discover -s tests` in ~90s.
+- 474 PyUnit tests, all passing, `unittest discover -s tests` in ~100s.
 
 Not built yet — do not assume these exist:
 
@@ -64,6 +99,7 @@ Not built yet — do not assume these exist:
   `requirements.txt` with no `src/` in the builder stage), ingestion had no
   Ollama URL so all 402 clauses were labelled `other`, the frontend
   healthcheck probed `localhost` against an IPv4-only nginx, and `qwen3:8b`
+  was OOM-killed in a 7.7 GB VM. See B-02.
 
 ## END OF EVERY PHASE — do these three, without being asked
 

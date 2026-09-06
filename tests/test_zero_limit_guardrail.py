@@ -252,12 +252,63 @@ class TheBillsItWasWrittenForTest(unittest.TestCase):
         expected = {
             ("star_health", "II.1"): False,  # coverage - rejected
             ("star_health", "II.20"): True,  # "Not Available" in the benefit table
-            ("hdfc_ergo", "E.2.1"): True,  # headed "Not Covered"
             ("niva_bupa", "5.1.2"): True,  # Code Excl02 waiting period
         }
         for cid, wanted in expected.items():
             with self.subTest(clause=cid):
                 self.assertEqual(wanted, states_an_exclusion(clauses[cid]))
+
+    @unittest.skipUnless(settings.clauses_path.exists(), "data/clauses.json not built")
+    def test_the_fourth_clause_no_longer_reaches_this_guardrail_at_all(self):
+        """`hdfc_ergo E.2.1` was the fourth, and an earlier guardrail now stops it.
+
+        It was the one this rule could not judge: a row of a plan-comparison
+        grid read straight across, headed "Not Covered", lexically identical to
+        `star_health II.20` - which says the same words and is a *correct* zero.
+        `KNOWN_LIMITATIONS.md` section 10 records that no test over the text's
+        meaning separates the two.
+
+        The splitter fix removed it from the index, so the two zeros read off it
+        on B21 and B28 are now rejected by guardrail 2 as a citation that does
+        not resolve, before this rule is ever asked. **That closes those two
+        lines. It does not close the hole** - the next flattened table would
+        land in it the same way - which is why section 10 stays.
+        """
+        from core.ingest import load_clauses
+
+        hdfc = [c for c in load_clauses() if c.policy == "hdfc_ergo"]
+
+        # 1. It is gone from the index, at source. If this fails the splitter has
+        #    regressed and this rule is once again the only thing standing
+        #    between a flattened table row and a wrong Rs 0.
+        self.assertNotIn(
+            "E.2.1",
+            {c.clause_id for c in hdfc},
+            "E.2.1 is back in the index; the splitter has regressed",
+        )
+
+        # 2. Guardrail 2 is what now rejects a zero citing it. `valid_ids` is
+        #    built from the policy's own clauses, so an id that is not in the
+        #    index cannot be in that set, and `grade` abstains on the citation
+        #    before it ever asks whether the clause states an exclusion.
+        valid_ids = {c.clause_id for c in hdfc}
+        self.assertNotIn("E.2.1", valid_ids)
+
+        # 3. And there is nothing left to read a zero off. Handed the whole of
+        #    hdfc_ergo as candidates, a verdict citing E.2.1 resolves to no
+        #    clause at all - so this rule returns None for want of anything to
+        #    inspect, not because it judged the text exclusionary. That is the
+        #    distinction the old assertion could not make: it passed because
+        #    `states_an_exclusion` said True of a corrupt clause, which was the
+        #    right answer to the wrong question.
+        self.assertIsNone(
+            _unsupported_zero_limit(judged("E.2.1", ZERO), candidates(*hdfc)),
+            "nothing in hdfc_ergo answers to E.2.1, so nothing can support a zero",
+        )
+        self.assertIsNone(
+            next((c for c in hdfc if c.clause_id == "E.2.1"), None),
+            "a clause answering to E.2.1 is exactly what must not come back",
+        )
 
 
 class IsZeroTest(unittest.TestCase):

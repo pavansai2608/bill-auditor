@@ -13,8 +13,6 @@ plan is `PHASES.md`. Accuracy numbers are authoritative only in
 
 ## Where the numbers come from
 
-  was OOM-killed in a 7.7 GB VM. See B-02.
-
 Last recorded eval: **`v11`, line accuracy 55.2% over 44 bills / 328 lines.**
 Citation accuracy 43.2%, payout error 56.4%, abstention recall 90.0%, false
 answers 3, dodges 117, **fabricated clauses 0**. Backend ollama (qwen3:8b),
@@ -271,12 +269,13 @@ Agentic RAG that audits Indian health insurance claim bills. A bill line is chec
 
 Setup runs once, offline: policy PDFs → pdfplumber text → **custom regex splitter on clause numbers** (never a LangChain text splitter — character chunking loses the clause number and citation becomes impossible) → `data/clauses.json` checkpoint → bge-base embeddings in ChromaDB + an in-memory BM25 index over the same clauses.
 
-Four things about the real PDFs that the splitter had to handle, each found the hard way:
+Five things about the real PDFs that the splitter had to handle, each found the hard way:
 
 - **star_health.pdf is two-column.** `extract_text()` reads straight across and interleaves the columns into nonsense. Columns are detected per document by what fraction of text lines *begin* in the right half (star ≈ 0.41, the single-column ones ≈ 0.02–0.04) and cropped separately. Word-overlap heuristics near the page centre do not separate these documents; line-start position does.
 - **Clause numbers restart per section.** `1.1` is both "Standard Definitions" (Section A) and "Hospitalization Expenses" (Section B) in hdfc_ergo. IDs are therefore section-qualified — `A.1.1`, `B.1.1`, `II.11` — which is also how the documents cite themselves ("Section B-2.9").
 - **Split before joining wrapped lines, never after.** Joining first glues a heading onto the sentence below it, the heading stops being its own line, and the clause vanishes from the splitter. This silently cut the yield to 88 clauses.
 - **Definitions blocks need a second pass.** hdfc_ergo's "Standard Definitions" is one 16k-character clause with 60+ terms numbered `Def. N.` inside it. Left whole it swamps `num_ctx` and makes "Room Rent means…" uncitable, so it is split again on that numbering into `A.1.1.Def41`.
+- **A table and the legend that reads it are one clause, and must stay one.** `hdfc_ergo E.2` is 12,414 characters: the Optima Secur plan-comparison grid, plus the key defining what its "Not Covered" cells mean. Splitting it at the table/prose boundary is tempting and was done once, in BA-240, then reverted in BA-242. Measured over nine queries the two halves came back together twice; the agent's own `QUERY_ANGLES["other"]` angle 1 returned the grid at rank 2 with the legend **nowhere in the top 25**, so no `rerank_top_n` widening recovers it. `refs` is empty on both, so `with_references` has no citation to follow, and the legend names its target positionally — "Key to read *above table*" — which nothing in the index can resolve once they are separate records. A judge handed the grid alone reads "Not Covered" with no key, which is exactly how B21 and B28 produced a confident `Rs 0` on lines the key pays in full. The size is legal because `tests/test_ingest.py` caps *prose* (2,666 against 12,000) and total separately (12,414 against 16,000) — see `_without_the_address_block`.
 
 Numbered list items inside a clause (`1. it needs ongoing monitoring`) match the clause pattern too. They are rejected by requiring a heading to start with a capital or digit — a list item continues a sentence and starts lower-case.
 

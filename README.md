@@ -59,7 +59,7 @@ below the baseline.
 The gate deliberately sits on the subset, not the full set, so it is fast enough
 to run on every push. It is compared only with other subset rows.
 
-**460 tests** (PyUnit, `unittest discover -s tests`, ~80s).
+**474 tests** (PyUnit, `unittest discover -s tests`, ~100s).
 
 ---
 
@@ -213,7 +213,7 @@ one breached cap reduce every associated expense on the bill.
 
 ```bash
 uv sync
-uv run python -m unittest discover -s tests     # 460 tests
+uv run python -m unittest discover -s tests     # 474 tests
 uv run uvicorn api.main:app --reload            # API on :8000, docs at /docs
 uv run python eval/evaluate.py --agent          # full 44-bill eval
 uv run python eval/evaluate.py --quick --threshold 0.52   # the CI gate
@@ -222,6 +222,32 @@ uv run python eval/evaluate.py --quick --threshold 0.52   # the CI gate
 Ollama must be running with `qwen3:8b` pulled for anything that reaches the
 model. Every model call is cached to disk by prompt hash, because the eval is
 re-run many times.
+
+## The published front end
+
+The UI is deployed to GitHub Pages at
+<https://pavansai2608.github.io/bill-auditor/> by
+[`.github/workflows/pages.yml`](.github/workflows/pages.yml) on every push to
+`main`. It is a separate path from Jenkins and does not touch it.
+
+**It cannot run an audit, and it says so rather than pretending.** Pages serves
+files; the audit searches a 402-clause index and puts every line to an 8B model
+running locally. The form is therefore disabled, with the quickstart above in
+its place — and the one thing a static file can honestly show is offered
+instead: a report the system really produced, exported from an eval checkpoint
+by `eval/export_example_report.py`, with its real figures and its real clause
+citations. `tests/test_example_report.py` holds that file to the clause index,
+because a fabricated citation in a committed JSON is not covered by the metric
+that keeps fabrications at zero everywhere else.
+
+The build is `npm run build:pages`, and everything that makes it different is a
+consequence of Pages serving from a **subpath** with no rewrite rule in front:
+assets written under `/bill-auditor/`, the router basename read from
+`import.meta.env.BASE_URL`, and `index.html` copied to `404.html` so a hard
+refresh on a deep link still boots the app. All three fail only in production —
+they work perfectly against a dev server at the domain root — so
+`tests/e2e/pages_static_check.py` serves `dist/` the way Pages does and checks
+them in a browser.
 
 ## Layout
 
@@ -235,3 +261,4 @@ re-run many times.
 | `ENGINEERING.md` | Why the splitter, retrieval, guardrails and pipeline work as they do |
 | `ci/` | the image pruner the Jenkins Prune stage calls |
 | `k8s/`, `Jenkinsfile` | deployment and the pipeline |
+| `.github/workflows/` | the static front end on GitHub Pages, separate from Jenkins |

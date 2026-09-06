@@ -371,3 +371,58 @@ remaining hole is an aborted build, whose post block can be skipped: main #16
 was aborted at 19:18 and left no cleanup behind it. A leaked server on an
 executor's pair will be named clearly rather than silently tested against, but
 it is still a red build for an unrelated reason.
+
+## 10. Guardrail 3 cannot tell a table cell from an exclusion
+
+Guardrail 3 rejects a limit of Rs 0 unless the clause it cites contains
+exclusionary language. Two clauses in this index carry the same exclusionary
+language, satisfy `EXCLUSION_RE` in exactly the same way, and have **opposite
+correct answers**:
+
+| | `star_health II.20` | `hdfc_ergo E.2.1` |
+|---|---|---|
+| what the zero read off it is | **correct** | **wrong** |
+| "Not Covered"/"Not Available" in the body | 2 | 2 |
+| `[table]` markers | **10** | **0** |
+
+`II.20` grants shared accommodation and its benefit table says "Not Available"
+against the two lowest sums insured. A zero read off that row is the policy
+speaking, and rejecting it would throw away a correct answer.
+
+`E.2.1` is not a clause at all. It is a row of a plan-comparison grid that the
+splitter read straight across, and it reads in full:
+
+    Not Covered
+    800 per day 800 per day 1000 per day 800 per day
+    2.2 choosing Shared max upto 4800 max upto 4800 Not Covered
+
+**No test over what the text means can separate these two.** Both are table
+cells. Both say the same words. `EXCLUSION_RE` matches
+`not\s+(?:be\s+)?(?:payable|covered|available|…)` against each of them
+identically, and any pattern narrow enough to reject `E.2.1` on its wording
+rejects `II.20` on the same wording. `core/exclusion.py` already records the
+trade in its own module docstring: requiring the exclusion to appear in prose
+would catch one more bad verdict and would reject that correct one.
+
+The only thing that separates them is **whether the extractor succeeded**.
+`II.20` has ten `[table]` markers because its table was read structurally;
+`E.2.1` has none because its table was flattened. A guardrail keyed on that is
+not testing whether the policy excludes the expense. It is testing whether the
+clause is intelligible, which is a data-quality signal wearing a guardrail's
+clothes — and it would rot the moment extraction improves, because a repaired
+`E.2.1` would carry markers and pass the very check written to stop it.
+
+**What this costs today: two confident wrong zeros, B21 and B28.** Both are
+ambulance lines, both cite `E.2.1`, and both tell the insured that an expense
+the policy covers is not payable, with a real clause reference beside it. That
+is 2 of 328 scored lines. The extent was measured before this was written —
+`eval/table_corruption_survey.md` — and `E.2.1` is the only genuinely corrupt
+clause in the index, so the count is small and is not expected to grow.
+
+This is a limit of the approach, not a task waiting to be done. Guardrail 3 asks
+whether the cited clause excludes *anything*; separating a cell from a rule
+needs the exclusion tied to the specific expense being judged, which is the
+general case, and the general case is where false rejections start costing
+correct answers (see section 7). Fixing `E.2.1` at source removes these two
+lines. It does not close the hole, because the next flattened table would land
+in it the same way.
