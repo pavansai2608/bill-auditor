@@ -37,7 +37,28 @@ spec:
             - secretRef: { name: bill-auditor-secrets, optional: true }
           resources:
             requests: { cpu: "500m", memory: "1Gi" }
-            limits: { cpu: "1", memory: "2Gi" }
+            # Four cores, not one, and not ten.
+            #
+            # This pod is the cross-encoder, which is ~99% of a search. At a
+            # limit of 1 it spent 99% of its scheduling periods frozen: the
+            # quota was gone in the first few milliseconds of each period and
+            # the threads waited out the rest. Measured on the same image,
+            # five real /search calls, cold cache:
+            #
+            #     cpu 1   85.14s per search   99% of periods throttled
+            #     cpu 4   24.37s per search    2% of periods throttled
+            #
+            # Not ten, because a limit is not free: requests across the
+            # namespace are 4,250m of the node's 10 cores, and the rest of that
+            # headroom is what everything else - ollama especially - expands
+            # into under load. Four is what the measurement paid for.
+            #
+            # This is the only knob. core/cpu.py reads the quota out of
+            # /sys/fs/cgroup/cpu.max and sizes the torch thread pool from it,
+            # so changing this number changes the thread count with it and
+            # nothing else needs editing. Raising it is also safe to schedule:
+            # the scheduler places pods by requests, and requests are untouched.
+            limits: { cpu: "4", memory: "2Gi" }
           # Readiness, not liveness, gates traffic. /ready returns 503 until
           # bge-base and the cross-encoder are loaded - 44-74s cold - so no
           # request is routed to a pod that would make the caller wait for a
