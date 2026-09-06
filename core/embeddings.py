@@ -64,6 +64,12 @@ def _cached_load(model_name: str) -> SentenceTransformer:
     audit service reach `core.ingest` - which reaches this - just to read
     clauses.json.
     """
+    from core.cpu import apply_torch_threads
+
+    # Before the weights load, so the thread pool is the right size the first
+    # time it is used rather than after a forward pass has already been queued.
+    apply_torch_threads()
+
     from sentence_transformers import SentenceTransformer
 
     device = settings.torch_device or None

@@ -47,11 +47,25 @@ if git diff --cached -- . ':(exclude).githooks/pre-commit' | grep -qE '^\+.*gsk_
     exit 1
 fi
 
-STAGED=$(git diff --cached --name-only --diff-filter=ACM -- '*.py')
-
-if [ -z "$STAGED" ]; then
-    exit 0
-fi
+# --- lint ---------------------------------------------------------------
+# These are the Lint stage out of the Jenkinsfile, verbatim and in order:
+#
+#     sh 'uv run ruff check .'
+#     sh 'uv run ruff format --check .'
+#
+# Whole tree, not the staged Python files. The filtered version passed
+# BA-245 and CI then failed on it in 812ms: ruff formats Python inside
+# markdown fenced blocks too, and PROJECT_FACTS.md quotes real source, so a
+# hand-wrapped quote is a formatting error in a file the filter never looked
+# at. Anything narrower than what CI runs will eventually diverge from it
+# again, and the point of a pre-commit hook is that it does not.
+#
+# WHAT THIS STILL MISSES: it checks the working tree, which is what CI will
+# see only if you commit all of it. Commit a subset and the tree can be clean
+# while the commit alone is not - or the reverse, a dirty unrelated file
+# blocking a good commit. Simulating CI exactly would mean stashing unstaged
+# work inside a hook, which can lose it. Speed is not the reason: the whole
+# tree is about a second.
 
 if command -v uv >/dev/null 2>&1; then
     RUFF="uv run ruff"
@@ -62,21 +76,22 @@ else
     exit 1
 fi
 
-echo "pre-commit: ruff check on $(echo "$STAGED" | wc -l | tr -d ' ') staged file(s)"
-
-# shellcheck disable=SC2086
-if ! $RUFF check $STAGED; then
+echo "pre-commit: ruff check . (the Lint stage, whole tree)"
+if ! $RUFF check .; then
     echo "" >&2
-    echo "pre-commit: BLOCKED - ruff reported problems." >&2
-    echo "  fix them, or run 'uv run ruff check --fix' then re-stage." >&2
+    echo "pre-commit: BLOCKED - ruff check reported problems." >&2
+    echo "  fix them, or run 'uv run ruff check --fix'." >&2
     exit 1
 fi
 
-# shellcheck disable=SC2086
-if ! $RUFF format --check $STAGED; then
+echo "pre-commit: ruff format --check . (the Lint stage, whole tree)"
+if ! $RUFF format --check .; then
     echo "" >&2
-    echo "pre-commit: BLOCKED - formatting differs." >&2
+    echo "pre-commit: BLOCKED - formatting differs from the Lint stage." >&2
+    echo "  This covers Python inside markdown fences as well as .py files." >&2
     echo "  run 'uv run ruff format' then re-stage." >&2
+    echo "  If it rewrote a code block in a doc, check the block still quotes" >&2
+    echo "  its source: a quote that ruff wants to change was never verbatim." >&2
     exit 1
 fi
 

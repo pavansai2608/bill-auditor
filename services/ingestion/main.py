@@ -16,11 +16,18 @@ from api.jobs import jobs
 from api.shared import PDF_MAGIC, SLUG_RE, policy_rows
 from core import llm
 from core.config import settings
+from core.cpu import set_thread_env
 from core.logging_conf import get_logger, setup_logging
 from services.common import clause_index_health, start_warm_up, warm_state
 
 log = get_logger(__name__)
 setup_logging()
+
+# Before anything loads a model. torch sizes its pool from os.cpu_count(),
+# which does not see this container's CPU quota; core/cpu.py reads the quota
+# and publishes the thread count into the environment, which is the only place
+# the OpenMP pool underneath torch will read it from. See core/cpu.py.
+set_thread_env()
 # Somebody is waiting on the other end of this, so the hosted model is
 # the default here. BA_LLM_BACKEND overrides it, which is how docker
 # and k8s choose without a code change.

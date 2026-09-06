@@ -8,8 +8,8 @@ appeared to re-run the same audit from scratch every time:
   reach the key payload, or every repeat is a miss and the cache is decoration.
 * Can two audit workers write the same key at once? They can, and until this
   was fixed the loser raised FileNotFoundError out of `cache_put` and took its
-  bill line down with it. `audit_workers` is 2 on Ollama and 4 on Groq, and a
-  bill with two identical lines is ordinary.
+  bill line down with it. `audit_workers` resolves to 2 on both backends, and
+  a bill with two identical lines is ordinary.
 
 Nothing here calls a model. The cache is exercised directly, against a
 temporary directory, so the suite stays offline.

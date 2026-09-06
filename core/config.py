@@ -122,6 +122,11 @@ class Settings(BaseSettings):
     # to Ollama alone. See eval/results.md for what it costs in latency.
     torch_device: str = ""
 
+    # How many CPU threads torch may use. 0 means "work it out from the cgroup
+    # quota" - see core/cpu.py. Set it to override, for a test or when the
+    # container's CPU limit changes and the derived number is no longer right.
+    torch_threads: int = 0
+
     embedding_model: str = "BAAI/bge-base-en-v1.5"
     reranker_model: str = "BAAI/bge-reranker-base"
     # 20 each. Halving these to 10 was tried as the biggest available lever on
