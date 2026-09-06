@@ -1,14 +1,29 @@
-# Every setting the services read. Changing the LLM backend is a change to
-# BA_OLLAMA_BASE_URL here and nothing else - point it at a hosted model and no
-# pod has to run an 8B model.
+# Every non-secret setting the services read.
+#
+# **Groq is the primary backend; Ollama is the fallback.** BA_LLM_BACKEND
+# overrides the per-context defaults in core/config.py - which would otherwise
+# give the API groq and everything else ollama - so every service in this
+# cluster agrees on one backend with no code change.
+#
+# Ollama is not switched off by this. It stays deployed, stays reachable at
+# BA_OLLAMA_BASE_URL, and core/llm.py falls back to it per call whenever Groq
+# refuses: rate limit, quota exhaustion or a connection error. See
+# `_invoke` and `_groq_down_until`.
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: bill-auditor-config
   namespace: bill-auditor
 data:
+  # The backend every service uses first.
+  BA_LLM_BACKEND: "groq"
+  BA_GROQ_MODEL: "openai/gpt-oss-120b"
+
+  # The fallback. Kept running on purpose: a free tier that ends mid-audit
+  # must not end the audit.
   BA_OLLAMA_BASE_URL: "http://ollama:11434"
   BA_OLLAMA_MODEL: "qwen3:8b"
+
   BA_NUM_CTX: "8192"
   BA_TEMPERATURE: "0.0"
   BA_KEEP_ALIVE: "30m"
@@ -19,19 +34,13 @@ data:
   BA_AUDIT_WORKERS: "0"
   BA_LOG_LEVEL: "INFO"
   BA_CORS_ORIGINS: '["http://localhost:5173","http://localhost:3000"]'
----
-# A template. Nothing here is secret today - the whole system is local models
-# and local files - but a hosted LLM backend would need a key, and it belongs
-# here rather than in the ConfigMap.
 #
-#   cp k8s/01-config.yaml /tmp/secret.yaml, fill it in, apply that copy.
-#   Never commit a filled-in version.
-apiVersion: v1
-kind: Secret
-metadata:
-  name: bill-auditor-secrets
-  namespace: bill-auditor
-type: Opaque
-stringData:
-  # BA_LLM_API_KEY: "replace-me-only-if-you-point-at-a-hosted-model"
-  placeholder: "not-a-secret"
+# THE SECRET IS NOT IN THIS FILE, AND NOT IN ANY FILE THIS DIRECTORY APPLIES.
+#
+# It used to be, as a commented placeholder, and that was a trap: `kubectl
+# apply` reconciles a Secret to the state the manifest declares, so every
+# deploy would have wiped a key someone had put in the cluster by hand.
+#
+# `k8s/deploy.sh` runs `cp k8s/*.yaml`, which does not recurse, so
+# `k8s/templates/secret.example.yaml` is never copied and never applied. Create
+# the real Secret out of band - the command is in that file.

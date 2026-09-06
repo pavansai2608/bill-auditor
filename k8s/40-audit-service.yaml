@@ -36,7 +36,7 @@ spec:
             - containerPort: 8000
           envFrom:
             - configMapRef: { name: bill-auditor-config }
-            - secretRef: { name: bill-auditor-secrets }
+            - secretRef: { name: bill-auditor-secrets, optional: true }
           resources:
             requests: { cpu: "1", memory: "2Gi" }
             limits: { cpu: "3", memory: "4Gi" }
