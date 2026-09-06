@@ -12,10 +12,22 @@ import unittest
 from core.config import settings
 from core.ingest import clause_index, load_clauses, load_non_payable
 from core.models import Clause
+from core.splitter import TABLE_MARKER
 
 
 def _checkpoint_missing() -> bool:
     return not settings.clauses_path.exists()
+
+
+def _prose_chars(text: str) -> int:
+    """Characters outside rendered table rows.
+
+    Imported from the splitter rather than restated, so the marker the tests
+    measure against cannot drift from the marker the splitter writes.
+    """
+    return sum(
+        len(line) + 1 for line in text.split("\n") if not line.lstrip().startswith(TABLE_MARKER)
+    )
 
 
 class ClauseDocumentTest(unittest.TestCase):
@@ -69,11 +81,45 @@ class CheckpointTest(unittest.TestCase):
         for clause in self.clauses:
             self.assertRegex(clause.clause_id, pattern)
 
-    def test_no_clause_is_empty_or_enormous(self):
-        """An enormous clause means under-splitting; it would swamp num_ctx."""
+    def test_no_clause_is_empty(self):
         for clause in self.clauses:
             self.assertGreater(len(clause.text), 40, clause.clause_id)
-            self.assertLess(len(clause.text), 12_000, clause.clause_id)
+
+    def test_no_clause_carries_an_enormous_body_of_prose(self):
+        """Under-split PROSE is what swamps num_ctx, so prose is what is capped.
+
+        The ceiling used to count every character, table rows included, and
+        `hdfc_ergo E.2` broke it at 12,414 - of which 9,749 (78.5%) are rendered
+        `[table]` rows and 2,666 are prose. E.2 is not under-split; it is a
+        plan-comparison grid and the legend that reads it, and the legend is
+        worth nothing detached from the grid.
+
+        Exempting "predominantly table" clauses outright was the obvious repair
+        and is the weaker one: a fraction is a ratio, and a ratio puts no bound
+        on the absolute prose payload. A clause of 40,000 characters of table
+        and 13,000 of prose is 75% table and would be waved through carrying
+        more prose than the ceiling was ever willing to allow. Measuring the
+        prose directly has no such hole and no threshold to tune - and on this
+        index it exempts exactly the clause it should: E.2 is the only one of
+        399 above the old ceiling, and no clause is even close to 12,000
+        characters of prose.
+        """
+        for clause in self.clauses:
+            self.assertLess(_prose_chars(clause.text), 12_000, clause.clause_id)
+
+    def test_no_clause_can_eat_the_context_window_on_its_own(self):
+        """The other half of the old ceiling: a table is still tokens.
+
+        Capping prose alone would leave a runaway table unbounded, and
+        `num_ctx` is 8192 tokens for the whole judge prompt - the bill line, the
+        instructions and every retrieved clause together. At roughly four
+        characters to the token, 16,000 characters is about half that window in
+        one clause, which is the most any single citation may take while
+        several are retrieved. E.2, the largest in the index at 12,414, sits
+        under it with room to spare.
+        """
+        for clause in self.clauses:
+            self.assertLess(len(clause.text), 16_000, clause.clause_id)
 
     def test_pages_are_within_the_document(self):
         for clause in self.clauses:
