@@ -1,9 +1,10 @@
 {
   "_what_this_is": "The floor under the clause index. Every number was measured, not chosen. See tests/test_index_coverage.py.",
   "_niva_bupa_was_lowered": "2026-09-06: niva_bupa's character floor was lowered from 71511 by hand, from 105 clauses to 104. 23 lines left the index with the flattened-table fix. 22 of them were the flat read of rows the splitter also renders structurally, word-for-word duplicates that are still present as [table] rows. The 23rd is a real loss: '4.2.2 We pay for Modern treatments as specified below:', which carried the only occurrence of 'Modern' in that policy. No page left the index. hdfc_ergo and star_health rose; those floors were raised to match.",
+  "_hdfc_ergo_was_lowered": "2026-09-06: hdfc_ergo's character floor was lowered from 115926 to 115925 by hand, one character, and its clause count raised from 143 to 144. E.2 was 12414 characters - three annexures and a legend in one record, over the 12000 cap in tests/test_ingest.py - and was split at the boundary between the rendered rows and the prose: E.2 9748 + E.3 2665 = 12413. The missing character is the newline that separated them, which belongs to neither clause once there are two. No content left the index and no page stopped being covered. Counting non-whitespace characters instead was considered and rejected: it would make a split free, but it also makes 'Room rent' -> 'Roomrent' free, and space-deletion is the exact defect class that cost this project 2.5 points of accuracy as phantom spaces.",
   "hdfc_ergo": {
-    "characters": 115926,
-    "clauses": 143,
+    "characters": 115925,
+    "clauses": 144,
     "pages": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 49, 50, 51, 52, 53]
   },
   "niva_bupa": {
