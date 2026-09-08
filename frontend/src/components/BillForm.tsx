@@ -117,11 +117,19 @@ function StaticDemoNote({ onShowExample }: { onShowExample: () => void }) {
         searches a {STATIC_CLAUSE_COUNT}-clause index and judges every bill line, which needs the
         four services running, not a CDN. From a clone of the repository:
       </p>
+      {/*
+        The port, never a "http://localhost:…" literal. The Pages workflow
+        greps the built bundle for localhost, 127.0.0.1 and 0.0.0.0 and fails
+        the build on a hit, because a private host in a public bundle is how an
+        API base ends up pointing at a machine no visitor has. That guard
+        cannot tell a host the app talks to from one it merely prints, and it
+        should not have to - it caught this line as instructions and failed
+        main's Pages build. Say the port instead.
+      */}
       <pre className="static-note-code">
         <code>
           {"cp .env.example .env    # add your BA_GROQ_API_KEY\n"}
-          {"docker compose up -d\n"}
-          {"open http://localhost:5173"}
+          {"docker compose up -d    # the UI comes up on port 5173"}
         </code>
       </pre>
       <p className="static-note-aside">

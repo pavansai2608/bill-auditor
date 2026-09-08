@@ -141,6 +141,18 @@ uv run ruff format --check .       # Quality / Lint
 uv run pyb --no-venvs run_unit_tests   # Quality / Unit
 ```
 
+**Any change under `frontend/` additionally has to pass the Pages build**,
+because Jenkins does not build it and will happily stay green while the
+published site breaks:
+
+```bash
+cd frontend && npm ci && npm run build:pages
+```
+
+That must exit 0 before anything is handed over. It is not the same as
+`npm run typecheck`: the failure that took main's Pages build down had a clean
+typecheck and a clean build, and died on the workflow's own guard step.
+
 If a stage in the `Jenkinsfile` changes, this list is stale and the
 `Jenkinsfile` wins. Re-read it rather than trusting these five lines.
 
@@ -168,6 +180,32 @@ find the cause, fix it, and say what it was:
 ```bash
 curl -s "http://localhost:8080/job/bill-audit/job/develop/<N>/consoleText"
 ```
+
+**3a. GitHub Actions is a second pipeline, and it fails on its own.** Jenkins
+knows nothing about `.github/workflows/pages.yml`, so a green `develop` proves
+nothing about the published site. After a push to `main`, poll the Pages
+workflow the same way and to the same standard. With the GitHub CLI, if it is
+installed:
+
+```bash
+gh run list --workflow=pages --limit 3
+gh run view <run-id> --log-failed
+```
+
+`gh` is **not** installed on this machine. The REST API answers unauthenticated
+for this repository, which is public, and is what to reach for instead:
+
+```bash
+curl -s "https://api.github.com/repos/pavansai2608/bill-auditor/actions/runs?per_page=3"
+curl -s "https://api.github.com/repos/pavansai2608/bill-auditor/actions/runs/<run-id>/jobs"
+```
+
+The `jobs` response names the failing **step**, which is the thing worth
+knowing - the run's annotations are often just `Process completed with exit
+code 1`, which says nothing. If `build` fails, `deploy` is skipped and the site
+keeps serving the previous bundle, so a failure here is silent from the
+outside: no error page, just stale content. Fetch the log, fix it, and say what
+it was, without waiting to be asked.
 
 **4. Never buy a green build by weakening what it measures.** Not by lowering a
 threshold, not by editing an evaluation file or an answer key, not by deleting

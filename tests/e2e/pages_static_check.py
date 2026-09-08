@@ -203,8 +203,11 @@ def run(headless: bool, base: str, check: Checks) -> None:
         note = driver.find_element(By.CSS_SELECTOR, "[data-testid='static-note']")
         check("the form explains why it cannot run", note.is_displayed())
         check(
+            # "port 5173", not a localhost URL: the Pages workflow fails the
+            # build if a private host reaches the bundle, so this assertion
+            # must not ask the note to carry one.
             "the explanation says where to run it instead",
-            "docker compose up" in note.text and "localhost:5173" in note.text,
+            "docker compose up" in note.text and "5173" in note.text,
         )
         submit = driver.find_element(By.CSS_SELECTOR, "[data-testid='submit']")
         check("submit is disabled", not submit.is_enabled())
