@@ -98,31 +98,34 @@ function Reveal({
  *
  * The rule the whole project runs on is that it never states something it
  * cannot support, and a form that posts into nothing breaks that rule at the
- * front door. So the button is disabled and this says exactly why, what the
- * missing half actually is, and how to run it - and then offers the one thing
- * a static file can honestly show: a report the system really produced.
+ * front door. So the button is disabled, this says why and how to run the
+ * missing half, and then offers the one thing a static file can honestly
+ * show: a report the system really produced.
+ *
+ * Keep this short. How retrieval works belongs in the README, not on a form.
+ * The clause count is hardcoded because nothing exposes it at build time -
+ * 399 is the figure recorded in PROJECT_FACTS.md (152 + 143 + 104), read out
+ * of data/clauses.json on 2026-09-06. Bump it there and here together.
  */
 function StaticDemoNote({ onShowExample }: { onShowExample: () => void }) {
   return (
     <div className="static-note" data-testid="static-note">
       <h4>This copy cannot run an audit</h4>
       <p>
-        You are looking at the front end on GitHub Pages — static files, with nothing behind them.
-        The audit is not a service that is switched off: it searches a 402-clause index built from
-        the policy PDFs, reranks the results with a cross-encoder and puts every line to an 8B model.
-        That needs a machine, so it runs on yours, not on a CDN.
+        This is the front end on GitHub Pages — static files, with nothing behind them. The audit
+        searches a 399-clause index and judges every bill line, which needs the four services
+        running, not a CDN. From a clone of the repository:
       </p>
-      <p>From a clone of the repository:</p>
       <pre className="static-note-code">
         <code>
-          {"uv sync\n"}
-          {"uv run uvicorn api.main:app --reload\n"}
-          {"cd frontend && npm ci && npm run dev"}
+          {"cp .env.example .env    # add your BA_GROQ_API_KEY\n"}
+          {"docker compose up -d\n"}
+          {"open http://localhost:5173"}
         </code>
       </pre>
       <p className="static-note-aside">
-        Ollama has to be running with <code>qwen3:8b</code> pulled. The first audit takes 30–60
-        seconds; every model call is cached to disk after that.
+        Groq answers the model calls; a local Ollama with <code>qwen3:8b</code> is only the
+        per-call fallback when Groq refuses one.
       </p>
       <button
         type="button"
@@ -133,8 +136,8 @@ function StaticDemoNote({ onShowExample }: { onShowExample: () => void }) {
         See a report it produced
       </button>
       <p className="static-note-aside">
-        Bill B01 against Star Health, from a recorded evaluation run. Every figure and every clause
-        reference below is that run&rsquo;s own output — nothing on the next screen is illustrative.
+        Bill B01 against Star Health, from a recorded evaluation run — every figure and clause
+        reference on the next screen is that run&rsquo;s own output, not an illustration.
       </p>
     </div>
   );
