@@ -6,7 +6,7 @@ import { prefersReducedMotion } from "../hooks/useReveal";
 import { fetchPolicies, uploadPolicy } from "../lib/api";
 import { readBill, rupees } from "../lib/billStats";
 import { EXAMPLE_BILL } from "../lib/exampleBill";
-import { STATIC_DEMO } from "../lib/staticDemo";
+import { STATIC_CLAUSE_COUNT, STATIC_DEMO } from "../lib/staticDemo";
 
 const UPLOAD_OWN = "__upload__";
 
@@ -103,9 +103,10 @@ function Reveal({
  * show: a report the system really produced.
  *
  * Keep this short. How retrieval works belongs in the README, not on a form.
- * The clause count is hardcoded because nothing exposes it at build time -
- * 399 is the figure recorded in PROJECT_FACTS.md (152 + 143 + 104), read out
- * of data/clauses.json on 2026-09-06. Bump it there and here together.
+ * The clause count is summed from STATIC_POLICIES rather than written out
+ * here, so the note and the insurer dropdown state one number, not two. That
+ * array is still hand-maintained against data/clauses.json - nothing exposes
+ * the count at build time. See the note in lib/staticDemo.ts.
  */
 function StaticDemoNote({ onShowExample }: { onShowExample: () => void }) {
   return (
@@ -113,8 +114,8 @@ function StaticDemoNote({ onShowExample }: { onShowExample: () => void }) {
       <h4>This copy cannot run an audit</h4>
       <p>
         This is the front end on GitHub Pages — static files, with nothing behind them. The audit
-        searches a 399-clause index and judges every bill line, which needs the four services
-        running, not a CDN. From a clone of the repository:
+        searches a {STATIC_CLAUSE_COUNT}-clause index and judges every bill line, which needs the
+        four services running, not a CDN. From a clone of the repository:
       </p>
       <pre className="static-note-code">
         <code>

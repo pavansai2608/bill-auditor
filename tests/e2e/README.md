@@ -14,8 +14,9 @@ uv run uvicorn api.main:app --port 8000
 cd frontend && npm install && npm run dev
 ```
 
-Ollama must be running with `qwen3:8b` pulled, and the clause index must exist
-(`uv run python -m core.ingest` once).
+The clause index must exist (`uv run python -m core.ingest` once). The API
+answers on Groq when `BA_GROQ_API_KEY` is set, and falls back to Ollama per
+call; with no key set, Ollama must be running with `qwen3:8b` pulled.
 
 ## Run it
 

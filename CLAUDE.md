@@ -65,8 +65,10 @@ Built and passing:
   against a dev server at the domain root. **No secret belongs in that
   workflow, in `.env.pages`, or in the bundle:** a `VITE_` variable is not
   configuration, it is a string anyone can fetch off the published site.
-- The clause index: 402 clauses in `data/clauses.json` (star_health 153,
-  hdfc_ergo 144, niva_bupa 105) plus `non_payable.json`.
+- The clause index: 399 clauses in `data/clauses.json` (star_health 152,
+  hdfc_ergo 143, niva_bupa 104) plus `non_payable.json`. Counted out of the
+  file on 2026-09-06; `PROJECT_FACTS.md` records the same figure and the
+  flattened-table fix that took it down from 402.
 - The eval harness: **44 bills** in `eval/bills/`, an answer key derived
   straight from the PDFs by `eval/derive_key.py`, and `eval/evaluate.py`
   (`--agent` scores the loop, without it scores naive v0).
@@ -133,7 +135,8 @@ uv run ruff check . && uv run ruff format .
 uv run python -m unittest discover -s tests    # PyUnit, as Jenkins runs it
 uv run python -m unittest tests.test_math      # a single test module
 uv run python -m unittest tests.test_math.MathTest.test_room_rent   # a single test
-uv run uvicorn api.main:app --reload           # API on :8000, docs at /docs
+docker compose up -d                           # all six services; UI on :5173, gateway on :8000
+uv run uvicorn api.main:app --reload           # the api/ monolith instead; eval and E2E use this
 uv run python eval/evaluate.py                 # full 44-bill eval, naive v0 path
 uv run python eval/evaluate.py --agent --version v2 --write   # score the agent loop, append to results.md
 uv run python eval/evaluate.py --quick --threshold 0.80   # CI gate; exit 1 below threshold
@@ -142,7 +145,7 @@ uv add <pkg>                              # then: uv export --format requirement
 
 Tests are **PyUnit (`unittest`)**, not pytest — Jenkins drives them through PyBuilder (`pyb run_unit_tests`). `requirements.txt` is a generated export, never hand-edited.
 
-Ollama must be running with `qwen3:8b` pulled for anything that touches the model.
+Groq answers the model calls for the API and the UI (`BA_GROQ_API_KEY` in `.env`), with Ollama as the per-call fallback when Groq refuses one. The eval, the CLI and the tests default to Ollama, so it must be running with `qwen3:8b` pulled for any of those.
 
 ## Git workflow
 
