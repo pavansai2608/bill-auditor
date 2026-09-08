@@ -507,3 +507,57 @@ trimming the stage:
 ```bash
 uv run python eval/evaluate.py --quick --agent --second-pass --threshold 0.52
 ```
+
+---
+
+## 11. Keep Ollama up, or Eval and E2E never run
+
+`develop` #51 and #52 both finished UNSTABLE with the accuracy gate and the
+browser tests unrun. Neither had anything to do with the code. Nothing was
+listening on `localhost:11434`.
+
+Two Ollamas exist on this machine and only one of them is the right answer:
+
+- **The native install** — `/usr/local/bin/ollama`, 0.33.3, with `qwen3:8b`
+  already in `~/.ollama`. It gets Metal and the whole machine's RAM.
+- **The container** — the `ollama` service in `docker-compose.yml`, which
+  deliberately publishes **no** host port. It is CPU-only inside the Docker VM,
+  and B-02 records `qwen3:8b` being OOM-killed there.
+
+Jenkins runs natively on this host, so `localhost:11434` means the host, and it
+should reach the native server. Do not "fix" this by adding `11434:11434` to
+the compose file: the two servers would then fight for one port, which is the
+same class of failure that made `main` #15 fail on Docker's own listener.
+
+Ollama.app registers its own login item (`com.ollama.ollama`), but that starts
+only when someone opens the app — which is why the first build after a reboot
+found nothing. `ci/com.ollama.serve.plist` fixes that at the same layer Jenkins
+itself lives at:
+
+```bash
+cp ci/com.ollama.serve.plist ~/Library/LaunchAgents/com.ollama.serve.plist
+launchctl bootstrap gui/$UID ~/Library/LaunchAgents/com.ollama.serve.plist
+launchctl print gui/$UID/com.ollama.serve | grep state    # state = running
+curl -s http://localhost:11434/api/tags | head -c 80       # the model list
+```
+
+It is a LaunchAgent rather than a LaunchDaemon on purpose. Jenkins is a user
+LaunchAgent (`homebrew.mxcl.jenkins-lts`), and the 27 GB of weights live under
+this user's `~/.ollama`; a root daemon at boot would need either a second copy
+of them or an `OLLAMA_MODELS` pointing into someone else's home. Its
+`LimitLoadToSessionType` matches the Jenkins plist, so it loads in a Background
+session too — no GUI login required.
+
+**If this job is ever removed** — `launchctl bootout gui/$UID/com.ollama.serve`,
+or deleting the plist — nothing breaks loudly. The next `develop` build goes
+UNSTABLE with Eval and E2E marked NOT_BUILT, and on `main` the Eval stage
+errors outright so that no image is built and nothing is deployed from a commit
+whose accuracy was never measured. That is the pipeline behaving correctly; the
+machine is what is misconfigured. The tell is the reason in the build log
+naming `no Ollama at http://localhost:11434`. Bring it back with the two
+commands above.
+
+One conflict to know about: opening Ollama.app while this job is running gives
+two processes wanting port 11434. Quit the app and leave the launchd job to it,
+or `launchctl bootout gui/$UID/com.ollama.serve` first if you want the app in
+charge for a while.

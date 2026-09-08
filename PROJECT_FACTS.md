@@ -638,9 +638,9 @@ Last measured value, Jenkins `main #28`: **0.585 PASS**.
 
 ## 4.2 Test count by module
 
-**478 tests**, all passing. Measured locally with
-`uv run python -m unittest discover -s tests`, and confirmed by Jenkins
-`main #28`: `[INFO] Executed 478 unit tests`.
+**492 tests**, all passing. Measured locally with
+`uv run python -m unittest discover -s tests`. Jenkins `main #28` recorded
+`[INFO] Executed 478 unit tests`; `tests/test_cpu_quota.py` added 14 in BA-247.
 
 | tests | file |
 |---|---|
@@ -661,6 +661,7 @@ Last measured value, Jenkins `main #28`: **0.585 PASS**.
 | 19 | `tests/test_audit.py` |
 | 18 | `tests/test_room_limit.py` |
 | 15 | `tests/test_waiting.py` |
+| 14 | `tests/test_cpu_quota.py` |
 | 12 | `tests/test_workers.py` |
 | 12 | `tests/test_room_cap_guardrail.py` |
 | 12 | `tests/test_llm_cache.py` |
@@ -673,7 +674,7 @@ Last measured value, Jenkins `main #28`: **0.585 PASS**.
 | 4 | `tests/test_room_limit_golden.py` |
 | 4 | `tests/test_index_coverage.py` |
 | 4 | `tests/test_derive_key_divergence.py` |
-| **478** | **total collected by `unittest discover`** |
+| **492** | **total collected by `unittest discover`** |
 | 4 | `tests/e2e/browser_flow.py` — **not** collected; run only by the E2E stage |
 
 `tests/e2e/browser_flow.py` is deliberately not named `test_*.py`, because
@@ -785,7 +786,7 @@ minikube is minutes of work that only the release branch needs.
 |---|---|---|
 | **Build** | `uv sync --frozen --all-extras`, `uv run pyb clean` | the lockfile resolves and the tree cleans |
 | **Lint** | `uv run ruff check .`, `uv run ruff format --check .` | zero findings, zero reformatting |
-| **Unit** | `uv run pyb --no-venvs run_unit_tests` | 478 tests pass |
+| **Unit** | `uv run pyb --no-venvs run_unit_tests` | 492 tests pass |
 | **Eval** | `uv run python eval/evaluate.py --quick --agent --second-pass --threshold 0.52` | line accuracy ≥ 0.52 on the 10-bill subset |
 | **E2E** | `tests/e2e/run_stage.sh` | three ownership proofs, then 4 Selenium tests |
 | **Docker** | five `docker build` invocations, tagged `:BUILD_NUMBER` and `:latest` | every earlier gate passed |
@@ -1020,6 +1021,12 @@ every service in the cluster with no code change.
 `core.audit.worker_count()`. It does **not** vary by backend; `tests/test_workers.py`
 pins 2 for both Groq and Ollama.
 
+**`BA_TORCH_THREADS` is deliberately absent from this ConfigMap.** Left unset,
+`core/cpu.py` reads the cgroup quota from `/sys/fs/cgroup/cpu.max` and derives
+the thread count, so the CPU limit in the deployment is the only number that has
+to be maintained. The setting exists to override that, for a test or a host
+where the derivation is wrong.
+
 ## The Secret `bill-auditor-secrets`
 
 **It is not declared in any manifest `k8s/deploy.sh` applies, deliberately.**
@@ -1043,7 +1050,7 @@ come up, Groq refuses on the first call, and `core/llm.py` falls back to Ollama.
 |---|---|---|---|---|---|
 | `ollama` | 1 | `ollama/ollama:latest` | 11434 | cpu 1, mem 6Gi | cpu 4, mem 10Gi |
 | `ingestion-service` | 1 | `bill-auditor/ingestion-service:latest` | 8000 | cpu 500m, mem 1Gi | cpu 2, mem 3Gi |
-| `retrieval-service` | 1 | `bill-auditor/retrieval-service:latest` | 8000 | cpu 500m, mem 1Gi | cpu 1, mem 2Gi |
+| `retrieval-service` | 1 | `bill-auditor/retrieval-service:latest` | 8000 | cpu 500m, mem 1Gi | **cpu 4**, mem 2Gi |
 | `audit-service` | 1 | `bill-auditor/audit-service:latest` | 8000 | cpu 1, mem 2Gi | cpu 3, mem 4Gi |
 | `gateway` | **2** | `bill-auditor/gateway:latest` | 8000 | cpu 200m, mem 256Mi | cpu 1, mem 512Mi |
 | `frontend` | **2** | `bill-auditor/frontend:latest` | 80 | cpu 50m, mem 64Mi | cpu 200m, mem 128Mi |
@@ -1055,6 +1062,30 @@ as **B-01**.
 
 **Why `gateway` and `frontend` are 2.** They are small — 256Mi and 64Mi
 requested — so a second replica fits, and they are the two that face a user.
+
+**Why `retrieval-service` gets four cores and not one** (BA-248). It holds the
+cross-encoder, which is ~99% of a search. At a limit of 1 it spent **99% of its
+CPU scheduling periods throttled** — the quota was spent in the first few
+milliseconds of each period and the threads waited out the rest. Measured on
+the same image, same index, same pod spec with only the limit changing, five
+real `/search` calls against a cold cache:
+
+| limit | mean per search | periods throttled |
+|---|---|---|
+| cpu 1 | 85.14s | 99% |
+| **cpu 4** | **24.37s** | **2%** |
+
+**3.49x, and this pair is controlled.** An earlier profiling run recorded a
+109s mean, and 109 → 24.37 would read as 4.47x — but the clause index moved
+from 402 to 399 between the two, so **that comparison is not controlled and
+4.47x is not a result.** Only the 3.49x figure above is.
+
+Four rather than ten because a limit is not free: requests across the namespace
+are 4,250m of the node's 10 cores, and the remaining headroom is what
+everything else — ollama especially — expands into under load. Raising a
+*limit* cannot affect scheduling, since the scheduler places pods by requests;
+requests were not changed. The thread count follows the quota on its own
+through `core/cpu.py`, so this one number is the only knob.
 
 All five application deployments are **`maxSurge: 0, maxUnavailable: 1`**. The
 node runs at ~92% of its memory requests, so a surge pod cannot schedule and the
@@ -1148,7 +1179,8 @@ OOM-killed in a 7.7 GB VM. Recorded as **B-02**.
 # 7. Testing
 
 Framework: **PyUnit (`unittest`)**, not pytest — Jenkins drives it through
-PyBuilder (`pyb run_unit_tests`). 478 tests, ~78–102 seconds locally, 55s in CI.
+PyBuilder (`pyb run_unit_tests`). 492 tests, ~82 seconds locally. The 55s CI
+figure was measured at 478 tests and has not been re-measured since.
 
 Full per-file counts are in section 4.2.
 
@@ -2056,6 +2088,55 @@ changed nothing.
 
 ---
 
+## 9.12 The thread fix that was slower than the defect
+
+**The symptom.** One 10-line bill took 34 minutes through the cluster on Groq,
+with zero rate-limit waits and zero fallbacks. Profiling put ~99% of a search in
+the cross-encoder and found the cause: `retrieval-service` ran under
+`limits: { cpu: "1" }` on a ten-core node, and torch sizes its thread pool from
+`os.cpu_count()`, which reports the machine and knows nothing about a cgroup
+quota. Ten threads inside one core's budget: **8,109 of 8,163 periods throttled,
+5,872s of throttled time against 815s of CPU actually used.**
+
+**The fix that made it worse.** The obvious repair is to call
+`torch.set_num_threads()` before the reranker loads. Measured at `--cpus=1`,
+five searches:
+
+| | rerank s/search |
+|---|---|
+| 10 threads, untouched | 165.95 |
+| `set_num_threads(2)` after torch was imported | **191.23** |
+| `OMP_NUM_THREADS=2` set before the import | 117.81 |
+
+**The middle row is the trap.** torch reports two threads and dispatches two
+work items, but the OpenMP pool underneath was already built with ten and torch
+does not own it — half the parallelism, all of the thrash. Nothing in
+`torch.get_num_threads()` reveals this; it returns 2 in both cases. Only the
+clock separates them.
+
+**What that cost in evidence.** The first proof of "does torch read
+`OMP_NUM_THREADS` at import time?" set the variable after `import torch`, read
+`get_num_threads()`, saw 2, and concluded the placement did not matter. The
+number was right and the conclusion was wrong: reporting is not the same as the
+pool being resized.
+
+**The outcome.** `core/cpu.py` splits into `set_thread_env()`, which publishes
+the count into `OMP_NUM_THREADS`, `MKL_NUM_THREADS` and `OPENBLAS_NUM_THREADS`
+and imports nothing heavy, called at service start-up before anything can import
+torch; and `apply_torch_threads()`, which does that plus `set_num_threads()` as
+a backstop at model load for the CLI and the eval, which have no start-up hook.
+Same harness both sides: **146.25s → 103.49s per search, 1.41x**, throttled time
+5,368s → 534s. The work is provably unchanged — the cross-encoder scored the
+same `[48, 72, 66, 73, 70]` documents in every run.
+
+**A second measurement fault, caught the same way.** One "before" run silently
+measured the "after" configuration: a shell variable holding `-e
+BA_TORCH_THREADS=10` did not word-split in zsh, so the flag never reached
+docker. The start-up log line is what exposed it — it said `threads=2` in a run
+labelled 10.
+
+---
+
 # 10. The stack
 
 Versions are the **resolved** versions from `uv.lock` and `package.json`, not
@@ -2215,14 +2296,14 @@ splitters on policy documents**.
 | `services/` | the same core split into four containers, plus `common.py` |
 | `frontend/` | React + TypeScript + Vite SPA |
 | `eval/` | the harness: 44 bills, the answer key, `evaluate.py`, `recall.py`, `results.md` |
-| `tests/` | 478 PyUnit tests, plus `e2e/` and `fixtures/` |
+| `tests/` | 492 PyUnit tests, plus `e2e/` and `fixtures/` |
 | `k8s/` | eleven manifests plus `deploy.sh` |
 | `ci/` | `prune_images.py` |
 | `data/` | `clauses.json`, `non_payable.json` committed; `db/`, `llm_cache/`, `policies/*.pdf`, `traces/` gitignored |
 | `docs/` | four screenshots: `audit-1440.png`, `site-landing-1440.png`, `jenkins-main-green.png`, `jenkins-prune-blocked.png` |
 | `src/bill_auditor/` | the packaged console script. `core/` and `api/` live outside `src/` and are import-path-only |
 | `target/` | PyBuilder output, gitignored |
-| `.githooks/` | `commit-msg` (format, 72-char subject, `[BA-XX]` ticket) and `pre-commit` (secrets, then ruff) |
+| `.githooks/` | `commit-msg` (format, 72-char subject, `[BA-XX]` ticket) and `pre-commit` (secrets, then the Lint stage's two commands on the whole tree) |
 
 ## `core/` module by module
 
@@ -2240,6 +2321,7 @@ splitters on policy documents**.
 | `assumptions.py` | differential billing, stated rather than hidden |
 | `splitter.py` | PDF → clauses. The largest module |
 | `ingest.py` | clause labelling, the Chroma collection, the BM25 index |
+| `cpu.py` | the cgroup CPU quota, and the torch thread count derived from it |
 | `embeddings.py` | the embedding model wrapper |
 | `retrieve.py` | hybrid search, sentence windows, rerank, the query cache |
 | `audit.py` | the naive **v0** path |
@@ -2346,7 +2428,17 @@ Commits are **Conventional Commits**: `feat(agent): add retry loop with query
 rewriting`. The `commit-msg` hook enforces the format **and a 72-character
 subject limit**. The `pre-commit` hook checks for secrets first — any `.env*`
 path except `.env.example` and `.env.pages`, plus a content scan for a Groq key
-pattern — and then runs ruff `check` and `format --check` on staged Python.
+pattern — and then runs **the Lint stage's two commands verbatim on the whole
+tree**: `uv run ruff check .` and `uv run ruff format --check .`.
+
+It used to filter to staged `.py` files, and that let a failure through in
+BA-245 (BA-246 fixed it). Ruff formats Python inside markdown fenced blocks as
+well as in `.py` files, and this document quotes real source, so a hand-wrapped
+quote is a formatting error in a file the filter never opened. The commit passed
+the hook — `ruff check on 1 staged file(s)` — and `develop #45` failed Lint in
+812ms. **What the hook still misses:** it checks the working tree, and CI checks
+the commit, so a partial commit can pass one and fail the other. Simulating CI
+exactly would mean stashing unstaged work inside a hook, which can lose it.
 
 **One rule with a scar on it:** *always branch from `develop`.* Running
 `git checkout -b feature/next` while still standing on the previous feature
@@ -2415,7 +2507,7 @@ would be wrong.
 | claim | where | status |
 |---|---|---|
 | "402 clauses in `data/clauses.json` (star_health 153, hdfc_ergo 144, niva_bupa 105)" | `CLAUDE.md` line 68 | **stale.** Measured today: **399** (152 / 143 / 104) |
-| "474 tests" and "474 PyUnit tests, all passing" | `CLAUDE.md` lines 12 and 79 | **stale.** Measured today, and in Jenkins `main #28`: **478** |
+| "474 tests" and "474 PyUnit tests, all passing" | `CLAUDE.md` lines 12 and 79 | **stale.** Measured today: **492**. Jenkins `main #28` recorded 478, before BA-247 added 14 |
 | "all 402 clauses were labelled `other`" | `CLAUDE.md` line 100 | correct **as history** — it describes the B-02 defect at the time, when there were 402 |
 | "`v4` all 8 guardrails" | `CLAUDE.md` line 155, the tag list | **wrong.** Three guardrails exist; `core/guardrails.py` is not built |
 | "`second_pass.py` and `guardrails.py` are **planned for Phase 7 and do not exist**" | `ENGINEERING.md` line 400 | **half stale.** `second_pass.py` exists and is built; `guardrails.py` genuinely does not |

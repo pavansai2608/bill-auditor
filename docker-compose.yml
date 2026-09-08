@@ -36,7 +36,7 @@ services:
     environment:
       # Ingestion labels every clause with its rule_type through the model, so
       # it needs Ollama just as much as the audit service does. Without this it
-      # falls back to localhost, every call is refused, and all 402 clauses come
+      # falls back to localhost, every call is refused, and all 399 clauses come
       # out as "other" - which degrades rule_type routing with no hard failure.
       BA_OLLAMA_BASE_URL: http://ollama:11434
       BA_LOG_LEVEL: INFO

@@ -204,7 +204,7 @@ def run(headless: bool, base: str, check: Checks) -> None:
         check("the form explains why it cannot run", note.is_displayed())
         check(
             "the explanation says where to run it instead",
-            "uvicorn" in note.text and "npm run dev" in note.text,
+            "docker compose up" in note.text and "localhost:5173" in note.text,
         )
         submit = driver.find_element(By.CSS_SELECTOR, "[data-testid='submit']")
         check("submit is disabled", not submit.is_enabled())

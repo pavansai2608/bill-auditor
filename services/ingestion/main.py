@@ -1,6 +1,6 @@
 """ingestion-service: PDFs in, clauses and embeddings out.
 
-Heavy but rare. Splitting the three policy PDFs and embedding 402 clauses takes
+Heavy but rare. Splitting the three policy PDFs and embedding 399 clauses takes
 minutes and a lot of memory; it happens when a policy is added, not when a bill
 is audited. That difference is the whole reason it is a separate container -
 nothing else has to be sized for it.

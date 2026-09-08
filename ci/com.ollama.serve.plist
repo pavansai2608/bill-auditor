@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Keeps a native Ollama listening on 127.0.0.1:11434 for the Jenkins agent.
+
+  Why this exists: the Eval and E2E stages probe that port and mark themselves
+  NOT_BUILT when nothing answers. Ollama.app registers its own login item
+  (com.ollama.ollama), but that only starts when someone opens the app, so the
+  first build after a reboot found no model server and went UNSTABLE with both
+  gates unrun - develop #51 and #52, both for exactly this reason.
+
+  Why a LaunchAgent and not a LaunchDaemon: Jenkins itself is a user
+  LaunchAgent (homebrew.mxcl.jenkins-lts), and the models are 27 GB under
+  ~/.ollama that only this user can read. Running as root at boot would mean
+  either a second copy of the weights or an OLLAMA_MODELS pointing into another
+  user's home. LimitLoadToSessionType matches the Jenkins plist so this loads
+  in a Background session too - no GUI login needed, same as Jenkins.
+
+  Why not the container instead: docker-compose.yml deliberately does not
+  publish 11434. Publishing it would put a CPU-only Ollama inside the Docker VM
+  on the same port this one uses - the two would race for it - and B-02 records
+  qwen3:8b being OOM-killed in that VM. The eval baseline was measured against
+  the native server, which has Metal and the whole machine's RAM.
+
+  Install, and what breaks if it is removed, are in JENKINS_SETUP.md section 11.
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.ollama.serve</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/local/bin/ollama</string>
+    <string>serve</string>
+  </array>
+
+  <key>RunAtLoad</key>
+  <true/>
+
+  <!-- ollama serve exits if the port is taken or the machine sleeps oddly.
+       KeepAlive brings it back rather than leaving the next build to discover
+       it is gone. -->
+  <key>KeepAlive</key>
+  <true/>
+
+  <key>LimitLoadToSessionType</key>
+  <array>
+    <string>Aqua</string>
+    <string>Background</string>
+    <string>LoginWindow</string>
+    <string>StandardIO</string>
+    <string>System</string>
+  </array>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+    <!-- Loopback only. This server exists for the agent on this machine; it is
+         not something to expose on the network. -->
+    <key>OLLAMA_HOST</key>
+    <string>127.0.0.1:11434</string>
+    <key>PATH</key>
+    <string>/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+  </dict>
+
+  <!-- /tmp, not the home directory, so this file carries no username and can be
+       installed as-is on another machine. -->
+  <key>StandardOutPath</key>
+  <string>/tmp/ollama-serve.log</string>
+  <key>StandardErrorPath</key>
+  <string>/tmp/ollama-serve.err</string>
+</dict>
+</plist>

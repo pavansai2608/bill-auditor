@@ -74,7 +74,7 @@ below the baseline.
 The gate deliberately sits on the subset, not the full set, so it is fast enough
 to run on every push. It is compared only with other subset rows.
 
-**478 tests** (PyUnit, `unittest discover -s tests`, ~100s).
+**492 tests** (PyUnit, `unittest discover -s tests`, ~75s).
 
 ---
 
@@ -152,11 +152,11 @@ which would mean the next word was painted over the last one.
 Across all four documents: **50,297 spaces examined, 79 caught, every one in
 star_health.** The index held 402 clauses before and 402 after — none added,
 none removed. (402 was its size at the time; the later flattened-table fix
-brought it to the 399 it holds today.) **26 clause bodies and 6 titles repaired,
-total character delta −50, and every diff is a deletion of whitespace and
-nothing else.** One `rule_type`
-changed as a consequence: `III.23` moved from `other` to `non_payable` once its
-title read "Injury/disease caused by…" instead of "I njury/disease".
+brought it to the 399 it holds today.) **26 clause bodies and 6 titles
+repaired, total character delta −50, and every diff is a deletion of whitespace
+and nothing else.** One `rule_type` changed as a consequence: `III.23` moved
+from `other` to `non_payable` once its title read "Injury/disease caused by…"
+instead of "I njury/disease".
 
 ### 2. A CI stage that was green and red for the same wrong reason
 
@@ -252,17 +252,31 @@ one breached cap reduce every associated expense on the bill.
 
 ## Running it
 
+The whole system is six containers. This is the path that works from a clone:
+
+```bash
+cp .env.example .env         # add your BA_GROQ_API_KEY
+docker compose up -d         # six containers: ollama, the four services, the UI
+open http://localhost:5173   # the gateway is on :8000, docs at /docs
+```
+
+`api/` is still a working monolith, and it is what the eval and the E2E stage
+drive, so the single-process path is the one to use for those:
+
 ```bash
 uv sync
-uv run python -m unittest discover -s tests     # 478 tests
+uv run python -m unittest discover -s tests     # 492 tests
 uv run uvicorn api.main:app --reload            # API on :8000, docs at /docs
 uv run python eval/evaluate.py --agent          # full 44-bill eval
 uv run python eval/evaluate.py --quick --threshold 0.52   # the CI gate
 ```
 
-Ollama must be running with `qwen3:8b` pulled for anything that reaches the
-model. Every model call is cached to disk by prompt hash, because the eval is
-re-run many times.
+**Groq answers the model calls** for the API and the UI; Ollama running
+`qwen3:8b` is the per-call fallback when Groq refuses one, and it is the
+default for the eval, the CLI and the tests — those burn hundreds of calls and
+no quota. Without a Groq key everything still runs, on Ollama alone. Every
+model call is cached to disk by prompt hash, because the eval is re-run many
+times.
 
 ## The published front end
 
@@ -272,9 +286,10 @@ The UI is deployed to GitHub Pages at
 `main`. It is a separate path from Jenkins and does not touch it.
 
 **It cannot run an audit, and it says so rather than pretending.** Pages serves
-files; the audit searches a 399-clause index and puts every line to an 8B model
-running locally. The form is therefore disabled, with the quickstart above in
-its place — and the one thing a static file can honestly show is offered
+files; the audit searches a 399-clause index and puts every line to a model,
+neither of which is deployed publicly. The form is therefore disabled, with
+the quickstart above in its place — and the one thing a static file can
+honestly show is offered
 instead: a report the system really produced, exported from an eval checkpoint
 by `eval/export_example_report.py`, with its real figures and its real clause
 citations. `tests/test_example_report.py` holds that file to the clause index,

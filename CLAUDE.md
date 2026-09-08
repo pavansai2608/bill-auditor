@@ -9,7 +9,7 @@ are - is `ENGINEERING.md`. The phase plan is `PHASES.md`.
 **Last updated: 2026-09-06. Every phase in `PHASES.md` is built, including
 Jenkins. The recorded eval is `v11` at 55.2% line accuracy over all 44 bills.
 The CI gate runs the 10-bill subset against a 56.1% baseline at
-`--threshold 0.52`. 474 tests.**
+`--threshold 0.52`. 492 tests.**
 
 **Read `KNOWN_LIMITATIONS.md` sections 6 and 7 before quoting any accuracy
 number**, and treat `eval/results.md` as the only authoritative source for one.
@@ -46,7 +46,12 @@ Built and passing:
   `ENGINEERING.md`. `k8s/deploy.sh` loads this build's images into minikube,
   rolls out the BUILD_NUMBER tag and fails if any pod is not on it;
   `ci/prune_images.py` then deletes stale tags, keeping N, N-1, `latest` and
-  anything the cluster is live on.
+  anything the cluster is live on. The Eval and E2E stages need a model server
+  on `localhost:11434`, which `ci/com.ollama.serve.plist` keeps running as a
+  LaunchAgent — the native Ollama, never the container, which publishes no host
+  port on purpose. Without it both gates go NOT_BUILT and the build is UNSTABLE
+  for a reason that has nothing to do with the commit; see `JENKINS_SETUP.md`
+  section 11.
 - `.github/workflows/pages.yml` — the front end alone on GitHub Pages at
   <https://pavansai2608.github.io/bill-auditor/>, on push to `main`. **Separate
   from Jenkins and does not touch it.** `npm run build:pages` reads
@@ -65,8 +70,10 @@ Built and passing:
   against a dev server at the domain root. **No secret belongs in that
   workflow, in `.env.pages`, or in the bundle:** a `VITE_` variable is not
   configuration, it is a string anyone can fetch off the published site.
-- The clause index: 402 clauses in `data/clauses.json` (star_health 153,
-  hdfc_ergo 144, niva_bupa 105) plus `non_payable.json`.
+- The clause index: 399 clauses in `data/clauses.json` (star_health 152,
+  hdfc_ergo 143, niva_bupa 104) plus `non_payable.json`. Counted out of the
+  file on 2026-09-06; `PROJECT_FACTS.md` records the same figure and the
+  flattened-table fix that took it down from 402.
 - The eval harness: **44 bills** in `eval/bills/`, an answer key derived
   straight from the PDFs by `eval/derive_key.py`, and `eval/evaluate.py`
   (`--agent` scores the loop, without it scores naive v0).
@@ -75,7 +82,7 @@ Built and passing:
   `bill_text` and the `lines` array of every bill against each other — the two
   halves of a fixture can drift and nothing else compares them. `--llm` runs
   the same check through `core.bill.parse_bill` instead of the regex.
-- 474 PyUnit tests, all passing, `unittest discover -s tests` in ~100s.
+- 492 PyUnit tests, all passing, `unittest discover -s tests` in ~75s.
 
 Not built yet — do not assume these exist:
 
@@ -116,6 +123,97 @@ starting the next phase.** Do not carry on past a regression;
 `git bisect run python eval/evaluate.py --quick --threshold 0.80` finds the
 commit that caused it.
 
+## Definition of done
+
+This applies to every change, without being restated. A change is not done when
+the edit is made; it is done when the pipeline that guards this repository has
+been run against it and has come back green.
+
+**1. Run what Jenkins runs, before handing over any git command.** Not an
+approximation of it - read the `Jenkinsfile` and run the commands it actually
+contains. Today the Build, Lint, Unit and Quality stages are:
+
+```bash
+uv sync --frozen --all-extras      # Build
+uv run pyb clean                   # Build
+uv run ruff check .                # Quality / Lint
+uv run ruff format --check .       # Quality / Lint
+uv run pyb --no-venvs run_unit_tests   # Quality / Unit
+```
+
+If a stage in the `Jenkinsfile` changes, this list is stale and the
+`Jenkinsfile` wins. Re-read it rather than trusting these five lines.
+
+If `uv run pyb` answers `Failed to spawn: pyb` while `.venv/bin/pyb` plainly
+exists, the console scripts carry an absolute shebang from wherever this
+checkout used to live, and the directory has moved since. `rm -rf .venv && uv
+sync --frozen --all-extras` rewrites them. Jenkins never sees this - it builds
+its own `.venv` in the workspace - so it is a local failure only, and not a
+reason to touch the `Jenkinsfile`.
+
+**2. After the repo owner says a build has run, poll for the result.** Do not
+ask for a pasted log:
+
+```bash
+curl -s "http://localhost:8080/job/bill-audit/job/develop/lastBuild/api/json?tree=number,building,result"
+```
+
+Poll until `"building": false`, then read `"result"`.
+
+**3. Anything other than `SUCCESS` is a failure to be fixed, not reported and
+left.** `UNSTABLE` counts as a failure - it is the colour a skipped gate
+produces, and a gate that did not run has proved nothing. Fetch the log,
+find the cause, fix it, and say what it was:
+
+```bash
+curl -s "http://localhost:8080/job/bill-audit/job/develop/<N>/consoleText"
+```
+
+**4. Never buy a green build by weakening what it measures.** Not by lowering a
+threshold, not by editing an evaluation file or an answer key, not by deleting
+or rewriting a recorded result, not by widening a `when` so a stage skips
+quietly, not by turning an error into a warning, and not by reverting a real
+fix to recover a number. A stage that genuinely cannot run on this agent should
+say so loudly and leave the build yellow. If the only route to green runs
+through weakening a check, stop and say so instead - that finding is the
+deliverable.
+
+**5. Never run a git command**, per the working rules below. Hand the commands
+over as text.
+
+**6. No AI attribution anywhere** - not in commits, code, comments or docs. Also
+per the working rules below.
+
+### Authenticating to the Jenkins API
+
+**Nothing is needed for reading.** This instance allows anonymous read: plain
+`curl` against `/api/json` and `/consoleText` returns 200, and
+`http://localhost:8080/whoAmI/api/json` reports `"name": "anonymous"` with
+`"authenticated": true`. Every command in this section works as written.
+
+If read access is ever locked down, or something needs to be *triggered* rather
+than read, it takes an API token - a real one, not the account password, which
+Jenkins rejects for API use:
+
+1. Jenkins → your name, top right → **Security** (or go straight to
+   `http://localhost:8080/user/<your-user>/security/`).
+2. **API Token** → **Add new Token** → name it → **Generate**.
+3. Copy it then and there. Jenkins shows it once and never again.
+
+Keep it out of this repository. Put it in a shell variable or `~/.netrc`, and
+pass it as `curl -u "<user>:$JENKINS_TOKEN"`. A POST additionally needs a CSRF
+crumb:
+
+```bash
+CRUMB=$(curl -s -u "$JENKINS_USER:$JENKINS_TOKEN" \
+  'http://localhost:8080/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,":",//crumb)')
+curl -s -u "$JENKINS_USER:$JENKINS_TOKEN" -H "$CRUMB" -X POST \
+  "http://localhost:8080/job/bill-audit/job/develop/build"
+```
+
+A token in a commit is a token to revoke, at Jenkins → your name → Security →
+the token's **Revoke** button.
+
 ## Working rules (non-negotiable)
 
 1. **Never run a git command.** Not `add`, `commit`, `push`, `merge`, `tag`, `config`, `checkout` — none. The repo owner runs all of them. Output the exact commands as text under a `## GIT COMMANDS — run these yourself` heading instead.
@@ -133,7 +231,8 @@ uv run ruff check . && uv run ruff format .
 uv run python -m unittest discover -s tests    # PyUnit, as Jenkins runs it
 uv run python -m unittest tests.test_math      # a single test module
 uv run python -m unittest tests.test_math.MathTest.test_room_rent   # a single test
-uv run uvicorn api.main:app --reload           # API on :8000, docs at /docs
+docker compose up -d                           # all six services; UI on :5173, gateway on :8000
+uv run uvicorn api.main:app --reload           # the api/ monolith instead; eval and E2E use this
 uv run python eval/evaluate.py                 # full 44-bill eval, naive v0 path
 uv run python eval/evaluate.py --agent --version v2 --write   # score the agent loop, append to results.md
 uv run python eval/evaluate.py --quick --threshold 0.80   # CI gate; exit 1 below threshold
@@ -142,7 +241,7 @@ uv add <pkg>                              # then: uv export --format requirement
 
 Tests are **PyUnit (`unittest`)**, not pytest — Jenkins drives them through PyBuilder (`pyb run_unit_tests`). `requirements.txt` is a generated export, never hand-edited.
 
-Ollama must be running with `qwen3:8b` pulled for anything that touches the model.
+Groq answers the model calls for the API and the UI (`BA_GROQ_API_KEY` in `.env`), with Ollama as the per-call fallback when Groq refuses one. The eval, the CLI and the tests default to Ollama, so it must be running with `qwen3:8b` pulled for any of those.
 
 ## Git workflow
 

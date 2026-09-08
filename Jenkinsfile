@@ -222,7 +222,13 @@ pipeline {
                     'this build has no evidence the app works in a browser, so it must ' +
                     'not produce images or deploy.')
             }
-            unstable('E2E skipped: needs both a running Ollama and npm on the agent.')
+            // `lack`, not a fixed string. The sentence that used to be here
+            // named both prerequisites whichever one was missing, so develop
+            // #51 and #52 read as "no npm on the agent" when npm was on the
+            // agent the whole time - the Lint stage in those same builds ran
+            // uv, which lives beside npm in /opt/homebrew/bin. A warning that
+            // misnames the cause costs more than no warning.
+            unstable("E2E skipped: ${lack.join(', ')}. The browser tests did not run.")
             catchError(buildResult: 'UNSTABLE', stageResult: 'NOT_BUILT') { error('E2E prerequisites missing') }
           } else {
             // Everything is in the script, including cleanup, because the

@@ -2,18 +2,24 @@
 
 React + TypeScript + Vite, with React Query owning the polling.
 
+The whole system, this front end included, comes up on compose:
+
+```bash
+cd .. && cp .env.example .env    # add your BA_GROQ_API_KEY
+docker compose up -d             # UI on http://localhost:5173, gateway on :8000
+```
+
+For front-end work, run vite against that gateway instead — the dev server
+reloads, the nginx image does not:
+
 ```bash
 npm install
-npm run dev        # http://localhost:5173
+npm run dev        # http://localhost:5173, needs :8000 answering
 ```
 
-The API must be running on http://localhost:8000:
-
-```bash
-cd .. && uv run uvicorn api.main:app --reload
-```
-
-Set `VITE_API_BASE` to point somewhere else (see `.env.example`).
+`docker compose up -d gateway` is enough to serve it, or `uv run uvicorn
+api.main:app --reload` for the monolith. Set `VITE_API_BASE` to point somewhere
+else (see `.env.example`).
 
 ## The GitHub Pages build
 
@@ -38,8 +44,11 @@ The router reads `import.meta.env.BASE_URL` rather than repeating the literal,
 so the basename and the asset paths cannot drift apart.
 
 **The site cannot run an audit, and says so.** The audit is a retrieval
-pipeline over a 402-clause index and a local 8B model; none of that is on a
-CDN. What the site can show is a report the system really produced -
+pipeline over a 399-clause index, judged by a model; none of that is on a CDN.
+The note on the form sums its clause count from `STATIC_POLICIES` in
+`src/lib/staticDemo.ts`, which is the one place the front end states one.
+
+What the site can show is a report the system really produced -
 `src/data/exampleReport.json`, exported from an eval checkpoint by
 `eval/export_example_report.py` and pinned to the clause index by
 `tests/test_example_report.py`. Nothing on that screen is invented.
